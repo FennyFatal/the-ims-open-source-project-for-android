@@ -1,0 +1,59 @@
+package javax.microedition.ims.core.sipservice.subscribe;
+
+public class NotifyInfo {
+
+    private final String notifyEvent;
+    private final String notifySubscriptionState;
+    private final String notifyBodyMessage;
+
+    public NotifyInfo(String notifyEvent, String notifySubscriptionState, String notifyBodyMessage) {
+        this.notifyEvent = notifyEvent;
+        this.notifySubscriptionState = notifySubscriptionState;
+        this.notifyBodyMessage = notifyBodyMessage;
+    }
+
+    public String getNotifyEvent() {
+        return notifyEvent;
+    }
+
+    public String getNotifySubscriptionState() {
+        return notifySubscriptionState;
+    }
+
+    public String getNotifyBodyMessage() {
+        return notifyBodyMessage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NotifyInfo that = (NotifyInfo) o;
+
+        if (notifyBodyMessage != null ? !notifyBodyMessage.equals(that.notifyBodyMessage) : that.notifyBodyMessage != null)
+            return false;
+        if (notifyEvent != null ? !notifyEvent.equals(that.notifyEvent) : that.notifyEvent != null) return false;
+        if (notifySubscriptionState != null ? !notifySubscriptionState.equals(that.notifySubscriptionState) : that.notifySubscriptionState != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = notifyEvent != null ? notifyEvent.hashCode() : 0;
+        result = 31 * result + (notifySubscriptionState != null ? notifySubscriptionState.hashCode() : 0);
+        result = 31 * result + (notifyBodyMessage != null ? notifyBodyMessage.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "NotifyInfo{" +
+                "notifyEvent='" + notifyEvent + '\'' +
+                ", notifySubscriptionState='" + notifySubscriptionState + '\'' +
+                ", notifyBodyMessage='" + notifyBodyMessage + '\'' +
+                '}';
+    }
+}

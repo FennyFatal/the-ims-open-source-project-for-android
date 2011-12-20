@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="javax.microedition.ims.engine.test"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>    
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+	<application android:icon="@drawable/icon" android:label="@string/app_name">
+		<service android:name="javax.microedition.ims.android.ConnectorService" android:process=":ims_stack">
+        	<intent-filter>
+        		<action android:name="javax.microedition.ims.android.IConnector" />
+        	</intent-filter>
+        	<intent-filter>
+        		<action android:name="javax.microedition.ims.android.IConnectionState" />
+        	</intent-filter>
+            <intent-filter>
+                <action android:name="javax.microedition.ims.android.IConfiguration" />
+            </intent-filter>
+        </service>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.SipSettings" android:label="@string/sip_settings_title"
+            android:clearTaskOnLaunch="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.ProxyServerSettings" 
+                android:label="@string/sip_proxy_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.MsrpSettings" 
+                android:label="@string/msrp_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.RegisterServerSettings" 
+                android:label="@string/sip_registrar_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.AuthenticationSettings" 
+                android:label="@string/sip_authentication_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.XDMServerSettings" 
+                android:label="@string/xdm_server_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.SupportedFeatures" 
+                android:label="@string/sip_supported_features">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.RequiredFeatures" 
+                android:label="@string/sip_required_features">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="javax.microedition.ims.android.config.ui.InviteRefreshSettings" 
+                android:label="@string/invite_refresh_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".RegisterActivity"
+			android:label="@string/register_activity_lbl">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".InviteActivity" android:label="@string/invite_activity_lbl">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+
+		<activity android:name=".TestReferActivity" android:label="ReferLabel">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".TestMsrpActivity" android:label="MSRPLabel">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".MsrpChatActivity" android:label="@string/msrp_chat_activity_title">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".Subscription281Activity"
+			android:label="@string/subscr281_title">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".MessageActivity" android:label="@string/message_activity_title">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".PresenceHardStateActivity"
+			android:label="@string/activity_presence_hardstate_title">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".Presence325Activity" android:label="@string/activity_presence_325_title">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".ContactPresenseTestActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+		
+        <activity android:name=".ConferenceActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".PhbkActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
+        
+        <activity android:name=".XdmDocsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
+        
+        <activity android:name=".ContListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+		
+		
+		<activity android:name=".ListPresenseTestActivity">
+		<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
+
+		        <activity android:name=".PhbkActivity"
+            android:label="@string/phbk_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".Settings">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+
+		</application>
+
+	<uses-sdk android:minSdkVersion="8" />
+
+</manifest> 

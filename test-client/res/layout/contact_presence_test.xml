@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:padding="5dip">
+
+	<LinearLayout android:orientation="vertical"
+		android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:padding="10dip">
+		
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="@string/remote_identity_lbl" />
+
+		<EditText android:id="@+id/remote_identity"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:singleLine="true" android:background="@android:drawable/editbox_background">
+		</EditText>
+
+		<Spinner android:id="@+id/remote_identities"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:layout_marginTop="5dip" android:drawSelectorOnTop="true"
+			android:prompt="@string/remote_identity_prompt">
+			<requestFocus />
+		</Spinner>
+
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:padding="10dip">
+
+			<Button android:id="@+id/btn_back" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/msg_back" />
+
+			<LinearLayout android:layout_weight="1.0"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+			<Button android:id="@+id/btn_status_subscribe"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/btn_status_subscribe" />
+                
+             <Button android:id="@+id/btn_status_unsubscribe"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/btn_status_unsubscribe" />
+
+		</LinearLayout>
+
+		<LinearLayout android:id="@+id/pagemessage_panel"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical|left">
+			<ImageView android:id="@+id/connection_lbl"
+				android:paddingRight="5px" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+				android:src="@drawable/state_inactive" />
+			<TextView android:id="@+id/connection_state"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:text="@string/connection_state_resumed_ims_disconnected" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

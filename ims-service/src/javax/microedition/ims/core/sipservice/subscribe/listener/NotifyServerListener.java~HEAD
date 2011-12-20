@@ -1,0 +1,61 @@
+package javax.microedition.ims.core.sipservice.subscribe.listener;
+
+import javax.microedition.ims.SipMessageUtilHolder;
+import javax.microedition.ims.common.ListenerHolder;
+import javax.microedition.ims.common.ListenerSupport;
+import javax.microedition.ims.core.dialog.Dialog;
+import javax.microedition.ims.core.dialog.IncomingNotifyListener;
+import javax.microedition.ims.core.sipservice.ReferState;
+import javax.microedition.ims.core.sipservice.TransactionStateChangeEvent;
+import javax.microedition.ims.core.sipservice.subscribe.NotifyInfo;
+import javax.microedition.ims.core.transaction.TransactionListener;
+import javax.microedition.ims.core.transaction.UnSubscribeOnLogicCompleteAdapter;
+
+public class NotifyServerListener<T> extends UnSubscribeOnLogicCompleteAdapter<T> {
+    private final Dialog dialog;
+    private final ListenerHolder<IncomingNotifyListener> listenerHolder;
+
+    public NotifyServerListener(
+            final Dialog dialog,
+            final ListenerSupport<TransactionListener<T>> listenerSupport,
+            final ListenerHolder<IncomingNotifyListener> listenerHolder) {
+        super(listenerSupport);
+
+        this.dialog = dialog;
+        this.listenerHolder = listenerHolder;
+    }
+
+    @Override
+    public void onStateChanged(final TransactionStateChangeEvent<T> event) {
+        //do listener un-subscribe here
+        super.onStateChanged(event);
+
+//        assert Dialog.InitiateParty.REMOTE == dialog.getInitiateParty();
+
+        ReferState sessionState = ReferState.toReferState(event);
+
+        if (ReferState.NOTIFICATION_RECEIVED == sessionState) {
+
+            //As far as we detected server media update we can un-subscribe form listening state changes
+            doUnSubscribe(event.getTransaction());
+
+            //Request lastNotifyRequest = dialog.getMessageHistory().getLastRequestByMethod(MessageType.SIP_NOTIFY);
+            NotifyInfo notifyInfo = getNotifyInfo(event.getTriggeringMessage());
+
+            listenerHolder.getNotifier().notificationReceived(new NotifyDialogEvent(dialog, notifyInfo));
+        }
+    }
+
+    private NotifyInfo getNotifyInfo(T msg) {
+        return SipMessageUtilHolder.getSipMessageUtil().getNotifyInfo(msg);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer();
+        sb.append("NotifyServerListener");
+        sb.append("{dialog=").append(dialog);
+        sb.append('}');
+        return sb.toString();
+    }
+}

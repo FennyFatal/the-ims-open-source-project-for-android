@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="" default="debug">
+    <property name="extensible.libs.classpath" value="../lib" />
+    <target name="android_update">
+		<exec executable="android" failonerror="true">
+			<arg value="update"/>
+			<arg value="project"/>
+			<arg value="-p"/>
+			<arg value="."/>
+		</exec>
+    </target>
+</project>

@@ -1,0 +1,128 @@
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <!--
+
+      @(#)package.html	1.60 98/01/27
+
+      Copyright 1998 Sun Microsystems, Inc. 901 San Antonio Road,
+      Palo Alto, California, 94303, U.S.A.  All Rights Reserved.
+
+      This software is the confidential and proprietary information of Sun
+      Microsystems, Inc. ("Confidential Information").  You shall not
+      disclose such Confidential Information and shall use it only in
+      accordance with the terms of the license agreement you entered into
+      with Sun.
+
+      CopyrightVersion 1.2
+
+    -->
+</head>
+<body bgcolor="white">
+
+This package collects classes and interfaces to install and configure IMS
+applications.
+
+<p>
+    This package collects classes and interfaces to install and configure IMS
+    applications. There is also functionality to monitor the IMS registration
+    status. Below follows information about how to use the IMSAPI and a description
+    of the application model.
+
+</p>
+
+<h2>Using the IMSAPI</h2>
+A JSR 281 IMS application goes through three generic steps:
+<ol>
+    <li>Access the IMS functionality of the device.</li>
+
+    <li>Go online to the IMS network using a selected identity.</li>
+    <li>Connect a call including media flows with a remote IMS device.</li>
+</ol>
+
+<h3>Access the IMS functionality</h3>
+To access the IMS functionality of the device, the IMS application needs to be
+installed. This can be done in two different ways, static and dynamic
+installation. Static installation is done by adding properties in the jad file.
+Dynamic installation is performed in runtime by invoking
+<code>Configuration.setRegistry</code>. Both installation methods are mentioned
+below.
+
+<h3>Go online</h3>
+The application creates a <code>Service</code> when it is prepared to handle
+calls. A <code>Service</code> is created by calling <code>Connector.open</code>.
+In order to receive incoming calls, it is recommended that the
+
+<code>CoreServiceListener</code> is set as soon as the <code>Service</code> is
+opened.
+
+<h3>Connect a call</h3>
+The final step that needs to be done is to create a <code>Session</code> that
+will manage the call. The call can be configured by adding various media and is
+then initiated by calling <code>Session.start</code>.
+
+<h3>Example code</h3>
+This example code only show the IMS specific java code that needs to be done
+in order to initiate a call including a streaming media.
+
+
+<pre>myCoreService = (CoreService) Connector.open("imscore://com.myCompany.CallApp");
+myCoreService.setListener(this);
+
+mySession = myCoreService.createSession(null, sip:bob@home.net);
+mySession.setListener(this);
+
+myMedia = (StreamMedia) mySession.createMedia("StreamMedia", Media.DIRECTION_SEND_RECEIVE);
+myMedia.setSource("capture://audio");
+
+mySession.start();
+</pre>
+
+</body>
+</html>
+
+
+<body>
+
+</body>

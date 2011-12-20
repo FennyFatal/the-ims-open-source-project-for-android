@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<resources>
+	<!-- string name="def_proxy_host">10.176.9.130</string -->
+	<string name="def_proxy_host">sip.iptel.org</string>
+
+	<string name="def_proxy_port">5060</string>
+
+	<string name="def_registrar_host">iptel.org</string>
+	<string name="def_registrar_port">5060</string>
+	<string name="def_registrar_expire_time">3600</string>
+	<string name="def_registrar_user_name_schema">sip</string>
+	<string name="def_registrar_user_name">dummy</string>
+	<string name="def_registrar_user_name_domain" >iptel.org</string>
+
+    <string name="def_preferred_identity">sip:dummy@sip2sip.info</string>
+	
+	<string name="def_auth_user_name_prefix"></string>
+	<string name="def_auth_user_name_info">dummy</string>
+	<string name="def_auth_user_name_domain">iptel.org</string>
+	<string name="def_auth_user_password">dummy</string>
+	<string name="def_auth_type">digest</string>
+	<!-- string name="def_auth_force">true</string-->
+	<string name="def_auth_simulteneous">false</string>
+	
+	<!-- UAS,PROXY -->
+	<string name="def_auth_forces">UAS</string>
+	
+	<string name="def_local_port">5061</string>
+	<string name="def_user_agent">android-ims-stack</string>
+	<string name="def_realm">iptel.org</string>
+
+	<string name="def_global_ip_discovery">false</string>
+	<string name="def_dns_lookup">false</string>
+	<string name="def_connection_type">UDP</string>
+	<string name="def_max_forwards">70</string>
+	<string name="def_use_rport">false</string>
+	<string name="def_required_100rel">false</string>
+ 	<string name="def_supported_100rel">true</string>
+ 	<string name="def_supported_eventlist">false</string>
+ 	<string name="def_use_resource_reservation">true</string>
+ 	<string name="def_supported_path">false</string>
+
+    <string name="def_xdm_xcap_root">http://domain.com:8080/xcap_root/services</string>
+ 	<string name="def_xdm_xui_name">sip:dummy@iptel.org</string>
+ 	<string name="def_xdm_xui_password"></string>
+ 	<string name="def_xdm_auth_name"></string>
+ 	<string name="def_xdm_password"></string>
+	<string name="def_xdm_send_full_document">false</string>
+
+	<string name="def_msrp_chunk_size" >4096</string>
+	<string name="def_msrp_local_port" >8509</string>
+
+	<string name="def_use_simul_connection">false</string>
+	
+	<string name="def_use_invite_refresh">false</string>
+	<string name="def_refresher">UAC</string>	
+	<string name="def_session_expires_time" >3600</string>
+	<string name="def_min_session_expires_time" >600</string>
+
+	<string name="def_force_srtp">true</string>
+
+	<string name="def_dtmf_payload_type">inband</string>
+
+</resources>

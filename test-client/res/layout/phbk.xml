@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical"
+    android:padding="5dip">
+
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="1dip">
+        
+        <Button android:id="@+id/phbk_add_contact_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/phbk_add_contact_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/phbk_reload_contacts_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/phbk_reload_contacts_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/phbk_select_document_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/phbk_select_document_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/phbk_delete_doc_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/phbk_delete_doc_btn" />
+    </LinearLayout>
+    
+    <TextView android:layout_width="fill_parent" android:id="@+id/phbk_current_document"
+            android:layout_height="wrap_content" android:text="@string/phbk_current_document" />
+        
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="fill_parent" android:padding="5dip">
+        
+        <ListView android:id="@+id/phbk_contact_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+            
+    </LinearLayout>
+    
+</LinearLayout>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">IMS Test Client</string>
+    <string name="register_activity_lbl">IMS Test Client</string>
+    <string name="invite_activity_lbl">Invite</string>
+    
+    <string name="activity_pid">Pid:</string>
+    
+    <string name="wrong_argument_msg">Wrong parameter</string>
+    <string name="media_cannot_be_created_msg">Media cannot be created</string>
+    <string name="media_empty_msg">Media cannot be empty</string>
+    <string name="session_cannot_be_started_msg">Session cannot be started</string>
+    <string name="session_cannot_be_created_msg">Session cannot be created</string>
+    <string name="service_already_closed">Session cannot be created</string>
+    
+    
+    <string name="reg_app_name_lbl">Application name:</string>
+    <string name="reg_identity_lbl">Identity:</string>
+    <string name="reg_disconnect_btn">Disconnect</string>
+    <string name="reg_connect_btn">Connect</string>
+    <string name="go_invite_btn">Go to invite screen</string>
+    
+    <string name="refer_to_lbl">Refer-To:</string>
+    
+    <!-- string name="reg_disconnected_lbl">disconnected</string>
+    <string name="reg_connected_lbl">connected</string>
+    <string name="registration_state_lbl">Reg state:</string-->
+    
+    
+    <string name="invite_state_lbl">Session state:</string>
+    <string name="invite_undefined_state_lbl">undefined</string>
+    
+    <string name="invite_btn">Invite</string>
+    <string name="refer_btn">Refer</string>
+    <string name="bye_btn">Bye</string>
+    
+    <string name="remote_identity_lbl">Remote identity:</string>
+    
+    <!-- session states -->
+    <string name="session_alerting_state">Alerting</string>
+    <string name="session_started_state">Started</string>
+    <string name="session_startfailed_state">StartFailed</string>
+    <string name="session_terminated_state">Terminated</string>    
+    <string name="session_updated_state">Updated</string>        
+    <string name="session_updatefailed_state">UpdateFailed</string>
+    <string name="session_updatereceived_state">UpdateReceived</string>
+    <string name="session_reference_received_state">ReferenceReceived</string>
+    
+    <string name="title_call_in_progress">Call in progress...</string>
+    
+    <!-- Incoming call -->
+    <string name="title_incoming_call">Incoming call</string>
+    <string name="msg_call_declined">Call from "%s" declined</string>
+    <string name="msg_call_canceled_by_remote">Call canceled by remote party</string>
+    <string name="msg_call_terminated_by_local">Call terminated by local party</string>
+    <string name="msg_call_terminated_by_remote">Call terminated by remote party</string>
+
+	<!-- Outgoing call -->
+    <string name="title_outgoing_call">Dialing</string>
+    <string name="msg_call_dialing">Call to "%s"</string>
+    <string name="msg_call_canceled">Call canceled</string>
+    <string name="msg_call_started_failed">Call start failed</string>
+    <string name="msg_starcode_dial_succeeded">Star code dial succeeded</string>
+    <string name="msg_starcode_dial_failed">Star code dial failed</string>
+    
+    <string name="btn_incomming_call_accept">Answer</string>
+    <string name="btn_incomming_call_reject">Decline</string>
+    <string name="btn_incomming_call_cancell">Cancel</string>
+    <string name="btn_incomming_call_update">Update</string>
+    <string name="btn_call_in_progress_bye">Bye</string>
+    <string name="btn_remove_video">Stop video sending</string>
+    
+    
+    
+    <string name="lbl_incoming_sesion_update">Session update</string>
+    <string name="lbl_incoming_sesion_update_accept">Accept</string>
+    <string name="lbl_incoming_sesion_update_reject">Reject</string>
+    
+    
+    <string name="chronometer_initial_format"><xliff:g id="initial-format">%s</xliff:g></string>
+    
+    <!-- Connection states -->
+    <!-- string name="connection_state_lbl">Connection state:</string>
+    <string name="connection_state_default_lbl">disconnected</string-->
+    
+    <string name="connection_state_resumed_ims_connected">online</string>
+    <string name="connection_state_resumed_ims_disconnected">offline</string>
+    
+	<string name="connection_state_suspended_ims_connected">no network</string>
+	<string name="connection_state_suspended_ims_disconnected">no network</string>
+	
+	<string name="initial_mediatype_lbl">Initial media type: </string>
+	<string name="lbl_initial_media1">Audio</string>
+	<string name="lbl_initial_media2">Video</string>
+	<string name="lbl_initial_media3">Reliable</string>
+	
+	<!-- Message sending activity -->
+	<string name="message_activity_title">Send message</string>
+	<string name="remote_user">Remote user address</string>
+	<string name="message_text">Text to send:</string>
+	<string name="send_btn_title">Send</string>
+	<string name="msg_send_success">Message was delivered</string>
+	<string name="msg_send_failure">Message sent failure</string>
+	<string name="msg_received">New message was received</string>
+	<string name="msg_act_btn">Mes</string>
+	<string name="btn_status_test_subscribe">SubsCont</string>
+	<string name="btn_status_test_subscribe_list">SubsList</string>
+	<string name="msg_back">Back</string>
+	
+	
+	<string name="conference_act_btn">Conf</string>
+	
+	
+	<!-- MSRP chat activity -->
+	<string name="msrp_msg_act_btn">MSRP</string>
+    <string name="msrp_chat_activity_title">MSRP chat</string>
+    <string name="msrp_chat_start_btn">Start chat</string>
+    <string name="msrp_chat_stop_btn">Stop</string>
+    <string name="msrp_chat_back_btn">Back</string>
+    <string name="msrp_chat_send_btn">Send</string>
+    <string name="msrp_chat_state_lbl">Session state:</string>
+    <string name="msrp_chat_offline_lbl">offline</string>
+    <string name="msrp_chat_messages_lbl">Messages</string>
+    <string name="msrp_chat_file_btn">File</string>
+    <string name="msrp_file_list_title">Select file for sending</string>
+	<string name="msrp_file_list_cancel_btn">Cancel</string>
+	<string name="msrp_file_list_ok_btn">OK</string>
+	<string name="msrp_file_list_selected">Selected: </string>
+	<string name="msrp_file_progress_cancel_btn">Cancel</string>
+	<string name="msrp_file_progress_title">Transfer progress</string>
+	<string name="msrp_file_progress_close_btn">Close</string>
+	<string name="msrp_file_progress_start1_btn">Start</string>
+    <string name="msrp_file_progress_start2_btn">Start 2x</string>
+	<string name="msrp_file_incoming_accept_btn">Accept</string>
+	<string name="msrp_file_incoming_reject_btn">Reject</string>
+	<string name="msrp_file_incoming_cancel_btn">Cancel</string>
+	<string name="msrp_file_incoming_close_btn">Close</string>
+	<string name="msrp_file_incoming_title">Incoming file</string>
+	<string name="msrp_file_recepient1_prompt">Select 1st recepient</string>
+	<string name="msrp_file_recepient2_prompt">Select 2nd recepient</string>
+        <string name="msrp_file_incoming_progress1">Progress: 0 from 0</string>
+        <string name="msrp_file_incoming_progress2">Progress: 0 from 0</string>
+        <string name="msrp_file_incoming_path1">File: </string>
+        <string name="msrp_file_incoming_path2">File: </string>
+        <string name="msrp_file_incoming_state1">Not started</string>
+        <string name="msrp_file_incoming_state2">Not started</string>
+	
+	<string name="msrp_chat_incoming_title">Incoming chat</string>
+	<string name="msrp_chat_incoming_label">Incoming MSRP chat</string>
+	<string name="msrp_chat_incoming_accept_btn">Accept</string>
+	<string name="msrp_chat_incoming_reject_btn">Reject</string>
+	
+    <string name="msrp_chat_outgoing_title">Outgoing chat</string>
+    <string name="msrp_chat_outgoing_label">Trying to open MSRP chat session</string>
+    <string name="msrp_chat_outgoing_cancel_btn">Cancel</string>
+    <string name="msrp_autoaccept">Two files autoaccept</string>
+
+        <string name="msrp_file_transfer_path">File: </string>
+        <string name="msrp_file_transfer_state1">Not started</string>
+        <string name="msrp_file_transfer_state2">Not started</string>
+        <string name="msrp_file_transfer_progress1">Progress: 0 from 0</string>
+        <string name="msrp_file_transfer_progress2">Progress: 0 from 0</string>
+	
+	<!-- Refer sending dialog -->
+	<string name="send_refer_title">Call transfer dialog</string>
+	<string name="show_refer_dlg_btn">Call Transfer</string>
+	<string name="msg_show_refer_btn_incoming">Incoming</string>
+	<string name="send_refer_remote_user">Refer-To</string>
+	<string name="send_refer_close_btn">Close</string>
+	<string name="send_refer_btn">Transfer Call</string>
+	
+	
+	<!-- subscribe 281 -->
+	<string name="show_subscribe_dlg_btn">Subscribe 281</string>
+    <string name="subscr281_title">Subscription 281</string>
+	<string name="subscr281_subscribe_btn">Subscr</string>
+	<string name="subscr281_unsubscribe_btn">UnSubscr</string>
+	<string name="subscr281_clear_btn">Clear</string>
+
+	<string name="subscr281_close_btn">Close</string>
+	<string name="subscr281_remote_user">Remote URI</string>
+	<string name="subscr281_event">Event </string>
+	
+	
+    <!-- phbk -->
+    <string name="show_phbk_btn">phbk</string>
+    <string name="phbk_title">Contacts</string>
+    <string name="phbk_add_contact_btn">Add contact</string>
+    <string name="phbk_reload_contacts_btn">Reload</string>
+    <string name="phbk_select_document_btn">Doc</string>
+    <string name="phbk_delete_doc_btn">Del doc</string>
+    <string name="phbk_edit_contact_name">Name</string>
+    <string name="phbk_edit_contact_uri">URI</string>
+    <string name="phbk_current_document">Current document: phbk</string>
+	
+	
+	<!-- Refer sending progress dialog -->
+	<string name="send_refer_progress_title">Refer sending...</string>
+	<string name="send_refer_progress_cancel_btn">Cancel</string>
+	
+	<!-- Call in progress dialog -->
+	<string name="msg_call_in_progress_btn_hold_on">Hold on</string>
+	<string name="msg_call_in_progress_btn_hold_off">Hold off</string>
+	<string name="msg_call_in_progress_btn_call_transfer">Call Transfer</string>
+	<string name="call_in_progress_btn_switch">Switch</string>
+	
+	<!-- Incoming Refer dialog -->
+	<string name="incoming_refer_title">Incoming Refer dialog</string>
+	<string name="msg_incoming_refer_btn_accept">Accept</string>
+	<string name="msg_incoming_refer_btn_reject">Reject</string>
+	
+    <!-- Presence hard state-->
+    <string name="btn_show_hard_state_presence">Presence Hard</string>
+    <string name="btn_show_jsr325_presence">Presence jsr325</string>
+    <string name="activity_presence_hardstate_title">HardState Presence</string>
+    <string name="status_icons_prompt">Select url to icon</string>
+    <string name="service_note_prompt">Select note</string>
+    <string name="btn_status_update">Update</string>
+    
+    
+    <!-- Presence 325 -->
+    <string name="activity_presence_325_title">Presence JSR 325</string>
+    <string name="lbl_presence_entity">Presence entity:</string>
+    
+    <string name="lbl_status_icon">Status icon:</string>
+    <string name="lbl_status_note">Status note:</string>
+    <string name="txt_status_note">Type status note here</string>
+    <string name="btn_status_publish">Publish</string>
+    <string name="btn_status_unpublish">Unpublish</string>    
+    
+        
+    <string name="remote_identity_prompt">Select remote identity</string>
+    
+    <!-- Conference -->
+    <string name="activity_conference_title">Conference</string>
+    <string name="conf_server_lbl">Conference server</string>
+    <string name="conf_server_choose_btn">Choose</string>
+    <string name="conf_start_btn">Start conference</string>
+    <string name="conf_stop_btn">Stop conference</string>
+    <string name="conf_duration_lbl">Duration:</string>
+    <string name="conf_state_lbl">State:</string>
+    <string name="conf_state_def_lbl">undefined</string>
+    <string name="remote_party_choose_btn">Choose</string>
+    <string name="conf_party_state_lbl">State:</string>
+    <string name="remote_party_state_def_lbl">undefined</string>
+    <string name="conf_party1_lbl">Remote1</string>
+    <string name="conf_party2_lbl">Remote2</string>
+    
+    
+    <string name="conf_server_list_title">Conference server list</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    
+    <!-- Contact presence -->
+     <string name="btn_status_subscribe">Subscribe</string>
+     <string name="btn_status_unsubscribe">Unsubscribe</string>
+     
+     
+     <!-- call switcher -->
+     <string name="call_switch_session_lbl">Remote party:</string>
+     <string name="call_switch_btn_choose">Choose</string>
+     <string name="call_switch_btn_main">Main</string>
+     <string name="call_switch_btn_switch">Switch</string>
+     <string name="call_switch_title">Calls switcher</string>
+     <string name="call_switch_session_prompt">Choose</string>
+     
+     
+     <!-- XDM documents -->
+     <string name="xdm_docs_btn">XDM Docs</string>
+     <string name="xdm_docs_select_btn">Docs</string>
+     <string name="xdm_docs_create_btn">Create</string>
+     <string name="xdm_docs_retrieve_btn">Retrieve</string>
+     <string name="xdm_docs_delete_btn">Del</string>
+     <string name="xdm_docs_current_document">Current document: RLS-Doc</string>
+     <string name="xdm_docs_switch_title">Document switcher</string>
+
+     <!-- Contact list -->
+     <string name="cont_list_btn">ContList</string>
+     <string name="cont_list_subscribe_btn">Subscribe</string>
+     <string name="cont_list_unsubscribe_btn">Unsubscribe</string>
+     <string name="cont_list_test_btn">Test</string>
+     <string name="cont_list_load_btn">Load</string>
+     <string name="cont_list_status">Status: not subscribed</string>
+
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="zero">0</string>
+    <string name="star">*</string>
+    <string name="pound">#</string>
+
+    <string name="account">sip:12345678@dummy.com;list=phbk</string>
+
+    <string name="settings">Settings</string>
+
+    <string name="codec_preferences_category">Codec</string>
+    <string-array name="codec_preferences_entries">
+        <item>H263</item>
+        <item>H263_1998</item>
+        <item>LSVX</item>
+    </string-array>
+    <string-array name="codec_preferences_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="codecsize_preferences_category">Size</string>
+    <string-array name="codecsize_preferences_entries">
+        <item>176*144</item>
+        <item>320*240</item>
+        <item>352*288</item>
+    </string-array>
+    <string-array name="codecsize_preferences_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="dtfmpayload_preferences_category">DtfmPayload</string>
+    <string name="def_dtfmpayload_preferences_category">outbound</string>
+    <string-array name="dtfmpayload_preferences_entries">
+        <item>Inbound</item>
+        <item>Outbound</item>
+    </string-array>
+    <string-array name="dtfmpayload_preferences_values">
+        <item>inbound</item>
+        <item>outbound</item>
+    </string-array>
+    
+     <string name="cont_doc_name_lbl">Doc name:</string>
+     <string name="cont_list_name_lbl">List name:</string>
+     <string name="cont_target_uri_lbl">Target uri:</string>
+
+     <string name="caption_1st">1st: </string>
+     <string name="caption_2nd">2nd: </string>
+     <string name="remote_identity_text">sip:12345678@dummy.com;list=phbk</string>
+     
+     <string name="lbl_video_capable">Video capable:</string>
+
+     <string name="lbl_local_anonym">Anonimous call</string>
+
+</resources>

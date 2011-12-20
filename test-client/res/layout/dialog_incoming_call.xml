@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- Layouts for input call dialog -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:padding="10dp">
+
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_margin="10dp"
+			android:src="@drawable/robot" />
+
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:padding="10dp">
+
+			<TextView android:id="@+id/text" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="#FFF" />
+
+			<TextView android:id="@+id/medias" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button android:id="@+id/btn_answer_incoming"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/btn_incomming_call_accept" />								
+
+				<Button android:id="@+id/btn_decline_incoming"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/btn_incomming_call_reject" />
+   
+			</LinearLayout>
+			
+			<Button android:id="@+id/btn_update_incoming"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/btn_incomming_call_update" />
+		</LinearLayout>
+	</LinearLayout>
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<CheckBox android:id="@+id/offered_media1"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_margin="2px" android:text="@string/lbl_initial_media1"
+			android:clickable="false" />
+
+		<CheckBox android:id="@+id/offered_media2"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_margin="2px" android:text="@string/lbl_initial_media2" 
+			android:clickable="false"/>
+
+		<CheckBox android:id="@+id/offered_media3"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_margin="2px" android:text="@string/lbl_initial_media3"
+			android:clickable="false" />
+	</LinearLayout>
+</LinearLayout>

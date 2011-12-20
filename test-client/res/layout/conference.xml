@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:padding="5dip">
+
+	<LinearLayout android:orientation="vertical"
+		android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:paddingBottom="10dip"
+		android:paddingLeft="10dip" android:paddingRight="10dip"
+		android:paddingTop="10dip">
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="vertical" android:layout_height="wrap_content"
+			android:padding="5dip" android:layout_marginBottom="10dip">
+
+			<TextView android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:text="@string/conf_server_lbl" />
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<EditText android:id="@+id/conference_server_name"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:layout_weight="1.0" android:singleLine="true"
+					android:background="@android:drawable/editbox_background" />
+
+				<Button android:id="@+id/conf_server_choose_btn"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/conf_server_choose_btn" />
+			</LinearLayout>
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/conf_state_lbl" />
+
+				<TextView android:id="@+id/conf_state"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/conf_state_def_lbl" />
+
+				<TextView android:layout_width="wrap_content"
+					android:paddingLeft="10dip" android:layout_height="wrap_content"
+					android:text="@string/conf_duration_lbl" />
+
+				<Chronometer android:id="@+id/chronometer_cs"
+					android:format="@string/chronometer_initial_format"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:layout_weight="0" android:paddingTop="5dip"
+					android:paddingLeft="10dip" android:paddingRight="10dip" />
+
+			</LinearLayout>
+		</LinearLayout>
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="vertical" android:layout_height="wrap_content"
+			android:padding="5dip" android:layout_marginBottom="10dip">
+
+			<TextView android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:text="@string/conf_party1_lbl" />
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<EditText android:id="@+id/conference_party1"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:layout_weight="1.0" android:singleLine="true"
+					android:background="@android:drawable/editbox_background" />
+
+				<Button android:id="@+id/conf_party1_choose_btn"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/remote_party_choose_btn" />
+			</LinearLayout>
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/conf_party_state_lbl" />
+
+				<TextView android:id="@+id/conf_party1_state"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/remote_party_state_def_lbl" />
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="vertical" android:layout_height="wrap_content"
+			android:padding="5dip" android:layout_marginBottom="10dip">
+
+			<TextView android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:text="@string/conf_party2_lbl" />
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<EditText android:id="@+id/conference_party2"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:layout_weight="1.0" android:singleLine="true"
+					android:background="@android:drawable/editbox_background" />
+
+				<Button android:id="@+id/conf_party2_choose_btn"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/remote_party_choose_btn" />
+			</LinearLayout>
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/conf_party_state_lbl" />
+
+				<TextView android:id="@+id/conf_party2_state"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/remote_party_state_def_lbl" />
+			</LinearLayout>
+		</LinearLayout>
+
+		<ToggleButton android:id="@+id/conf_start_stop_btn"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="@string/conf_start_btn"
+			android:layout_alignParentRight="true" android:layout_gravity="right" 
+			android:textOff="@string/conf_start_btn"
+			android:textOn="@string/conf_stop_btn"/>
+
+	</LinearLayout>
+</LinearLayout>

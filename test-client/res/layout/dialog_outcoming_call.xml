@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- Layouts for input call dialog -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:padding="10dp">
+
+	<ImageView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_margin="10dp"
+		android:src="@drawable/robot" />
+
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:orientation="vertical"
+		android:padding="10dp">
+
+		<TextView android:id="@+id/text" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="#FFF" 
+			android:paddingBottom="10dp"/>
+			
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal" 
+			android:gravity="right">
+		
+			<Button android:id="@+id/btn_cancel" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:text="@string/btn_incomming_call_cancell"/>
+				
+				<Button android:id="@+id/btn_update" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/btn_incomming_call_update"/>
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--
+    Layouts for invite form
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
+    android:padding="5dip" android:orientation="vertical">
+
+
+	<TextView android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" android:text="@string/phbk_edit_contact_name" />
+	
+	<EditText android:id="@+id/phbk_edit_contact_name"
+	    android:layout_width="fill_parent" android:layout_height="wrap_content"
+	    android:singleLine="true" android:background="@android:drawable/editbox_background">
+	    <requestFocus />
+	</EditText>
+	
+	<TextView android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" android:text="@string/phbk_edit_contact_uri" />
+	
+	<EditText android:id="@+id/phbk_edit_contact_uri"
+	    android:layout_width="fill_parent" android:layout_height="wrap_content"
+	    android:singleLine="true" android:background="@android:drawable/editbox_background">
+	</EditText>
+          
+
+</LinearLayout>

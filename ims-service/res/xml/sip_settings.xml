@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceScreen android:key="sip_proxy_server"
+		android:title="@string/sip_proxy_server" android:summary="@string/sip_proxy_server_summary">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.ProxyServerSettings" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="sip_registrar_server"
+		android:title="@string/sip_registrar_server" android:summary="@string/sip_registrar_server_summary">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.RegisterServerSettings" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="sip_authentication"
+		android:title="@string/sip_authentication" android:summary="@string/sip_authentication_summary">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.AuthenticationSettings" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="xdm_server"
+		android:title="@string/xdm_server" android:summary="@string/xdm_server_summary">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.XDMServerSettings" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="msrp_data"
+		android:title="@string/msrp_title" android:summary="@string/msrp_title">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.MsrpSettings" />
+	</PreferenceScreen>
+	
+	<PreferenceScreen android:key="invite_refresh_data"
+		android:title="@string/invite_refresh_title" android:summary="@string/invite_refresh_title">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="javax.microedition.ims.engine.test"
+			android:targetClass="javax.microedition.ims.android.config.ui.InviteRefreshSettings" />
+	</PreferenceScreen>
+
+	<CheckBoxPreference android:key="sip_use_rport"
+		android:defaultValue="@string/def_use_rport" android:title="@string/sip_use_rport"
+		android:summary="@string/sip_use_rport_summary" android:persistent="true"
+		android:disableDependentsState="true" />
+
+	<CheckBoxPreference android:key="sip_use_resource_reservation"
+		android:defaultValue="@string/def_use_resource_reservation"
+		android:title="@string/sip_use_resource_reservation" android:summary="@string/sip_use_resource_reservation_summary"
+		android:persistent="true" android:disableDependentsState="true" />
+		
+	<CheckBoxPreference android:key="sip_use_simul_connection"
+		android:defaultValue="@string/def_use_simul_connection"
+		android:title="@string/sip_use_simul_connection" android:summary="@string/sip_use_simul_connection_summary"
+		android:persistent="true" android:disableDependentsState="true" />
+		
+	<javax.microedition.ims.android.config.ui.ExtEditTextPreference
+		android:key="sip_local_port" android:defaultValue="@string/def_local_port"
+		android:title="@string/sip_local_port" android:summary="@string/sip_local_port_summary"
+		android:dialogTitle="@string/sip_local_port" android:numeric="integer"
+		android:maxLength="5" validatePattern="@id/port_validator_pattern"
+		validateMessage="@string/port_validator_message" />
+
+	<EditTextPreference android:key="sip_max_forwards"
+		android:defaultValue="@string/def_max_forwards" android:title="@string/sip_max_forwards"
+		android:summary="@string/sip_max_forwards_summary"
+		android:dialogTitle="@string/sip_max_forwards" android:numeric="integer"
+		android:maxLength="4" />
+
+	<EditTextPreference
+		android:key="sip_user_agent" android:defaultValue="@string/def_user_agent"
+		android:title="@string/sip_user_agent" android:summary="@string/sip_user_agent_summary"
+		android:dialogTitle="@string/sip_user_agent" />
+
+	<PreferenceScreen android:key="sip_supported_features"
+		android:title="@string/sip_supported_features">
+        <intent android:action="android.intent.action.MAIN"
+            android:targetPackage="javax.microedition.ims.engine.test"
+            android:targetClass="javax.microedition.ims.android.config.ui.SupportedFeatures" />
+	</PreferenceScreen>
+	
+	<ListPreference
+    	android:key="sip_dtmf_payload_type"
+    	android:defaultValue="@string/def_dtmf_payload_type"
+        android:title="@string/dtmf_payload_type"
+        android:summary="@string/dtmf_payload_type_summary"
+        android:entries="@array/dtmf_payload_type_entries"
+        android:entryValues="@array/dtmf_payload_type_entries"
+        android:dialogTitle="@string/dtmf_payload_type" />
+	
+
+	<!-- PreferenceScreen android:key="sip_required_features"
+		android:title="@string/sip_required_features">
+        <intent android:action="android.intent.action.MAIN"
+            android:targetPackage="javax.microedition.ims"
+            android:targetClass="javax.microedition.ims.android.config.ui.RequiredFeatures" />
+	</PreferenceScreen-->
+
+</PreferenceScreen>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- Layouts for input call dialog -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:padding="10dp">
+
+			<TextView android:id="@+id/incoming_refer_text" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="#FFF" />
+
+			<TextView android:id="@+id/medias" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+
+				<Button android:id="@+id/incoming_refer_btn_accept"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/msg_incoming_refer_btn_accept" />
+
+				<Button android:id="@+id/incoming_refer_btn_reject"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="@string/msg_incoming_refer_btn_reject" />
+			</LinearLayout>
+		</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+    Layouts for register form
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:padding="5dip">
+
+	<LinearLayout android:orientation="vertical"
+		android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:paddingBottom="10dip"
+		android:paddingLeft="10dip" android:paddingRight="10dip"
+		android:paddingTop="25dip">
+
+		<!--TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="@string/reg_app_name_lbl" />
+
+		<EditText android:id="@+id/client_app_name"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:singleLine="true" android:background="@android:drawable/editbox_background"
+			android:editable="false" />
+
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="@string/reg_identity_lbl" />
+
+		<EditText android:id="@+id/client_identity"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:singleLine="true" android:background="@android:drawable/editbox_background"
+			android:editable="false"/-->
+
+		<LinearLayout android:layout_width="wrap_content" android:paddingTop="5dip"
+			android:layout_height="wrap_content" android:layout_gravity="right">
+			<Button android:id="@+id/go_invite_btn" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:visibility="invisible"
+				android:text="@string/go_invite_btn" />
+			
+			<Button android:id="@+id/connect_btn" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:text="@string/reg_connect_btn" />
+		</LinearLayout>
+		
+		<LinearLayout android:id="@+id/connection_panel"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical|left">
+			<ImageView android:id="@+id/connection_lbl" android:paddingRight="5px"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical" android:src="@drawable/state_inactive"/>
+			<TextView android:id="@+id/connection_state"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" 
+				android:layout_gravity="center_vertical" android:text="@string/connection_state_resumed_ims_disconnected" />
+		</LinearLayout>
+		
+	</LinearLayout>
+</LinearLayout>

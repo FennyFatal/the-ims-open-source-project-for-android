@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="javax.microedition.ims"
+      android:versionName="1.0" android:versionCode="1">
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    
+	<application android:label="@string/app_name" android:debuggable="true" android:hasCode="true">
+		<!--service android:name=".android.ConnectorService"-->
+		<service android:name=".android.ConnectorService" android:process=":ims_stack">
+        	<intent-filter>
+        		<action android:name="javax.microedition.ims.android.IConnector" />
+        	</intent-filter>
+        	<intent-filter>
+        		<action android:name="javax.microedition.ims.android.IConnectionState" />
+        	</intent-filter>
+            <intent-filter>
+                <action android:name="javax.microedition.ims.android.IConfiguration" />
+            </intent-filter>
+        </service>
+        
+        <activity android:name=".android.config.ui.SipSettings" android:label="@string/sip_settings_title"
+                android:clearTaskOnLaunch="true"
+                android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> 
+        
+        <activity android:name=".android.config.ui.ProxyServerSettings" 
+                android:label="@string/sip_proxy_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".android.config.ui.MsrpSettings" 
+                android:label="@string/msrp_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+ 
+        <activity android:name=".android.config.ui.RegisterServerSettings" 
+                android:label="@string/sip_registrar_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".android.config.ui.AuthenticationSettings" 
+                android:label="@string/sip_authentication_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".android.config.ui.XDMServerSettings" 
+                android:label="@string/xdm_server_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".android.config.ui.SupportedFeatures" 
+                android:label="@string/sip_supported_features">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".android.config.ui.RequiredFeatures" 
+                android:label="@string/sip_required_features">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".android.config.ui.InviteRefreshSettings" 
+                android:label="@string/invite_refresh_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+	 </application>
+
+    <uses-sdk android:minSdkVersion="5" />
+</manifest> 

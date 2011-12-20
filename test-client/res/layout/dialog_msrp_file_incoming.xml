@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
+    android:padding="5dip">
+
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="270px"
+        android:layout_height="wrap_content" android:padding="10dip">
+
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_1st"/>
+	        <TextView android:id="@+id/msrp_file_incoming_path1"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_path1"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_1st"/>
+	        <TextView android:id="@+id/msrp_file_incoming_state1"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_state1"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_1st"/>
+	        <TextView android:id="@+id/msrp_file_incoming_progress1"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_progress1"/>
+        </LinearLayout>
+
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_2nd"/>
+	        <TextView android:id="@+id/msrp_file_incoming_path2"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_path2"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_2nd"/>
+	        <TextView android:id="@+id/msrp_file_incoming_state2"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_state2"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
+                      android:layout_height="wrap_content" android:layout_width="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                      android:text="@string/caption_2nd"/>
+	        <TextView android:id="@+id/msrp_file_incoming_progress2"
+	                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	                  android:text="@string/msrp_file_incoming_progress2"/>
+        </LinearLayout>
+ 
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:padding="10dip">
+            
+            <Button android:id="@+id/msrp_file_incoming_accept_btn" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:text="@string/msrp_file_incoming_accept_btn" />
+                    
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/msrp_file_incoming_reject_btn" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:text="@string/msrp_file_incoming_reject_btn" />
+        </LinearLayout>
+
+
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:padding="10dip">
+            
+	        <Button android:id="@+id/msrp_file_incoming_cancel_btn" android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" 
+	                android:text="@string/msrp_file_incoming_cancel_btn" />
+	                
+	        <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/msrp_file_incoming_close_btn" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:text="@string/msrp_file_incoming_close_btn" />
+        </LinearLayout>
+    
+</LinearLayout>
+</LinearLayout>

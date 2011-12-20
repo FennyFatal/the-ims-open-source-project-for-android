@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- Layouts for input call dialog -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+	
+	
+    <TextView android:layout_width="fill_parent"
+       android:layout_height="wrap_content" android:text="@string/call_switch_session_lbl" />
+
+    <LinearLayout android:layout_width="fill_parent"
+   	   android:layout_height="wrap_content">
+
+           <EditText android:id="@+id/call_switch_session_name"
+               android:layout_width="fill_parent" android:layout_height="wrap_content"
+               android:layout_weight="1.0" android:singleLine="true"
+               android:background="@android:drawable/editbox_background" />
+
+        <Button android:id="@+id/call_switch_btn_choose"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/call_switch_btn_choose" />
+            
+     </LinearLayout>
+
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="10dip">
+        
+        <!-- 
+        <Button android:id="@+id/call_switch_btn_main" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/call_switch_btn_main"/>
+         -->
+        
+        <Button android:id="@+id/call_switch_btn_switch" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/call_switch_btn_switch"/>
+    </LinearLayout>
+	
+	
+</LinearLayout>

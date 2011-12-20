@@ -1,0 +1,34 @@
+package javax.microedition.ims.core.sipservice.subscribe.listener;
+
+import javax.microedition.ims.common.ListenerSupportTypeHolder;
+import javax.microedition.ims.core.dialog.Dialog;
+import javax.microedition.ims.core.sipservice.subscribe.NotifyInfo;
+
+public class NotifyDialogEvent implements ListenerSupportTypeHolder<Dialog> {
+    
+    private final Dialog dialog;
+    private final NotifyInfo notifyInfo;
+
+    public NotifyDialogEvent(final Dialog dialog, final NotifyInfo notifyInfo) {
+        this.dialog = dialog;
+        this.notifyInfo = notifyInfo;
+    }
+
+    @Override
+    public Dialog getType() {
+        return dialog;
+    }
+
+
+    public NotifyInfo getNotifyInfo() {
+        return notifyInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "NotifyDialogEvent{" +
+                "dialog=" + dialog +
+                ", notifyInfo=" + notifyInfo +
+                '}';
+    }
+}

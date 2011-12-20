@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<permissions>
+    <library name="jsr-api"
+            file="/system/framework/jsr-api.jar"/>
+</permissions>

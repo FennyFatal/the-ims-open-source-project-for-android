@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!-- Layouts for input call dialog -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout android:layout_width="fill_parent"
+	   android:layout_height="wrap_content"
+	   android:padding="0dp">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_margin="10dp"
+			android:src="@drawable/robot" />
+
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:padding="10dp">
+
+			<TextView android:id="@+id/text" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="#FFF"
+				android:paddingBottom="10dp" />
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content">
+
+				<Chronometer android:id="@+id/chronometer_call_in_progress"
+					android:format="@string/chronometer_initial_format"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:layout_weight="0" android:paddingTop="10dip"
+					android:paddingLeft="10dip" android:paddingRight="20dip" />
+
+				<Button android:id="@+id/btn_bye" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/btn_call_in_progress_bye"
+					android:layout_weight="1.0" />
+
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/incoming_sesion_update_accept_reject">
+        
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="#FFF"
+            android:text="@string/lbl_incoming_sesion_update" />
+            
+        <RadioButton
+            android:text="@string/lbl_incoming_sesion_update_accept"
+            android:id="@+id/incoming_sesion_update_accept" />
+            
+        <RadioButton
+            android:text="@string/lbl_incoming_sesion_update_reject"
+            android:id="@+id/incoming_sesion_update_reject" />
+    </RadioGroup>
+
+	
+	<LinearLayout android:layout_width="fill_parent" 
+              android:layout_height="wrap_content">
+        
+        <CheckBox android:id="@+id/progress_media1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_initial_media1" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    
+        <CheckBox android:id="@+id/progress_media2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_initial_media2" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <!--CheckBox android:id="@+id/progress_media3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_initial_media3" /-->
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>     
+	
+	
+    <TableLayout android:layout_height="wrap_content" android:id="@+id/TableLayoutDTMF" android:layout_width="fill_parent"><TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TableRowDTMF1"><Button android:layout_height="wrap_content" android:text="@string/one" android:layout_width="wrap_content" android:layout_weight="1" android:id="@+id/ButtonDTMF1"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/two" android:layout_weight="1" android:id="@+id/ButtonDTMF2"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/three" android:layout_weight="1" android:id="@+id/ButtonDTMF3"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/four" android:layout_weight="1" android:id="@+id/ButtonDTMF4"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/five" android:layout_weight="1" android:id="@+id/ButtonDTMF5"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/six" android:layout_weight="1" android:id="@+id/ButtonDTMF6"></Button></TableRow><TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TableRowDTMF2"><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/seven" android:layout_weight="1" android:id="@+id/ButtonDTMF7"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/eight" android:layout_weight="1" android:id="@+id/ButtonDTMF8"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/nine" android:layout_weight="1" android:id="@+id/ButtonDTMF9"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/zero" android:layout_weight="1" android:id="@+id/ButtonDTMF0"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/star" android:layout_weight="1" android:id="@+id/ButtonDTMFstar"></Button><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pound" android:layout_weight="1" android:id="@+id/ButtonDTMFhash"></Button></TableRow></TableLayout>
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="10dip">
+        
+        <Button android:id="@+id/call_in_progress_btn_switch" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/call_in_progress_btn_switch"/>
+        
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ToggleButton android:id="@+id/call_in_progress_btn_hold" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:textOff="@string/msg_call_in_progress_btn_hold_on"
+            android:textOn="@string/msg_call_in_progress_btn_hold_off"/>
+            
+        <Button android:id="@+id/call_in_progress_btn_call_transfer" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_call_in_progress_btn_call_transfer"/>
+    </LinearLayout>
+	
+	
+</LinearLayout>

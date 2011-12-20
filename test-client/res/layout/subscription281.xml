@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
+    android:padding="5dip">
+
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="5dip">
+
+
+	    <LinearLayout android:orientation="horizontal"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content">
+	        
+	        <TextView android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" android:text="@string/subscr281_remote_user" />
+	
+	        <EditText android:id="@+id/subscr281_remote_user"
+	            android:layout_width="fill_parent" android:layout_height="wrap_content"
+	            android:singleLine="true" android:background="@android:drawable/editbox_background">
+	            <requestFocus />
+	        </EditText>
+	        
+        </LinearLayout>
+        
+        <Spinner android:id="@+id/subscr281_remote_users"
+            android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="5dip" android:drawSelectorOnTop="true"
+            android:prompt="@string/remote_identity_prompt">
+            <requestFocus />
+        </Spinner>
+
+
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/subscr281_event" />
+    
+            <EditText android:id="@+id/subscr281_event"
+                android:layout_width="fill_parent" android:layout_height="wrap_content"
+                android:singleLine="true" android:background="@android:drawable/editbox_background">
+            </EditText>
+            
+        </LinearLayout>
+                  
+          
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:padding="1dip">
+            
+            <Button android:id="@+id/subscr281_subscribe_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/subscr281_subscribe_btn" />
+                
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/subscr281_unsubscribe_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/subscr281_unsubscribe_btn" />
+                
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/subscr281_clear_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/subscr281_clear_btn" />
+                
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/subscr281_close_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/subscr281_close_btn" />
+        </LinearLayout>
+        
+        
+        <ListView android:id="@android:id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+            
+    </LinearLayout>
+</LinearLayout>

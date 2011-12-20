@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
+    android:padding="5dip">
+
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="10dip">
+
+
+        <ScrollView android:id="@+id/msrp_file_list_scroll" android:layout_width="270px"
+            android:layout_height="250px" android:background="@android:drawable/editbox_background">
+            
+            <LinearLayout android:id="@+id/msrp_file_list_scroll_layout" android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical" >
+            </LinearLayout>
+            
+        </ScrollView>
+        
+        
+        <TextView android:id="@+id/msrp_file_select_state"
+                  android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="@string/msrp_file_list_selected"/>
+          
+          
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:padding="10dip">
+            
+            <Button android:id="@+id/msrp_file_list_cancel_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/msrp_file_list_cancel_btn" />
+                
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/msrp_file_list_ok_btn" android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/msrp_file_list_ok_btn"/>
+        </LinearLayout>
+        
+    
+</LinearLayout>
+</LinearLayout>

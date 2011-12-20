@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+    Layouts for invite form
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:padding="5dip">
+
+	<LinearLayout android:orientation="vertical"
+		android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:padding="10dip">
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_marginTop="10px"
+			android:text="@string/lbl_presence_entity" />
+
+		<EditText android:id="@+id/presence_entity"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:editable="false" android:enabled="false"/>
+
+
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            
+		      <TextView android:layout_width="wrap_content"
+			     android:layout_height="wrap_content" android:layout_marginTop="10px"
+			     android:text="@string/lbl_status_note" />
+
+		      <Spinner android:id="@+id/service_notes" android:layout_width="wrap_content"
+			     android:layout_height="wrap_content" android:drawSelectorOnTop="true"
+			     android:prompt="@string/service_note_prompt" />
+			</LinearLayout>
+
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0" android:gravity="right">
+            
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="10px"
+                    android:text="@string/lbl_video_capable" />
+                    
+                <Spinner android:id="@+id/video_capable_status" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:drawSelectorOnTop="true"
+                    android:prompt="@string/service_note_prompt" />
+                    
+            </LinearLayout>   
+			
+		</LinearLayout>	
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:padding="10dip">
+
+			<Button android:id="@+id/btn_back" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/msg_back" />
+
+			<LinearLayout android:layout_weight="1.0"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+			<Button android:id="@+id/btn_status_publish"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/btn_status_publish" />
+				
+            <Button android:id="@+id/btn_status_unpublish"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/btn_status_unpublish" />
+                                
+		</LinearLayout>
+
+		<LinearLayout android:id="@+id/pagemessage_panel"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical|left">
+			<ImageView android:id="@+id/connection_lbl"
+				android:paddingRight="5px" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+				android:src="@drawable/state_inactive" />
+			<TextView android:id="@+id/connection_state"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:text="@string/connection_state_resumed_ims_disconnected" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

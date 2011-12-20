@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="items">
+        <item>Env Test</item>
+        <item>Aes Test</item>
+        <item>Cipher Test</item>
+        <item>Datatypes Test</item>
+        <item>Stat Test</item>
+        <item>Sha1 Test</item>
+        <item>Kernel Test</item>
+        <item>Rand Test</item>
+        <item>Rdbx Test</item>
+        <item>Srtp Test</item>
+        <item>Roc Test</item>
+        <item>Replay Test</item>
+        <item>Dtls Test</item>
+        <item>Rtpw Test</item>
+    </string-array>
+</resources>

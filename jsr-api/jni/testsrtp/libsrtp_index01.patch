@@ -1,0 +1,71 @@
+diff -u -r1.1 rdb.h
+--- ./crypto/include/rdb.h	26 Sep 2005 20:41:14 -0000	1.1
++++ ./crypto/include/rdb.h	22 May 2007 15:06:40 -0000
+@@ -64,8 +64,8 @@
+ err_status_t rdb_add_index(rdb_t *rdb, uint32_t index);
+ 
+ /*
+- * the functions rdb_increment() and rdb_get_value() are for use by 
+- * senders, not receivers - DO NOT use these functions on the same
+- * rdb_t upon which rdb_add_index is used!
++ * the functions rdb_increment(), rdb_get_value() and rdb_overflow()
++ * are for use by senders, not receivers - DO NOT use these functions
++ * on the same rdb_t upon which rdb_add_index is used!
+  */
+ 
+@@ -84,6 +84,18 @@
+ err_status_t rdb_increment(rdb_t *rdb);
+ 
+ /*
++ * rdb_overflow checks if the sequence number in db is too high
++ *
++ * return values:
++ * 
++ *    err_status_ok            no problem
++ *    err_status_key_expired   sequence number too high
++ *
++ */
++err_status_t
++rdb_overflow(rdb_t *rdb);
++
++/*
+  * rdb_get_value(db) returns the current sequence number of db
+  */
+ 
+diff -u -r1.4 rdb.c
+--- ./crypto/replay/rdb.c	8 Jun 2006 17:00:28 -0000	1.4
++++ ./crypto/replay/rdb.c	22 May 2007 15:06:40 -0000
+@@ -127,6 +127,17 @@
+ err_status_t rdb_increment(rdb_t *rdb) {
+ 
+   if (rdb->window_start++ > 0x7fffffff)
++    {
++      rdb->window_start = 0x80000000;
++      return err_status_key_expired;
++    }
++  return err_status_ok;
++}
++
++err_status_t
++rdb_overflow(rdb_t *rdb) {
++
++  if (rdb->window_start > 0x7fffffff)
+     return err_status_key_expired;
+   return err_status_ok;
+ }
+diff -u -r1.23 srtp.c
+--- ./srtp/srtp.c	18 Jul 2006 19:45:46 -0000	1.23
++++ ./srtp/srtp.c	22 May 2007 15:06:40 -0000
+@@ -1513,10 +1513,11 @@
+    * check sequence number for overruns, and copy it into the packet
+    * if its value isn't too big
+    */
+-  status = rdb_increment(&stream->rtcp_rdb);
++  status = rdb_overflow(&stream->rtcp_rdb);
+   if (status)
+     return status;
+   seq_num = rdb_get_value(&stream->rtcp_rdb);
++  rdb_increment(&stream->rtcp_rdb);
+   *trailer |= htonl(seq_num);
+   debug_print(mod_srtp, "srtcp index: %x", seq_num);
+ 

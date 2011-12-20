@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical"
+    android:padding="5dip">
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_doc_name_lbl" />
+
+        <EditText android:id="@+id/cont_doc_name"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:singleLine="true" 
+            android:background="@android:drawable/editbox_background"
+            android:text="@+id/cont_doc_name"/>
+        
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_list_name_lbl" />
+
+        <EditText android:id="@+id/cont_list_name"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:singleLine="true" 
+            android:background="@android:drawable/editbox_background"
+            android:text="@+id/cont_list_name"/>
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        
+        <Button android:id="@+id/cont_list_load_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_list_load_btn" />
+    </LinearLayout>   
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+            
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_target_uri_lbl" />
+
+        <EditText android:id="@+id/cont_target_uri"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:singleLine="true" 
+            android:background="@android:drawable/editbox_background"
+            android:text="@+id/cont_target_uri"/>
+     </LinearLayout>   
+        
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <!-- 
+        <Button android:id="@+id/cont_list_test_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_list_test_btn" />
+        -->
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/cont_list_subscribe_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_list_subscribe_btn" />
+            
+        <Button android:id="@+id/cont_list_unsubscribe_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/cont_list_unsubscribe_btn" />
+    </LinearLayout>
+        
+    <TextView android:layout_width="fill_parent" android:id="@+id/cont_list_status"
+            android:layout_height="wrap_content" android:text="@string/cont_list_status" />
+        
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="fill_parent" android:padding="5dip">
+        
+        <ListView android:id="@+id/cont_list_contact_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+            
+    </LinearLayout>
+</LinearLayout>

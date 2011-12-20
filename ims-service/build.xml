@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<project name="ims-service" default="-compile-all">
+
+    <!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked in in Version
+         Control Systems. -->
+    <property file="local.properties" />
+	
+    <!-- The default.properties file is created and updated by the 'android' tool, as well
+         as ADT.
+         This file is an integral byteTrafficPart of the build system for your application and
+         should be checked in in Version Control Systems. -->
+    <property file="default.properties" />
+	<loadproperties srcFile="project.properties" />
+
+
+    <!-- The build.properties file can be created by you and is never touched
+         by the 'android' tool. This is the place to change some of the default property values
+         used by the Ant rules.
+         Here are some properties you may want to change/update:
+
+         application.package
+             the name of your application package as defined in the manifest. Used by the
+             'uninstall' rule.
+         source.dir
+             the name of the source directory. Default is 'src'.
+         out.dir
+             the name of the output directory. Default is 'bin'.
+
+         Properties related to the SDK location or the project target should be updated
+          using the 'android' tool with the 'update' action.
+
+         This file is an integral byteTrafficPart of the build system for your application and
+         should be checked in in Version Control Systems.
+
+         -->
+    <property file="build.properties" />
+
+	<property name="stub.dir" value="../lib" />
+	<property name="build.dir" value="build" />
+	<property name="build.src.dir" value="${build.dir}/src" />
+	<property name="build.classes.dir" value="${build.dir}/classes" />
+	<property name="stub.jar.name" value="ims-service.jar" />
+	<property name="manifest.hasCode" value="true" />
+	<property name="gen.absolute.dir" value="gen" />
+	<property name="android.aidl" value="${sdk-platform-folder}/framework.aidl" />
+	<property name="extensible.classpath" value="" />
+	<property name="android.target.classpath" value="" />
+	<property name="out.classes.dir" value="bin/classes" />
+	<path id="jar.libs.ref">
+		<fileset dir="/workspace2/ims-stack/ims-common/bin/" includes="**/*.jar" />
+		<fileset dir="/workspace2/ims-stack/ims-parser/bin/" includes="**/*.jar" />
+	</path>
+
+	<mkdir dir="${gen.absolute.dir}" />
+    <!-- Custom Android task to deal with the project target, and import the proper rules.
+         This requires ant 1.6.0 or above. -->
+	<!--
+    <path id="android.antlibs">
+        <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/jarutils.jar" />
+    </path>
+    <import file="${sdk.dir}/platforms/${platform}/templates/android_rules.xml"/>
+	-->
+	<import file="${sdk.dir}/tools/ant/build.xml" />
+	<import file="../common.xml" />
+
+    <!-- version-tag: 1 -->
+
+	<!--
+    <taskdef name="setup"
+        classname="com.android.ant.SetupTask"
+        classpathref="android.antlibs" />
+
+    <setup />
+	-->
+	
+	<target name="clean_lib">
+		<echo>clean lib</echo>
+		<delete dir="${build.dir}"/>
+		
+		<mkdir dir="${stub.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.src.dir}" />
+		<mkdir dir="${build.classes.dir}" />
+	</target>
+	
+	<target name="create_lib">
+		<echo>create lib</echo>
+		
+		<jar destfile="${stub.dir}/${stub.jar.name}">
+			  <fileset dir="${out.classes.dir}" includes="**" />
+		</jar>
+		
+		<!--<delete dir="${build.dir}"/>-->
+	</target>
+	
+	<target name="convert_aidl_to_java">
+		<copy todir="${build.src.dir}" >
+			<fileset dir="${gen.absolute.dir}" excludes="**/R.*"/>
+		</copy>	
+		
+		<copy todir="${build.src.dir}">
+			<!--fileset dir="${source.absolute.dir}" includes="I**.java" /-->
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/IReasonInfo.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/IRegistry.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/IExceptionHolder.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/IError.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/core/media/IMedia.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/core/media/ICryptoParam.java" />
+			
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IXCAPRequest.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IXCAPResponse.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IXCAPException.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IXCAPError.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IUniquenessError.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IDocumentEntry.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IURIList.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IURIListHolder.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IListEntry.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IPresenceList.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IPresenceListsHolder.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IURIListsHolder.java" />
+            <fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IPresenceAuthorizationRule.java" />
+            <fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IPresenceAuthorizationRulesHolder.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/xdm/IIdentity.java" />
+			
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/IMessage.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/IContentPart.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/MSRPContentPartInfo.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/MSRPMessageInfo.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/IFileInfo.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/IFileTransferManager.java" />	
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/msrp/IFileSelector.java" />
+			
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/presence/IEvent.java" />
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/presence/IPresentity.java" />
+			
+			<fileset dir="${source.absolute.dir}" includes="javax/microedition/ims/android/IGsmLocationInfo.java" />			
+		</copy>
+	</target>
+	
+	<!-- Compiles this project'sipTerminatedTrafficPart .java files (created from aidl) into .class files. -->
+	<target name="compile_aidl" depends="convert_aidl_to_java"
+	    description="Compiles project'sipTerminatedTrafficPart .java files created from aidl into .class files">
+	    <javac encoding="ascii" target="1.5" debug="true" extdirs=""
+	        destdir="${build.classes.dir}"
+	        verbose="${verbose}" classpath="${extensible.classpath}">
+	        <src path="${build.src.dir}" />
+	        <classpath>
+	            <fileset dir="${external.libs.absolute.dir}" includes="*.jar" />
+	        </classpath>
+	    </javac>
+	</target>
+	
+	<target name="export_lib" depends="clean_lib,convert_aidl_to_java,create_lib"/>
+
+	<target name="all" depends="clean_lib, convert_aidl_to_java, -compile, create_lib" >
+			
+	</target>
+</project>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--
+    Layouts for invite form
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="wrap_content"
+    android:padding="5dip">
+
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="10dip">
+
+
+        <TextView android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:text="@string/send_refer_remote_user" />
+
+        <EditText android:id="@+id/edit_remote_user"
+            android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:singleLine="true" android:background="@android:drawable/editbox_background">
+            <requestFocus />
+        </EditText>
+        
+        <Spinner android:id="@+id/send_refer_remote_users"
+            android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="5dip" android:drawSelectorOnTop="true"
+            android:prompt="@string/remote_identity_prompt">
+            <requestFocus />
+        </Spinner>
+        
+          
+          
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:padding="10dip">
+            
+            <Button android:id="@+id/btn_close" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="@string/send_refer_close_btn" />
+                
+            <LinearLayout android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
+            <Button android:id="@+id/btn_send_refer" android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_refer_btn"/>
+        </LinearLayout>
+            
+    
+</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical"
+    android:padding="5dip">
+
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:padding="1dip">
+        
+        <Button android:id="@+id/xdm_docs_select_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/xdm_docs_select_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/xdm_docs_create_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/xdm_docs_create_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/xdm_docs_retrieve_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/xdm_docs_retrieve_btn" />
+            
+        <LinearLayout android:layout_weight="1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <Button android:id="@+id/xdm_docs_delete_btn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/xdm_docs_delete_btn" />
+    </LinearLayout>
+    
+    <TextView android:layout_width="fill_parent" android:id="@+id/xdm_docs_current_document"
+            android:layout_height="wrap_content" android:text="@string/xdm_docs_current_document" />
+        
+<!--
+    <LinearLayout android:orientation="vertical"
+        android:background="@drawable/panel_bg" android:layout_width="fill_parent"
+        android:layout_height="fill_parent" android:padding="5dip">
+        
+        <ListView android:id="@+id/xdm_docs_contact_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+            
+    </LinearLayout>
+-->
+    
+    <ScrollView android:id="@+id/xdm_docs_message_history" android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:background="@android:drawable/editbox_background">
+            
+	    <LinearLayout android:id="@+id/xdm_docs_message_history_layout" android:layout_width="fill_parent"
+	            android:layout_height="wrap_content" android:orientation="vertical" >
+	    </LinearLayout>
+            
+    </ScrollView>
+    
+    
+</LinearLayout>

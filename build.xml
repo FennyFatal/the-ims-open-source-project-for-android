@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ims-open-source" default="all">
+
+    <target name="all">
+        <antcall target="enterDirs">
+            <param name="action" value="do_all"/>
+        </antcall>
+    </target>
+
+    <target name="clean">
+        <antcall target="enterDirs">
+            <param name="action" value="do_clean"/>
+        </antcall>
+    </target>
+
+    <target name="update">
+        <antcall target="enterDirs">
+            <param name="action" value="android_update"/>
+        </antcall>
+    </target>
+
+    <target name="enterDirs">
+        <antcall target="${action}">
+            <param name="dir" value="ims-common"/>
+        </antcall>
+        <antcall target="${action}">
+            <param name="dir" value="ims-parser"/>
+        </antcall>
+        <antcall target="${action}">
+            <param name="dir" value="ims-service"/>
+        </antcall>
+        <antcall target="${action}">
+            <param name="dir" value="jsr-api"/>
+        </antcall>
+        <antcall target="${action}">
+            <param name="dir" value="test-client"/>
+        </antcall>
+    </target>
+
+    <target name="do_all">
+        <ant dir="${dir}" target="all"/>
+    </target>
+
+    <target name="do_clean">
+        <ant dir="${dir}" target="clean"/>
+    </target>
+
+    <target name="android_update">
+		<exec executable="android" failonerror="true">
+			<arg value="update"/>
+			<arg value="project"/>
+			<arg value="-t"/>
+			<arg value="android-14"/>
+			<arg value="-p"/>
+			<arg value="${dir}"/>
+		</exec>
+    </target>
+
+</project>

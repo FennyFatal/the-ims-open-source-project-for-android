@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="service_note_types">
+        <item>Online</item>
+        <item>Offline</item>
+        <item>Busy</item>
+        <item>Away</item>
+        <item>In a meeting</item>
+        <item>On the phone</item>
+        <item>Do not disturb</item>
+        <item>Invisible</item>
+    </string-array>
+    
+    <string-array name="base_status_types">
+        <item>OPEN</item>
+        <item>CLOSED</item>
+    </string-array>
+    
+    <string-array name="presense_status_icon">
+      <item>http://cards.littleoak.com.au/197172_coffer_postcards/201_charlie_george.jpg</item>
+      <item>http://cards.littleoak.com.au/197172_coffer_postcards/145_colin_stein.JPG</item>
+      <item>http://cards.littleoak.com.au/197172_coffer_postcards/126_martin_peters.JPG</item>
+    </string-array> 
+    
+</resources>

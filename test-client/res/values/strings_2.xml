@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+  ~
+  ~ Unauthorized redistribution or further use of this material is
+  ~ prohibited without the express permission of T-Mobile USA, Inc. and
+  ~ will be prosecuted to the fullest extent of the law.
+  ~
+  ~ Removal or modification of these Terms and Conditions from the source
+  ~ or binary code of this software is prohibited.  In the event that
+  ~ redistribution of the source or binary code for this software is
+  ~ approved by T-Mobile USA, Inc., these Terms and Conditions and the
+  ~ above copyright notice must be reproduced in their entirety and in all
+  ~ circumstances.
+  ~
+  ~ No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+  ~ Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+  ~ used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+  ~ AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+  ~ CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+  ~ NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+  ~ OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+  ~ AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+  ~ LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+  ~ OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+  ~ LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+  ~ INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+  ~ HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+  ~ OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+  ~ INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  ~
+  ~ THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+  ~ MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+  ~ CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+  ~ WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+  ~ USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+  -->
+
+<resources>
+    <string name="hello">Hello World!</string>
+    
+   	<string name="connector_service_started">Connector service started</string>
+   	<string name="connector_service_stopped">Connector service stopped</string>
+   	
+	<string name="sip_settings_title">Sip Settings</string>
+   
+   	<string name="sip_proxy_server">Proxy server</string>
+   	<string name="sip_proxy_server_summary">Proxy server is not set</string>
+   
+   
+  	<string name="sip_proxy_title">Proxy Settings</string>
+   	<string name="sip_proxy_host">Host or IP</string>
+   	<string name="sip_proxy_host_summary">Host or IP is not set</string>
+   
+	<string name="sip_proxy_port">Port</string>
+   	<string name="sip_proxy_port_summary">Port is not set</string>
+   
+   
+   	<string name="sip_registrar_server">Registrar server</string>
+   	<string name="sip_registrar_server_summary">Registrar server summary</string>
+   	
+	<string name="sip_registrar_title">Registrar Settings</string>   
+   	<string name="sip_registrar_host">Registrar Host or IP</string>
+   	<string name="sip_registrar_host_summary">Registrar Host or IP is not set</string>
+   
+	<string name="sip_registrar_port">Registrar Port</string>
+   	<string name="sip_registrar_port_summary">Registrar Port is not set</string>
+   	
+   	<string name="sip_registrar_protocol_type">Protocol type</string>
+   	<string name="sip_registrar_protocol_type_summary">Protocol type is not set</string>
+   	
+   	<string name="sip_registrar_username_schema">User schema type</string>
+   	<string name="sip_registrar_username_schema_summary">User schema type is not set</string>
+   	
+	<string name="sip_registrar_username">User name</string>
+   	<string name="sip_registrar_username_summary">User name is not set</string>
+   	
+    <string name="sip_registrar_username_domain">User domain</string>
+    <string name="sip_registrar_username_domain_summary">User domain is not set</string>
+   	
+   	<string name="sip_registrar_expire_time_type">Expire time</string>
+   	<string name="sip_registrar_expire_time_summary">Registration expire type</string>
+
+    <string name="sip_preferred_identity">Preferred User identity</string>
+   	<string name="sip_preferred_identity_summary">Preferred User identity</string>
+   
+   	<string name="sip_authentication">Authentication</string>
+   	<string name="sip_authentication_summary">Authentication summary</string>
+   	
+   	<string name="sip_authentication_title">Authentication Settings</string>
+   	
+   	<string name="sip_auth_type">Auth type</string>
+    <string name="sip_auth_type_summary">Auth type is not set</string>
+   	
+
+   	
+   	<string name="sip_auth_username_schema">User schema</string>
+   	<string name="sip_auth_username_schema_summary">User schema is not set</string>
+   	
+	<string name="sip_auth_username">User name</string>
+   	<string name="sip_auth_username_summary">User name is not set</string>
+   	
+   	<string name="sip_auth_username_domain">User domain</string>
+   	<string name="sip_auth_username_domain_summary">User domain is not set</string>
+
+   	
+   	
+	<string name="sip_auth_password">Password</string>
+   	<string name="sip_auth_password_summary">Password is not set</string>
+   
+	<string name="sip_auth_realm">Realm</string>
+   	<string name="sip_auth_realm_summary">Realm is not set</string>
+   	
+   	
+   	<string name="sip_use_rport">Use rport</string>
+   	<string name="sip_use_rport_summary">Use rport</string>
+
+    <string name="sip_use_resource_reservation">Resource reservation</string>
+    <string name="sip_use_resource_reservation_summary">Use resource reservation</string>
+
+    <string name="sip_global_ip_discovery">Global IP discovery</string>
+    <string name="sip_global_ip_discovery_summary">Use global IP discovery</string>
+
+    <string name="sip_dns_lookup">Use DNS lookup</string>
+    <string name="sip_dns_lookup_summary">Use DNS lookup</string>
+    
+    <!-- string name="sip_auth_force">Force authorization</string>
+    <string name="sip_auth_force_summary">Use force authorization</string-->
+    
+    <string name="sip_auth_simulteneous">Use simulteneous auth</string>
+    <string name="sip_auth_simulteneous_summary">Use simulteneous auth</string>
+    
+    <string name="sip_auth_forses">Auth forses types</string>
+    <string name="sip_auth_forses_summary">Auth forses types</string>
+
+   	<string name="sip_local_port">Local port</string>
+   	<string name="sip_local_port_summary">Local port summary</string>
+   
+   	<string name="sip_max_forwards">Max forwards</string>
+   	<string name="sip_max_forwards_summary">Max forwards summary</string>
+   	
+   	<string name="sip_user_agent">User agent</string>
+   	<string name="sip_user_agent_summary">User agent summary</string>
+   	
+   	<string name="sip_supported_features">Supported features</string>
+   	<string name="sip_supported_100rel">100rel</string>
+   	<string name="sip_supported_eventlist">eventlist</string>
+   	<string name="sip_supported_path">path</string>
+   	
+   	
+    <string name="sip_required_features">Required features</string>
+    <string name="sip_required_100rel">100rel</string>
+    
+    <string name="xdm_server_title">XDM Settings</string>
+    
+    <string name="xdm_xcap_root">XCAP root</string>
+    <string name="xdm_xcap_root_summary">XCAP root</string>
+    
+    <string name="xdm_xui_name">XUI name</string>
+    <string name="xdm_xui_name_summary">XUI name</string>
+    
+    <string name="xdm_auth_name">Auth name</string>
+    <string name="xdm_auth_name_summary">Auth name</string>
+    
+    <string name="xdm_password">XUI password</string>
+    <string name="xdm_password_summary">XUI password</string>
+
+    <string name="xdm_send_full_document">Send full document</string>
+    <string name="xdm_send_full_document_summary">Send full document</string>
+    
+    <string name="xdm_server">XDM server</string>
+    <string name="xdm_server_summary">XDM server</string>
+    
+   	
+   	<!-- Validators messages -->
+   	<string name="host_validator_message">Wrong value for host or IP</string>
+   	<string name="port_validator_message">Wrong value for port</string>
+   	<string name="username_validator_message">Wrong value for user name</string>
+   	<string name="realm_validator_message">Wrong value for realm</string>
+   	<string name="maxforwards_validator_message">Wrong value for max forwards</string>
+   	<string name="useragent_validator_message">Wrong value for user agent</string>
+   	<string name="username_domain_validator_message">Wrong value for user domain</string>
+   	<string name="username_schema_validator_message">Wrong value for user schema</string>
+   	
+
+ 	<string name="msrp_title">Msrp settings</string> 
+ 
+ 	<string name="msrp_local_port_title">Msrp local port</string>
+   	<string name="msrp_local_port">Local port</string>
+   	<string name="msrp_local_port_summary">Local port is not set</string>
+   	
+   	<string name="msrp_chunk_size_title">Msrp chunk size</string>
+   	<string name="msrp_chunk_size">Chunk size</string>
+   	<string name="msrp_chunk_size_summary">Chunk size is not set</string>
+   	
+   	<string name="invite_refresh_title">Invite refresh settings</string> 
+   	<string name="sip_use_invite_refresh">Use invite refresh</string> 
+   	<string name="sip_use_invite_refresh_summary">Use invite refresh: </string> 
+   	<string name="sip_refresher_type">Refresher</string>
+   	<string name="sip_refresher_type_summary">Refresher</string>
+   	<string name="session_expires_time_title">Session expires time</string>
+   	<string name="session_expires_time_summary">Session expires is not set</string>
+   	<string name="min_session_expires_time_title">Min session expires time</string>  
+   	<string name="min_session_expires_time_summary">Min session expires is not set</string> 
+   	
+   	<string name="sip_use_simul_connection">Use simultaneous connection</string> 
+   	<string name="sip_use_simul_connection_summary">Use simultaneous connection: </string>	
+   	
+   	<string name="dtmf_payload_type">Payload Type</string>
+   	<string name="dtmf_payload_type_summary">Payload Type</string>
+    	
+</resources>

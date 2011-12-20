@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        minHeight="?android:attr/listPreferredItemHeight"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/testName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dip">
+
+    <Button
+        android:id="@+id/startTest"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:text="@string/start_test"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="5dip"/>
+
+    <Button
+        android:id="@+id/stopTest"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:text="@string/stop_test"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="10dip"/>
+
+    </LinearLayout>
+
+</LinearLayout>

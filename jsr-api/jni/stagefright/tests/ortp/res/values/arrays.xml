@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="items">
+        <item>MrtpSend/MrtpRecv Test</item>
+        <item>MrtpSend/RtpMem Test</item>
+        <item>RtpSend/RtpRecv Test</item>
+        <item>RtpSend_Stupid/RtpRecv Test</item>
+        <item>SendTimer/RtpRecv Test</item>
+        <item>TevRtpSend/TevRtpRecv Test</item>
+    </string-array>
+</resources>
