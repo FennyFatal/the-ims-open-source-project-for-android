@@ -87,4 +87,9 @@ public abstract class CommonMsrpTransaction extends CommonTransaction<MsrpMessag
         //return retValue;
         return Priority.NORMAL;
     }
+    
+    @Override
+    public TransactionDescription getDescription() {
+        return msrpTransactionDescriptor;
+    }
 }

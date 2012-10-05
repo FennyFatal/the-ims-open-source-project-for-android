@@ -46,23 +46,11 @@ import java.io.IOException;
 
 /**
  * A presence source is an entity that provides presence information to a
- * presence server. Each presence source is responsible for publishing its own
- * presence information, and the IMS engine will not merge presence information
- * from multiple presence sources
- * 
- * When the presence information is published, a watcher can subscribe to the
- * presence information until the presence source has called unpublish or if the
- * presence source transits to STATE_INACTIVE.
- * 
- * The PresenceSource life cycle consist of four states: STATE_INACTIVE,
- * STATE_PENDING_PUBLISH, STATE_PENDING_UNPUBLISH, and STATE_ACTIVE. A new
- * PresenceSource starts in STATE_INACTIVE and when publish is called the state
- * transits to STATE_PENDING_PUBLISH and remains there until a response arrives.
- * 
- * In STATE_ACTIVE, unpublish can be called to terminate the publication and the
- * state will then transit to STATE_PENDING_UNPUBLISH and remain there until a
- * response arrives. If the PresenceService is closed all presence sources will
- * transit to STATE_INACTIVE according to the figure below.
+ * presence server.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  * 
  * @author Andrei Khomushko
  * 

@@ -77,6 +77,7 @@ public class SubscribeServiceImpl
     private final SubscriptionStorage subscriptionStorage;
     private final AtomicBoolean done = new AtomicBoolean(false);
     private final SubscribeService transactionSafeView;
+    private int subscriptionExpirationTime;
 
     private final TransactionBuildUpListener<BaseSipMessage> serverNotifyListener =
             new TransactionBuildUpListener<BaseSipMessage>() {
@@ -131,6 +132,8 @@ public class SubscribeServiceImpl
         transactionManager.addListener(serverNotifyListener, TransactionType.Name.SIP_NOTIFY_SERVER);
 
         transactionSafeView = TransactionUtils.wrap(this, SubscribeService.class);
+
+        subscriptionExpirationTime = (int)(stackContext.getConfig().getSubscriptionExpirationSeconds());
     }
 
     public SubscribeService getTransactionSafeView() {
@@ -170,7 +173,7 @@ public class SubscribeServiceImpl
             throw new IllegalStateException("Cannot find retValue after SubscribeService shutdown.");
         }
 
-        SubscriptionKey subscriptionKey = new SubscriptionKeyDefaultImpl(remoteParty, info.getEvent());
+        SubscriptionKey subscriptionKey = new SubscriptionKeyDefaultImpl(localParty.getAppID(),/*remoteParty,*/ info.getEvent());
 
         return subscriptionStorage.find(subscriptionKey);
     }
@@ -185,6 +188,10 @@ public class SubscribeServiceImpl
                 remoteParty,
                 SubscriptionHelper.createDocumentChangeSubscriptionInfo(documentUris)
         );
+    }
+
+    public int getExpirationTime() {
+        return subscriptionExpirationTime;
     }
 
     public void unBind(final Subscription subscription) {

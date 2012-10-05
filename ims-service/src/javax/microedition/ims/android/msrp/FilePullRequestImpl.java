@@ -44,6 +44,7 @@ package javax.microedition.ims.android.msrp;
 import android.os.RemoteException;
 import android.util.Log;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.Acceptable;
 import javax.microedition.ims.messages.utils.StatusCode;
@@ -76,22 +77,22 @@ public class FilePullRequestImpl extends IFilePullRequest.Stub {
 
     
     public void accept() throws RemoteException {
-        Log.i(TAG, "accept#started");
+        Logger.log(TAG, "accept#started");
 
         acceptable.accept(dialog);
         expire();
 
-        Log.i(TAG, "accept#finish");
+        Logger.log(TAG, "accept#finish");
     }
 
     
     public void reject() throws RemoteException {
-        Log.i(TAG, "reject#started");
+        Logger.log(TAG, "reject#started");
 
         acceptable.reject(dialog, StatusCode.TEMPORARY_UNAVAILABLE, "TEMPORARY_UNAVAILABLE");
         expire();
 
-        Log.i(TAG, "reject#finish");
+        Logger.log(TAG, "reject#finish");
     }
 
     

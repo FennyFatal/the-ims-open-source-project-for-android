@@ -1,5 +1,5 @@
 /*
- * This software code is � 2010 T-Mobile USA, Inc. All Rights Reserved.
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
  *
  * Unauthorized redistribution or further use of this material is
  * prohibited without the express permission of T-Mobile USA, Inc. and
@@ -17,7 +17,7 @@
  * used to endorse or promote products derived from this software without
  * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ON AN �AS IS� AND �WITH ALL FAULTS� BASIS
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
  * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
  * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
@@ -41,6 +41,7 @@
 
 package javax.microedition.ims.core.transaction.server;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.StackContext;
 import javax.microedition.ims.core.dialog.Dialog;
@@ -66,7 +67,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         super(stackContext, dlg, description);
     }
 
-
+    @Override
     protected void startResendTimer() {
         //run resender task to resend messages if there is no answer for a long time
         /*if(Context.INSTANCE.getConfiguration().getConnectionType().router(messageRouter).equals(Protocol.UDP)){
@@ -94,6 +95,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
             return null;
         }
     */
+    @Override
     public void sendResponse(final BaseSipMessage triggeringMessage, int code, boolean toLastRequest) {
         assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
         super.sendResponse(triggeringMessage, code, toLastRequest);
@@ -105,8 +107,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
     }
 */
 
-
-
+    @Override
     protected void onTransactionInited() {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -122,6 +123,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         return new ProceedingState(this);
     }
 
+    @Override
     public void accept() {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -129,6 +131,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         currentState.onTUReceived(createTUEvent(TUResponseEvent.OperationType.ACCEPT_INVITE, 200, null));
     }
 
+    @Override
     public void reject(int statusCode, String alternativeUserAddress) {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -136,11 +139,13 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         currentState.onTUReceived(createTUEvent(TUResponseEvent.OperationType.REJECT_INVITE, statusCode, alternativeUserAddress));
     }
 
+    @Override
     public void cancel() {
         BaseSipMessage cancelMessage = getDialog().getMessageHistory().findLastRequestByMethod(MessageType.SIP_CANCEL);
         currentState.onTUReceived(new TUResponseEvent(OperationType.CANCEL, 200, null, cancelMessage));
     }
 
+    @Override
     public void update() {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -148,7 +153,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         sendMessage(mb.buildMessage(), null);
     }
 
-
+    @Override
     public void acceptUpdate() {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -156,6 +161,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         currentState.onTUReceived(createTUEvent(TUResponseEvent.OperationType.ACCEPT_UPDATE, 200, null));
     }
 
+    @Override
     public void rejectUpdate(int statusCode, String alternativeUserAddress) {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -165,7 +171,10 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
     }
 
     TUEvent createTUEvent(OperationType opType, int statusCode, String alternativeUserAddress) {
-        return new TUResponseEvent(opType, statusCode, alternativeUserAddress, null);
+        BaseSipMessage triggeredMessage = lastInRequest.get() != null? lastInRequest.get(): initialMessage.get();
+        Logger.log("ServerCommonInviteTransaction", "triggeredMessage = " + triggeredMessage);
+        
+        return new TUResponseEvent(opType, statusCode, alternativeUserAddress, triggeredMessage);
     }
 
     public void sendBye() {
@@ -174,6 +183,7 @@ public abstract class ServerCommonInviteTransaction extends ServerTransaction im
         //TODO send by as separate transaction
     }
 
+    @Override
     public void preAccept() {
         assert TransactionUtils.isTransactionExecutionThread() :
                 "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();

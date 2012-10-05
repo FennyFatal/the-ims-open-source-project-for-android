@@ -40,7 +40,10 @@
  */
 
 package javax.microedition.ims.presence;
-
+ /**
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ */
 public class Circle {
     private final String srsName;
     private final String coordinates;

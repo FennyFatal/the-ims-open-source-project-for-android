@@ -47,6 +47,8 @@ import javax.microedition.ims.ReasonInfo;
  * A listener type used to receive messages and files from other participants 
  * in a session. It can also be used to receive system messages and message 
  * notifications in a session. The transfer progress of files can also be observed. 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  */
 public interface IMSessionListener {
     

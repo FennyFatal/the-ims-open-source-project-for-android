@@ -62,5 +62,8 @@ public interface SubscribeService extends SubscribeServiceListenerSupport {
     Subscription lookUpDocumentChangesSubscription(ClientIdentity localParty, String remoteParty, List<String> documentUris);
 
     @DirectCall
+    int getExpirationTime();
+
+    @DirectCall
     void unBind(Subscription subscription);
 }

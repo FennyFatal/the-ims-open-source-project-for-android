@@ -427,6 +427,8 @@ public class MessageParser{
             paramHeaderBuilder.param( curHValName, curHValValue );
         }
 
+        curHValValue = curHValName = null;
+
 		/*
 		if (curHValValue == null || curHValValue.length() == 0)
 			paramHeader.getParamsList().set( curHValName );
@@ -636,8 +638,8 @@ public class MessageParser{
 
 	action add_ac {
 		check("add_ac");		//base.getAcceptContact().append( paramHeader );
-		msgBuilder.customHeader(Header.AcceptContact, paramHeaderBuilder.build().buildContent());//base.addCustomHeader(Header.AcceptContact, paramHeader.buildContent());
-
+//		msgBuilder.customHeader(Header.AcceptContact, paramHeaderBuilder.build().buildContent());//base.addCustomHeader(Header.AcceptContact, paramHeader.buildContent());
+        msgBuilder.acceptContact(paramHeaderBuilder.build().buildContent(), null);
 	}
 
 	action add_rc {

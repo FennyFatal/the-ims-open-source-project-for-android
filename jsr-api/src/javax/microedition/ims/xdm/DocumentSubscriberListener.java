@@ -49,45 +49,9 @@ import javax.microedition.ims.ReasonInfo;
  * This listener type is used to notify the application about document
  * subscription status and updates on documents on the XDM server.
  * 
- * <h4>Notifications of document updates</h4>
- * 
- * Once the subscription has been established, the XDM server will send
- * notifications to the client of document updates. Notifications are in the
- * form of XCAP diff documents. XCAP diff is described in [XCAP-DIFF].
- * 
- * An XCAP diff document can contain information about updates of one or more
- * XDM documents, and for each XDM document, the XCAP diff document can contain
- * information of multiple updates. The different types of updates are:
- * 
- * <ul>
- * <li>Initial information about the XDM document, including the document ETag,
- * sent when the subscription starts.</li>
- * <li>Information about a change in a document, including the old and new ETag
- * and optionally details of the change.</li>
- * <li>Information about a change of the ETag of a document.</li>
- * <li>Information about the deletion of a document.</li>
- * <li>Information about the creation of a new document.</li>
- * </ul>
- * 
- * For each XDM document mentioned in the XCAP diff document, one of the methods
- * documentUpdateReceived or documentDeleted is called once. Note that multiple
- * updates to a single document will always result in exactly one method call.
- * Also note that it is up to the XDM server to decide how often an XCAP diff
- * document is sent to the client, meaning that a single XCAP diff document can
- * include any number of updates.
- * 
- * If the document has been deleted, and a new document has not been created
- * with the same document selector, documentDeleted is called. In all other
- * cases, documentUpdateReceived is called. This includes the following cases:
- * 
- * <ul>
- * <li>When the subscription starts and the initial notification is received.</li>
- * <li>If a new document is created.</li>
- * <li>If a document is changed.</li>
- * <li>If a document is deleted and then a new document with the same document
- * selector is created.</li>
- * </ul>
- * 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @see DocumentSubscriber
  * 
  * @author Andrei Khomushko

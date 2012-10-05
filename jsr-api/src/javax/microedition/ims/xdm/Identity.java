@@ -45,9 +45,12 @@ import java.util.Arrays;
 
 /**
  * This class represents an identity or a group of identities which is used in a
- * Rule to represent which conditions apply to that specific Rule. An Identity
- * can be one of four different types according to [RFC4745].
- * 
+ * Rule to represent which conditions apply to that specific Rule. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

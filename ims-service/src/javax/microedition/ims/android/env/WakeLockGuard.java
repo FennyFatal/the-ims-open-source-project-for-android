@@ -1,5 +1,5 @@
 /*
- * This software code is � 2010 T-Mobile USA, Inc. All Rights Reserved.
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
  *
  * Unauthorized redistribution or further use of this material is
  * prohibited without the express permission of T-Mobile USA, Inc. and
@@ -17,7 +17,7 @@
  * used to endorse or promote products derived from this software without
  * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ON AN �AS IS� AND �WITH ALL FAULTS� BASIS
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
  * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
  * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
@@ -51,6 +51,7 @@ import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.Shutdownable;
 
 public class WakeLockGuard implements Shutdownable{
@@ -65,24 +66,24 @@ public class WakeLockGuard implements Shutdownable{
     }
 
     public void acquire() {
-        Log.d(LOG_TAG, "acquire#wake lock acquire request was sent");
+        Logger.log(LOG_TAG, "acquire#wake lock acquire request was sent");
         wakeLock.acquire();
-        Log.d(LOG_TAG, "acquire#refCount = " + refCounter.incrementAndGet());
+        Logger.log(LOG_TAG, "acquire#refCount = " + refCounter.incrementAndGet());
     }
     
     public void release() {
-        Log.d(LOG_TAG, "release#wake lock release request was sent");
+        Logger.log(LOG_TAG, "release#wake lock release request was sent");
         wakeLock.release();
-        Log.d(LOG_TAG, "release#refCount = " + refCounter.decrementAndGet());
+        Logger.log(LOG_TAG, "release#refCount = " + refCounter.decrementAndGet());
     }
     
     @Override
     public void shutdown() {
         long refCount = refCounter.get();
-        Log.d(LOG_TAG, "shutdown#refCount = " + refCount);
+        Logger.log(LOG_TAG, "shutdown#refCount = " + refCount);
         
         if(refCount > 0) {
-            Log.w(LOG_TAG, String.format("shutdown#there are a %s references to wake lock, power leak(battery life) is possible", refCount));    
+            Logger.log(LOG_TAG, String.format("shutdown#there are a %s references to wake lock, power leak(battery life) is possible", refCount));    
         }
         
         

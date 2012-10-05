@@ -43,71 +43,11 @@ package javax.microedition.ims.core;
 
 /**
  * The <code>Message</code> interface provides functionality to manipulate
- * headers and body parts of SIP messages.
- * </p><p>
- * <p/>
- * This is an interface for use in advanced applications.
- * </p><p>
- * A <code>Message</code> can be retrieved by calling
- * <code>ServiceMethod.getNextRequest</code>,
- * <code>ServiceMethod.getPreviousRequest</code>,
- * <code>ServiceMethod.getNextResponse</code> or
- * <code>ServiceMethod.getPreviousResponses</code>.
- * </p><p>
- * <p/>
- * </p><h3>Modifying headers</h3>
- * The IMSAPI allows the application to read and write to SIP message headers.
- * A header with no predefined meaning or standard can be read and written
- * without restriction. If the header is covered in a standard, then any
- * modification to the header must be in accordance to the standard.
- * <p/>
- * <h4>Modifying the 'Content-Type' header</h4>
- * The 'Content-Type' header can only be set on messages with more than one
- * bodypart, and only to 'multipart/*'. See also section below on Modifying
- * message bodies.
- * <p/>
- * </p><h3>Modifying message bodies</h3>
- * The interface allows the application to create non-recursive multi-part
- * SIP messages bodies. The following shows how the object structure is mapped
- * to the SIP message structure. For the sending side:
- * <ul>
- * <li>If a <code>Message</code> has one <code>MessageBodyPart</code> then the
- * <code>Message</code> will have the body
- * content and content type set to the <code>MessageBodyPart</code> content
- * and content type.</li>
- * <li>If a <code>Message</code> has several <code>MessageBodyParts</code>, then
- * each <code>MessageBodyPart</code> (
- * recursive <code>MessageBodyPart</code> are not possible) is mapped to a
- * part in the
- * SIP message body (content and headers, including the content type).
- * The message body content type is by default set to multipart/mixed, but can
- * be overridden by the application to be of another subtype to multipart.<br>
- * <p/>
- * NOTE: For the case where the IMS core has an SDP attached to the SIP
- * message, then that is handled as if it were a <code>MessageBodyPart</code> not
- * accessible to the application.</li>
- * </ul>
- * For the receiving side:
- * <ul>
- * <li>A SIP message with a body where content type is not multipart is handled
- * as a <code>Message</code> with one <code>MessageBodyPart</code> and
- * that content type.</li>
- * <li>A multipart message (of any subtype) is parsed and each part on the
- * top level is mapped to a <code>MessageBodyPart</code>
- * (nested multi-part messages cannot be mapped to recursive
- * <code>MessageBodyParts</code>). <br>
- * <p/>
- * Note: Any SDP part discovered here shall not be mapped to a
- * <code>MessageBodyPart</code> accessible to the application, unless it is
- * part of an OPTIONS response.</li>
- * </ul>
+ * headers and body parts of SIP messages. </p>
  * <p>
- * See [RFC3261] for more information about headers and body parts in a request
- * messages.
- * </p><p>
- * </p><p>
- * <p/>
- * </p>
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  *
  * @see ServiceMethod
  */

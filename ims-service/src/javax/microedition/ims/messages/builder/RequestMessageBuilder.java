@@ -52,9 +52,6 @@ import javax.microedition.ims.core.AcceptContactDescriptor;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.StackContext;
 import javax.microedition.ims.core.auth.AuthorizationData;
-import javax.microedition.ims.core.connection.GsmLocationInfo;
-import javax.microedition.ims.core.connection.NetworkSubType;
-import javax.microedition.ims.core.connection.NetworkType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.registry.ClientRegistry;
 import javax.microedition.ims.core.registry.StackRegistry;
@@ -105,6 +102,9 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
         }
 
         addSupported(builder, MessageType.parse(builder.getMethod()));
+
+//        buildAcceptContactForClient(builder, dialog.getLocalParty());
+        buildAcceptContactForClient(builder, dialog);
 
         return (Request) builder.build();
     }
@@ -297,14 +297,27 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
 
     protected void buildAcceptContactForClient(
             final BaseSipMessage.Builder retValue,
-            final ClientIdentity clientIdentity) {
+            /*final ClientIdentity clientIdentity*/ final Dialog dialog) {
 
-        AcceptContactDescriptor[] acceptContactHeaders =
-                context.getClientRouter().buildClientPreferences(clientIdentity);
+        final MessageType messageType = MessageType.parse(retValue.getMethod());
+        if (messageType == MessageType.SIP_REGISTER ||
+            messageType == MessageType.SIP_RESPONSE ||
+            messageType == MessageType.SIP_PUBLISH ||
+            messageType == MessageType.XDM_REQUEST ||
+            messageType == MessageType.MSRP_SEND ||
+            messageType == MessageType.MSRP_STATUS ||
+            messageType == MessageType.MSRP_REPORT
+            )
+        return;
+
+        AcceptContactDescriptor[] acceptContactHeaders = dialog.getAcceptContactHeaders(
+                (messageType == MessageType.SIP_INVITE) ? context.getConfig().useFeatureTags() : true);
+//                context.getClientRouter().buildClientPreferences(clientIdentity);
 
         if (acceptContactHeaders != null && acceptContactHeaders.length > 0) {
             for (AcceptContactDescriptor header : acceptContactHeaders) {
-                retValue.customHeader(Header.AcceptContact.stringValue(), header.getContent());
+//                retValue.customHeader(Header.AcceptContact.stringValue(), header.getContent());
+                retValue.acceptContact(header.getContent(), null);
             }
         }
     }
@@ -336,99 +349,6 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
         return new UriHeader.UriHeaderBuilder(uri).build();
     }
 
-    //examples:
-    //P-Access-Network-Info: 3GPP2-1X-HRPD; ci-3gpp2=1234123412341234123412341234123411
-    //P-Access-Network-Info: wlan-mac-addr=00BA5550EEFF
-    //P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=544542332
-
-    protected void addPAccessNetworkHeader(
-            final GsmLocationInfo gsmLocationInfo,
-            final BaseSipMessage.Builder retValue) {
-
-        String headerValue = buildNetworkInfo(gsmLocationInfo);
-
-        if (headerValue != null) {
-            //retValue.customHeader("P-Access-Network-Info", headerValue);
-            retValue.customHeader(Header.PAccessNetwork.stringValue(), headerValue);
-        }
-        else{
-            String errMsg = Header.PAccessNetwork.stringValue() +
-                    " is empty because GsmLocationInfo proceeded to null value. GsmLocationInfo = " + gsmLocationInfo;
-
-            Logger.log(Logger.Tag.WARNING, errMsg);
-        }
-    }
-
-    protected void addPLastAccessNetworkHeader(
-            final GsmLocationInfo gsmLocationInfo,
-            final BaseSipMessage.Builder retValue) {
-
-        /*
-        if (gsmLocationInfo != null && gsmLocationInfo.getCid() != 0) {
-            retValue.customHeader(Header.PLastAccessNetwork, String.valueOf(gsmLocationInfo.getCid()));
-        }
-        */
-
-        String headerValue = buildLastNetworkInfo(gsmLocationInfo);
-
-        if (headerValue != null) {
-            //retValue.customHeader("P-Access-Network-Info", headerValue);
-            retValue.customHeader(Header.PLastAccessNetwork.stringValue(), headerValue);
-        }
-        else{
-            String errMsg = Header.PLastAccessNetwork.stringValue() +
-                    " is empty because GsmLocationInfo proceeded to null value. GsmLocationInfo = " + gsmLocationInfo;
-
-            Logger.log(Logger.Tag.WARNING, errMsg);
-        }
-    }
-
-    protected String buildMACHeaderPart() {
-        final String pointMAC = context.getEnvironment().getConnectionManager().getAccessPointMAC();
-        String escapedMAC = null;
-
-        if (pointMAC != null) {
-            escapedMAC = pointMAC.replaceAll(":", "").replaceAll("-", "");
-        }
-
-        return escapedMAC == null ? null : "i-wlan-node-id=" + escapedMAC;
-    }
-
-    private String buildNetworkInfo(GsmLocationInfo locationInfo) {
-        final NetworkType networkType = context.getEnvironment().getConnectionManager().getNetworkType();
-        final NetworkSubType networkSubType = context.getEnvironment().getConnectionManager().getNetworkSubType();
-
-        String headerValue = null;
-
-        if (networkSubType != null) {
-
-            if (NetworkType.MOBILE == networkType && locationInfo != null) {
-                // In emulator environment we don't necessarily have location info available
-                //headerValue += "; utran-cell-id-3gpp=" + locationInfo.getCid();
-                headerValue = locationInfo.toCellIdentity();
-            } else if (NetworkType.WIFI == networkType) {
-                final String macKeyValuePair = buildMACHeaderPart();
-                if (macKeyValuePair != null) {
-                    headerValue = networkSubType.stringValue() + "; " + macKeyValuePair;
-                }
-            }
-        }
-        return headerValue;
-    }
-
-    private String buildLastNetworkInfo(GsmLocationInfo locationInfo) {
-
-        String retValue = null;
-
-        if (locationInfo != null) {
-            //return "3GPP-UTRAN-TDD; utran-cell-id-3gpp=" + locationInfo.toUtranCellId3gppValue();
-            retValue = locationInfo.toCellIdentity();
-        }
-
-        return retValue;
-    }
-
-
     protected void generateContactHeader(final Configuration config,
                                          final StackRegistry stackRegistry,
                                          final BaseSipMessage.Builder retValue,
@@ -436,8 +356,31 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
 
         Set<String> aggregatedParams = new HashSet<String>(Arrays.asList(customParams));
 
-        Set<String> clientParams = extractClientData(stackRegistry);
+        Set<String> clientParams = extractClientData(stackRegistry, config.useFeatureTags());
         aggregatedParams.addAll(clientParams);
+
+        generateContactHeader(
+                config,
+                retValue,
+                true,
+                aggregatedParams.toArray(
+                        new String[aggregatedParams.size()]
+                )
+        );
+
+        //generateContactHeader(config, retValue, true);
+    }
+
+    protected void generateContactHeader(Set<String> clientParams,
+                                         final Configuration config,
+                                         final StackRegistry stackRegistry,
+                                         final BaseSipMessage.Builder retValue,
+                                         final String... customParams) {
+
+        Set<String> aggregatedParams = new HashSet<String>(Arrays.asList(customParams));
+
+        if (clientParams != null)
+            aggregatedParams.addAll(clientParams);
 
         generateContactHeader(
                 config,
@@ -454,7 +397,7 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
     /**
      * Extract client IARI, ICSIs, and Feature Tags from CoreService property.
      */
-    private Set<String> extractClientData(StackRegistry stackRegistry) {
+    protected Set<String> extractClientData(StackRegistry stackRegistry, boolean useFeatureTags) {
         final Set<String> clientData = new HashSet<String>();
 
         for (ClientRegistry registry : stackRegistry.getClientRegistries()) {
@@ -479,7 +422,56 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
             clientData.addAll(iCSIs);
 
             //add FeatureTags
-            clientData.addAll(Arrays.asList(coreProperty.getFeatureTags()));
+            if (useFeatureTags) {
+                Collection<String> fTs = CollectionsUtils.transform(Arrays.asList(coreProperty.getFeatureTags()),
+                        new CollectionsUtils.Transformer<String, String>() {
+                            public String transform(String source) {
+                                return source.split(";") [0];
+                            }
+                        });
+                clientData.addAll(fTs);
+            }
+        }
+
+        return clientData;
+    }
+
+    /**
+     * Extract client IARI, ICSIs, and Feature Tags from CoreService property.
+     */
+    protected Set<String> extractClientData(String id, StackRegistry stackRegistry, boolean features) {
+        final Set<String> clientData = new HashSet<String>();
+
+        ClientRegistry registry = stackRegistry.getClientRegistry(id);
+        CoreServiceProperty coreProperty = registry.getCoreServiceProperty();
+
+        //add iARIs
+        Collection<String> iARIs = CollectionsUtils.transform(Arrays.asList(coreProperty.getIARIs()),
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.iari-ref=\"%s\"", source);
+                    }
+                });
+        clientData.addAll(iARIs);
+
+        //add iCSIs
+        Collection<String> iCSIs = CollectionsUtils.transform(Arrays.asList(coreProperty.getICSIs()),
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.icsi-ref=\"%s\"", source);
+                    }
+                });
+        clientData.addAll(iCSIs);
+
+        //add FeatureTags
+        if (features) {
+            Collection<String> fTs = CollectionsUtils.transform(Arrays.asList(coreProperty.getFeatureTags()),
+                    new CollectionsUtils.Transformer<String, String>() {
+                        public String transform(String source) {
+                            return source.split(";") [0];
+                        }
+                    });
+            clientData.addAll(fTs);
         }
 
         return clientData;
@@ -510,25 +502,25 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
     */
     private static String extractSVN(String source) {
 
-        if (source == null || source.length() != 16) {
-            Logger.log(Logger.Tag.WARNING, "extractedSVN#source expected not null and source.length equal 16 but actually source = " + source
+        if (source == null || source.length() != 2) {
+            Logger.log(Logger.Tag.WARNING, "extractedSVN#source expected not null and source.length equal 2 but actually source = " + source
                     + ", returning the default 00 value");
             return "00";
         }
 
-        return source.substring(14, 16);
+        return source;
     }
 
     protected String extractSipInstance() {
         String deviceId = context.getEnvironment().getHardwareInfo().getDeviceId();
         
         if(deviceId == null) {
-            Log.i(LOG_TAG, "extractSipInstance#deviceId is null");
+            Logger.log(LOG_TAG, "extractSipInstance#deviceId is null");
             return null;
         }
         
         if(deviceId.length() != 15) {
-            Log.i(LOG_TAG, String.format("extractSipInstance#Eexpected deviceId value length is 15, but actual value is = %s, device id value = %s", deviceId.length(), deviceId));
+            Logger.log(LOG_TAG, String.format("extractSipInstance#Eexpected deviceId value length is 15, but actual value is = %s, device id value = %s", deviceId.length(), deviceId));
             return null;
         } 
 
@@ -543,7 +535,7 @@ public abstract class RequestMessageBuilder extends BaseMessageBuilder implement
         
         String sipInstanceValue = String.format("+sip.instance=\"<urn:gsma:imei:%s>\"", formatedDeviceId.toString());
         
-        Log.d(LOG_TAG, "extractSipInstance#sipInstanceValue = " + sipInstanceValue);
+        Logger.log(LOG_TAG, "extractSipInstance#sipInstanceValue = " + sipInstanceValue);
         
         return sipInstanceValue;
     }

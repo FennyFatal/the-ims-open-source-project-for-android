@@ -43,23 +43,12 @@ package javax.microedition.ims.presence;
 
 /**
  * The StatusIcon class provide metadata about a status icon that is stored on
- * the server. The StatusIcon class can be used to provide an URI to a status
- * icon in the presence document. The status icon is not included in the
- * presence document and must be retrieved from the URI that is specified. An
- * ETag can also be specified to indicate if the status icon has been updated.
+ * the server.
  * 
- * Examples: Here are a few examples that show what the URI can look like:
- * <ul>
- * <li>"http://example.org/my-icons/busy"</li>
- * <li>"/org.openmobilealliance.pres-content/users/sip:hermione.blossom@example.org/oma_statusicon/icon_document"
- * </li>
- * </ul>
- * 
- * The status icon of the first URI can be retrieved by simply connecting to the
- * URI with HTTP. The second URI specifies an XDM document that is stored on a
- * Presence Content XDMS server, which can be retrieved by using the XDM
- * enabler.
- * 
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

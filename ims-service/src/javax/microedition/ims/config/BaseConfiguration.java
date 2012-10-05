@@ -60,10 +60,12 @@ public final class BaseConfiguration implements Configuration {
     private final UserInfo preferredIdentity;
     private final ServerAddress proxyServer;
     private final ServerAddress registrarServer;
+    private final ServerAddress registrarServerSettings;
     private final UserInfo authUserName;
     private final UserInfo registrationName;
     private final UserPassword userPassword;
     private final String realm;
+    private final String realmSettings;
     private final String userAgent;
     private final Protocol connectionType;
     private final int maxForwards;
@@ -72,12 +74,16 @@ public final class BaseConfiguration implements Configuration {
     private final boolean useDnsLookup;
     private final boolean useResourceReservation;
     private final long registrationExpirationSeconds;
+    private final long subscriptionExpirationSeconds;
+    private final long publicationExpirationSeconds;
     //private final boolean forceAuthorization;
     private final boolean useSimultaneousAuth;
     private final Collection<ChallengeType> authForceTypes = new HashSet<ChallengeType>();
 
     //private final String[] requiredFeatures;
     private final Set<OptionFeature> supportedFeatures;
+
+    private final boolean useFeatureTags;
 
     private final XDMConfig xdmConfig;
     private final PrivacyInfo privacyInfo;
@@ -109,6 +115,12 @@ public final class BaseConfiguration implements Configuration {
         }
         this.registrarServer = builder.registrarServer;
 
+        if (builder.registrarServerSettings == null) {
+            throw new IllegalArgumentException(
+                    "The registrarServerSettings parameter is null");
+        }
+        this.registrarServerSettings = builder.registrarServerSettings;
+
         if (builder.authUserName == null) {
             throw new IllegalArgumentException(
                     "The authUserName parameter is null");
@@ -128,9 +140,16 @@ public final class BaseConfiguration implements Configuration {
         this.userPassword = builder.userPassword;
 
         if (builder.realm == null) {
-            throw new IllegalArgumentException("The realm parameter is null");
+            // realm may be null if not yet been read from SIM. In this case, exception
+            // will be thrown when initializing AKAAuthProvider.
+            //throw new IllegalArgumentException("The realm parameter is null");
         }
         this.realm = builder.realm;
+
+        if (builder.realmSettings == null) {
+            //throw new IllegalArgumentException("The realmSettings parameter is null");
+        }
+        this.realmSettings = builder.realmSettings;
 
         if (builder.userAgent == null) {
             throw new IllegalArgumentException(
@@ -162,12 +181,25 @@ public final class BaseConfiguration implements Configuration {
         }
         this.registrationExpirationSeconds = builder.registrationExpirationSeconds;
 
+        if (builder.subscriptionExpirationSeconds < 0) {
+            throw new IllegalArgumentException(
+                    "The subscriptionExpirationSeconds parameter is negative");
+        }
+        this.subscriptionExpirationSeconds = builder.subscriptionExpirationSeconds;
+
+        if (builder.publicationExpirationSeconds < 0) {
+            throw new IllegalArgumentException(
+                    "The publicationExpirationSeconds parameter is negative");
+        }
+        this.publicationExpirationSeconds = builder.publicationExpirationSeconds;
+
         //this.forceAuthorization = builder.forceAuthorization;
         this.useSimultaneousAuth = builder.useSimultaneousAuth;
         this.authForceTypes.addAll(builder.authForceTypes);
 
         this.supportedFeatures = builder.supportedFeatures;
         //this.requiredFeatures = builder.requiredFeatures.toArray(new String[0]);
+        this.useFeatureTags = builder.useFeatureTags;
 
         if (builder.xdmConfig == null) {
             throw new IllegalArgumentException(
@@ -225,10 +257,12 @@ public final class BaseConfiguration implements Configuration {
         private int localPort;
         private ServerAddress proxyServer;
         private ServerAddress registrarServer;
+        private ServerAddress registrarServerSettings;
         private UserInfo authUserName;
         private UserInfo registrationName;
         private UserPassword userPassword;
         private String realm;
+        private String realmSettings;
         private String userAgent;
         private Protocol connectionType;
         private int maxForwards;
@@ -237,12 +271,16 @@ public final class BaseConfiguration implements Configuration {
         private boolean useDNSLookup;
         private boolean useResourceReservation;
         private long registrationExpirationSeconds;
-        private boolean useSimultaneousAuth;
+        private long subscriptionExpirationSeconds;
+        private long publicationExpirationSeconds;
+        private boolean useSimultaneousAuth, useSigComp;
         private final Collection<ChallengeType> authForceTypes = new HashSet<ChallengeType>();
         // private boolean isPrackSupported = true;
 
         //private final Set<String> requiredFeatures = new HashSet<String>();
         private final Set<OptionFeature> supportedFeatures = new HashSet<OptionFeature>();
+
+        private boolean useFeatureTags;
 
         private XDMConfig xdmConfig;
         private PrivacyInfo privacyInfo;
@@ -266,10 +304,12 @@ public final class BaseConfiguration implements Configuration {
             buildLocalPort(configuration.getLocalPort());
             buildProxyServer(configuration.getProxyServer());
             buildRegistrarServer(configuration.getRegistrarServer());
+            buildRegistrarServerSettings(configuration.getRegistrarServerSettings());
             buildAuthUserName(configuration.getAuthUserName());
             buildRegistrationName(configuration.getRegistrationName());
             buildUserPassword(configuration.getUserPassword());
             buildRealm(configuration.getRealm());
+            buildRealmSettings(configuration.getRealm());
             buildUserAgent(configuration.getUserAgent());
             buildConnectionType(configuration.getConnectionType());
             buildMaxForwards(configuration.getMaxForwards());
@@ -279,11 +319,16 @@ public final class BaseConfiguration implements Configuration {
             buildUseResourceReservation(configuration.useResourceReservation());
             buildRegistrationExpirationSeconds(configuration
                     .getRegistrationExpirationSeconds());
+            buildSubscriptionExpirationSeconds(configuration
+                    .getSubscriptionExpirationSeconds());
+            buildPublicationExpirationSeconds(configuration
+                    .getPublicationExpirationSeconds());
             //buildForceAuthorization(configuration.forceAuthorization());
             buildUseSimultaneousAuth(configuration.useSimultaneousAuth());
             buildAuthForceTypes(configuration.getAuthForceTypes().toArray(new ChallengeType[0]));
             buildSupportedFeature(configuration.getSupportedFeatures());
             //buildRequiredFeature(configuration.getRequiredFeatures());
+            buildUseFeatureTags(configuration.useFeatureTags());
             buildXdmConfig(configuration.getXDMConfig());
             buildPrivacyInfo(configuration.getPrivacyInfo());
             buildPreferredIdentity(configuration.getPreferredIdentity());
@@ -315,6 +360,12 @@ public final class BaseConfiguration implements Configuration {
             return this;
         }
 
+        public ConfigurationBuilder buildRegistrarServerSettings(
+                ServerAddress registrarServerSettings) {
+            this.registrarServerSettings = registrarServerSettings;
+            return this;
+        }
+
         public ConfigurationBuilder buildRegistrarServer(
                 ServerAddress registrarServer) {
             this.registrarServer = registrarServer;
@@ -339,6 +390,11 @@ public final class BaseConfiguration implements Configuration {
 
         public ConfigurationBuilder buildRealm(String realm) {
             this.realm = realm;
+            return this;
+        }
+
+        public ConfigurationBuilder buildRealmSettings(String realmSettings) {
+            this.realmSettings = realmSettings;
             return this;
         }
 
@@ -390,6 +446,18 @@ public final class BaseConfiguration implements Configuration {
             return this;
         }
 
+        public ConfigurationBuilder buildSubscriptionExpirationSeconds(
+                long subscriptionExpirationSeconds) {
+            this.subscriptionExpirationSeconds = subscriptionExpirationSeconds;
+            return this;
+        }
+
+        public ConfigurationBuilder buildPublicationExpirationSeconds(
+                long publicationExpirationSeconds) {
+            this.publicationExpirationSeconds = publicationExpirationSeconds;
+            return this;
+        }
+
 /*        public ConfigurationBuilder buildForceAuthorization(
                 boolean forceAuthorization) {
             this.forceAuthorization = forceAuthorization;
@@ -427,6 +495,11 @@ public final class BaseConfiguration implements Configuration {
             return this;
         }
 */
+        public ConfigurationBuilder buildUseFeatureTags(
+                boolean useFeatureTags) {
+            this.useFeatureTags = useFeatureTags;
+            return this;
+        }
 
         public ConfigurationBuilder buildXdmConfig(XDMConfig xdmConfig) {
             this.xdmConfig = xdmConfig;
@@ -511,6 +584,14 @@ public final class BaseConfiguration implements Configuration {
         return realm;
     }
 
+    public String getRealmSettings() {
+        return realmSettings;
+    }
+
+    public ServerAddress getRegistrarServerSettings() {
+        return registrarServerSettings;
+    }
+
     public ServerAddress getRegistrarServer() {
         return registrarServer;
     }
@@ -552,12 +633,20 @@ public final class BaseConfiguration implements Configuration {
         return authForceTypes;
     }
 
+    public UserInfo getRegistrationName() {
+        return registrationName;
+    }
+
     public long getRegistrationExpirationSeconds() {
         return registrationExpirationSeconds;
     }
 
-    public UserInfo getRegistrationName() {
-        return registrationName;
+    public long getSubscriptionExpirationSeconds() {
+        return subscriptionExpirationSeconds;
+    }
+
+    public long getPublicationExpirationSeconds() {
+        return publicationExpirationSeconds;
     }
 
     /*
@@ -646,6 +735,10 @@ public final class BaseConfiguration implements Configuration {
         return dtmfPayload;
     }
 
+    public boolean useFeatureTags() {
+        return useFeatureTags;
+    }
+
     @Override
     public String toString() {
         return "BaseConfiguration [localPort=" + localPort + ", preferredIdentity="
@@ -657,6 +750,8 @@ public final class BaseConfiguration implements Configuration {
                 + forceSrtp + ", useResourceReservation=" + useResourceReservation
                 + ", useDNSLookup="+useDnsLookup
                 + ", registrationExpirationSeconds=" + registrationExpirationSeconds
+                + ", subscriptionExpirationSeconds=" + subscriptionExpirationSeconds
+                + ", publicationExpirationSeconds=" + publicationExpirationSeconds
                 + ", useSimultaneousAuth=" + useSimultaneousAuth + ", authForceTypes="
                 + authForceTypes + ", supportedFeatures=" + supportedFeatures + ", xdmConfig="
                 + xdmConfig + ", privacyInfo=" + privacyInfo + ", globalIpDiscovery="
@@ -664,7 +759,7 @@ public final class BaseConfiguration implements Configuration {
                 + msrpLocalPort + ", sessionExpires=" + sessionExpires + ", minSessionExpires="
                 + minSessionExpires + ", refresher=" + refresher + ", useInviteRefresh="
                 + useInviteRefresh + ", useSimultaneousConnection=" + useSimultaneousConnection
-                + ", featureMapping=" + featureMapping 
-                + ", specialUris=" + specialUris + ", dtmfPayload=" + dtmfPayload + "]";
+                + ", featureMapping=" + featureMapping
+                + ", specialUris=" + specialUris + ", dtmfPayload=" + dtmfPayload + ", useFeatureTags=" + useFeatureTags + "]";
     }
 }

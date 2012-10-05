@@ -45,9 +45,8 @@ package javax.microedition.ims.presence;
  * The WatcherInfo interface contains information about a watcher and the state
  * of his/her subscription.
  * 
- * In STATE_ACTIVE, the watcher has an active subscription. In STATE_TERMINATED,
- * the subscription of the watcher has been terminated. STATE_PENDING indicates
- * that the subscription requires authorization.
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  * 
  * @author Andrei Khomushko
  * 

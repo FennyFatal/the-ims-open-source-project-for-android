@@ -50,6 +50,7 @@ import javax.microedition.ims.StackHelper;
 import javax.microedition.ims.android.IExceptionHolder;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.RepetitiousTaskManager;
 import javax.microedition.ims.common.util.CollectionsUtils;
 import javax.microedition.ims.config.Configuration;
@@ -157,10 +158,12 @@ public class XDMServiceImpl extends IXDMService.Stub {
             retValue = new IXCAPResponse(xcapResponse.buildContent(),
                     xcapResponse.getEtag(), xcapResponse.getMimeType());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown
@@ -200,7 +203,8 @@ public class XDMServiceImpl extends IXDMService.Stub {
                             });
             retValue = iDocumentEntries.toArray(new IDocumentEntry[0]);
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -226,11 +230,13 @@ public class XDMServiceImpl extends IXDMService.Stub {
 
             uriListHolder.setEtag(xdmDocumentData.getEtag());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -245,10 +251,12 @@ public class XDMServiceImpl extends IXDMService.Stub {
         try {
             doSendXCAPRequest(request);
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown
@@ -278,11 +286,13 @@ public class XDMServiceImpl extends IXDMService.Stub {
                     .getEtag(), documentData.getDocumentSelector(),
                     documentData.getXMLContent());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -345,7 +355,8 @@ public class XDMServiceImpl extends IXDMService.Stub {
                     .getEtag(), documentData.getDocumentSelector(),
                     documentData.getXMLContent());
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -357,7 +368,7 @@ public class XDMServiceImpl extends IXDMService.Stub {
         try {
             listenerHolder.getNotifier().serviceClosed(reasonInfo);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage(), e);
         }
     }
 */
@@ -392,11 +403,13 @@ public class XDMServiceImpl extends IXDMService.Stub {
 
             presenceListsHolder.setEtag(xdmDocumentData.getEtag());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -410,11 +423,13 @@ public class XDMServiceImpl extends IXDMService.Stub {
         try {
             doSendXCAPRequest(request);
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         } catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown
@@ -446,11 +461,13 @@ public class XDMServiceImpl extends IXDMService.Stub {
                     .getEtag(), documentData.getDocumentSelector(),
                     documentData.getXMLContent());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -482,7 +499,8 @@ public class XDMServiceImpl extends IXDMService.Stub {
                     .getEtag(), documentData.getDocumentSelector(),
                     documentData.getXMLContent());
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils
                     .createIXCAPException(e));
         }
@@ -501,32 +519,34 @@ public class XDMServiceImpl extends IXDMService.Stub {
 
 
     public String getXUI() throws RemoteException {
-        return xdmConfig.getXuiName();
+        return localParty.getUserInfo().toUri();
     }
 
 
     public void deletePresenceAuthorizationDocument(IXCAPRequest request,
                                                     IExceptionHolder exceptionHolder) throws RemoteException {
-        Log.i(TAG, "deletePresenceAuthorizationDocument#started");
+        Logger.log(TAG, "deletePresenceAuthorizationDocument#started");
         try {
             doSendXCAPRequest(request);
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown
             exceptionHolder.setParcelableException(Utils.createIXCAPException(new IOException(e.getMessage())));
         }
-        Log.i(TAG, "deletePresenceAuthorizationDocument#finished");
+        Logger.log(TAG, "deletePresenceAuthorizationDocument#finished");
     }
 
     public IPresenceAuthorizationDocument createPresenceAuthorizationDocument(
             IXCAPRequest request, IPresenceAuthorizationRulesHolder presenceAuthorizationRulesHolder,
             IExceptionHolder exceptionHolder) throws RemoteException {
-        Log.i(TAG, "createPresenceAuthorizationDocument#started");
+        Logger.log(TAG, "createPresenceAuthorizationDocument#started");
         IPresenceAuthorizationDocument retValue = null;
 
         XDMRequest xcapRequest = Utils.createXDMRequest(request);
@@ -544,14 +564,16 @@ public class XDMServiceImpl extends IXDMService.Stub {
 
             presenceAuthorizationRulesHolder.setEtag(xdmDocumentData.getEtag());
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         }
 
-        Log.i(TAG, "createPresenceAuthorizationDocument#finished");
+        Logger.log(TAG, "createPresenceAuthorizationDocument#finished");
 
         return retValue;
     }
@@ -590,10 +612,12 @@ public class XDMServiceImpl extends IXDMService.Stub {
                     documentData.getXMLContent()
             );
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         }
 
@@ -630,7 +654,7 @@ public class XDMServiceImpl extends IXDMService.Stub {
 
         ConnectionDataProvider connDataProvider = new ConnectionDataProviderConfigVsDnsImpl(
                 configuration,
-                new DNSResolverDNSJavaImpl()
+                new DNSResolverDNSJavaImpl(configuration)
         );
         connDataProvider.refresh();
 

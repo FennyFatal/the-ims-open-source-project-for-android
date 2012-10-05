@@ -72,6 +72,7 @@ public class StagefrightPlayer extends BasePlayerImpl {
     }
 
     public void putOnHold(boolean onHold) {}
+    public void putOnHold(boolean onHold, int direction) {}
     public boolean isOnHold() { return false; }
 
     public StagefrightPlayer(Context context, PlayerType playerType, StreamMedia streamMedia,

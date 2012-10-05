@@ -47,6 +47,8 @@ import javax.microedition.ims.ReasonInfo;
  * A listener type used to receive information about events in the chat 
  * session. This listener extends the IMSessionListener interface where 
  * messages and files from the other participant can be received. 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  */
 public interface ChatListener extends IMSessionListener {
     

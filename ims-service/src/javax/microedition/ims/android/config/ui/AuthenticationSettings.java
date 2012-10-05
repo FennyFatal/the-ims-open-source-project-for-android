@@ -120,7 +120,7 @@ public class AuthenticationSettings extends PreferenceActivity implements Config
 
     private void initRealmControl() {
         Preference preference = findPreference(AndroidConfiguration.SIP_AUTH_REALM);
-        preference.setSummary(configuration.getRealm());
+        preference.setSummary(configuration.getRealmSettings());
     }
 
 /*    private void initAuthForceControl() {

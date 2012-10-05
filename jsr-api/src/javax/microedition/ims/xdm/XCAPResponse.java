@@ -44,20 +44,13 @@ package javax.microedition.ims.xdm;
 /**
  * Represents an XCAP response.
  * 
- * An XCAP request is an HTTP request to create, fetch, modify, or delete an XML
- * document or part of an XML document on the server. An XCAP response is the
- * server's response to such a request. For instructions on how to use XCAP
- * requests and responses, see the XCAPRequest class.
- * 
- * An XCAP response is a special form of an HTTP response, which among other
- * things means it has a set of headers and content. The content and a subset of
- * the headers can be accessed using the methods of this class.
- * 
- * Note that this class is only used to represent responses to successful XCAP
- * operations. Failed XCAP operations will result in an XCAPException, see the
- * sendXCAPRequest method in XDMService.
- * 
- * @see XCAPRequest, XCAPException, XDMService
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ * @see XCAPRequest
+ * @see XCAPException
+ * @see XDMService
  * 
  * @author Andrei Khomushko
  * 

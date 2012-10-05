@@ -111,9 +111,11 @@ Content-Length: 0
         CommonRegistry commonRegistry = context.getStackRegistry().getCommonRegistry();
         assert commonRegistry != null;
 
-        for (RegisterProperty registerProperty : commonRegistry.getRegisterProperties()) {
-            for (Entry<String, String> customHeader : registerProperty.getHeaders().entrySet()) {
-                retValue.customHeader(customHeader.getKey(), customHeader.getValue());
+        if (commonRegistry != null && commonRegistry.getRegisterProperties() != null) {
+            for (RegisterProperty registerProperty : commonRegistry.getRegisterProperties()) {
+                for (Entry<String, String> customHeader : registerProperty.getHeaders().entrySet()) {
+                    retValue.customHeader(customHeader.getKey(), customHeader.getValue());
+                }
             }
         }
 
@@ -135,7 +137,7 @@ Content-Length: 0
                     context.getStackRegistry(),
                     retValue,
                     agentIdParam,
-                    "+g.3gpp.smsip",
+//                    "+g.3gpp.smsip",
                     //"+g.oma.sip-im",
                     "reg-id=1",
                     sipInstance,
@@ -147,7 +149,7 @@ Content-Length: 0
                     context.getStackRegistry(),
                     retValue,
                     agentIdParam,
-                    "+g.3gpp.smsip",
+//                    "+g.3gpp.smsip",
                     sipInstance,
                     //"+g.oma.sip-im",
                     locationInfoValue
@@ -180,9 +182,13 @@ Content-Length: 0
     private String lookupAgentId(StackRegistry registry) {
         String agentId = null;
 
-        RegisterProperty[] registerProperties = registry.getCommonRegistry().getRegisterProperties();
-        for (RegisterProperty property : registerProperties) {
-            agentId = property.getAgentId();
+        CommonRegistry commonRegistry = registry.getCommonRegistry();
+
+        if (commonRegistry != null && commonRegistry.getRegisterProperties() != null) {
+            RegisterProperty[] registerProperties = commonRegistry.getRegisterProperties();
+            for (RegisterProperty property : registerProperties) {
+                agentId = property.getAgentId();
+            }
         }
         return agentId;
     }

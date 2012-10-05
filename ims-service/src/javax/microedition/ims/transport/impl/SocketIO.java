@@ -52,12 +52,12 @@ import java.net.Socket;
  * Time: 17:53:09
  */
 class SocketIO implements Shutdownable {
+    private static final int BUFF_SIZE = 1024 * 16;
+    
     private final Socket socket;
     private final PrintWriter out;
     private final BufferedOutputStream bout;
     private final BufferedInputStream bin;
-    private static final int BUFF_SIZE = 1024 * 16;
-
 
     public SocketIO(Socket socket) throws IOException {
         this.socket = socket;
@@ -127,4 +127,10 @@ class SocketIO implements Shutdownable {
     BufferedInputStream getByteIn() {
         return bin;
     }
+
+    @Override
+    public String toString() {
+        return "SocketIO [socket=" + socket + "]";
+    }
+    
 }

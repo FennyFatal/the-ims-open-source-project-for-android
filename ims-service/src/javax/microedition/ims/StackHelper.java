@@ -258,7 +258,8 @@ public final class StackHelper {
         return imsStack;
     }
 
-    public static ConnectionManager newMockConnectionManager(final ConnState connState) {
+    public static ConnectionManager newMockConnectionManager(final ConnState connState)
+            throws IMSStackException {
         return instantiateConnectionManager(
                 "javax.microedition.ims.core.connection.MockConnectionManager",
                 new MockNetworkInfoImpl(connState, NetworkType.MOBILE)
@@ -267,14 +268,16 @@ public final class StackHelper {
         );
     }
 
-    public static ConnectionManager newAndroidConnectionManager(Object androidContext) {
+    public static ConnectionManager newAndroidConnectionManager(Object androidContext)
+            throws IMSStackException {
         return instantiateConnectionManager(
                 "javax.microedition.ims.android.connection.AndroidConnectionManager",
                 androidContext
         );
     }
 
-    private static ConnectionManager instantiateConnectionManager(final String connManagerClass, final Object buildUpObject) {
+    private static ConnectionManager instantiateConnectionManager(final String connManagerClass, final Object buildUpObject)
+            throws IMSStackException {
         ConnectionManager retValue = null;
         try {
             Class<?> connectionManagerClass = Class.forName(connManagerClass);
@@ -283,18 +286,23 @@ public final class StackHelper {
         }
         catch (ClassNotFoundException e) {
             e.printStackTrace();
+            throw new IMSStackException("ClassNotFoundException: " + e);
         }
         catch (NoSuchMethodException e) {
             e.printStackTrace();
+            throw new IMSStackException("NoSuchMethodException: " + e);
         }
         catch (InstantiationException e) {
             e.printStackTrace();
+            throw new IMSStackException("InstantiationException: " + e);
         }
         catch (IllegalAccessException e) {
             e.printStackTrace();
+            throw new IMSStackException("IllegalAccessException: " + e);
         }
         catch (InvocationTargetException e) {
             e.printStackTrace();
+            throw new IMSStackException("InvocationTargetException: " + e);
         }
 
         return retValue;

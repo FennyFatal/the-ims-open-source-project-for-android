@@ -43,16 +43,14 @@ package javax.microedition.ims.xdm;
 
 /**
  * A presence list is used by a presence server to subscribe, on behalf of a
- * watcher, to the presence status of a list of presentities. A PresenceList
- * contains a reference to a URI list. The reference is identified by a service
- * URI that is unique in the scope of the PresenceListDocument in which it is
- * contained. The service URI is also the identifier for a PresenceList.
- * 
- * An existing PresenceList is retrieved with either getPresenceList or
- * getPresenceLists in the PresenceListDocument. A new PresenceList is added to
- * a PresenceListDocument with the addPresenceList method.
- * 
- * PresenceLists are defined in full in [OMA_PRES_RLS_XDM].
+ * watcher, to the presence status of a list of presentities.
+ *
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * 
  * @author Andrei Khomushko
  * 

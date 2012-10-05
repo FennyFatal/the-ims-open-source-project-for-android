@@ -65,8 +65,8 @@ public final class MediaOfferHelper {
      * Setting media that are in STATE_INACTIVE to
      * STATE_PENDING.
      */
-    public void setInactiveMediaPending(List<MediaImpl> medias) {
-        for (MediaImpl media : medias) {
+    public void setInactiveMediaPending(List<MediaExt> medias) {
+        for (MediaExt media : medias) {
             if (media.getState() == Media.STATE_INACTIVE) {
                 media.setState(Media.STATE_PENDING);
             }

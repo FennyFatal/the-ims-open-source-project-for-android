@@ -43,6 +43,10 @@ package javax.microedition.ims.core;
 
 /**
  * This listener type is used to notify the application of the status of requested publications. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  */
 public interface PublicationListener {
     

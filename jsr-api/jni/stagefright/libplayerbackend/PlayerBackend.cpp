@@ -98,7 +98,7 @@ static jint JNICALL setAudioCodec(JNIEnv *env, jclass clasz, jstring jCodecSpec,
 
     // Create audio codec.
     sscanf(codecSpec, "%d %[^/]%*c%d", &codecType, codecName, &sampleRate);
-    codec = newAudioCodec(codecName);
+    //codec = newAudioCodec(codecName);
     sampleCount = (codec ? codec->set(sampleRate, codecSpec) : -1);
     env->ReleaseStringUTFChars(jCodecSpec, codecSpec);
     if (sampleCount <= 0) {

@@ -46,6 +46,8 @@ import javax.microedition.ims.ReasonInfo;
 /**
  * A listener type for receiving notifications of incoming system messages, 
  * advertisement messages, and delivery reports. 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  */
 public interface IMServiceListener {
     
@@ -53,12 +55,6 @@ public interface IMServiceListener {
      * Notifies the application that a group advertisement message was received.
      * <p/>
      * Group advertisement messages include information about a GroupDocument. 
-     * Advertisement messages are sent to all group members when the group is 
-     * created or if certain elements are modified, for example when new group 
-     * members are added to the GroupDocument. See [OMA_SHARED_GROUP] for more information.
-     * <p/>
-     * Note: Group advertisement messages will automatically be sent by the 
-     * server if the automatic-group-advertisement property is enabled in a GroupDocument.
      * 
      * @param service - the concerned Service
      * @param message - the received Message
@@ -66,12 +62,7 @@ public interface IMServiceListener {
     void advertisementMessageReceived(IMService service, Message message);
     
     /**
-     * Notifies the application that delivery reports were received. Each 
-     * delivery report corresponds to one recipient in the sent message. 
-     * If the message is sent to more than one recipient, this method may 
-     * be called several times for each sent message depending on when 
-     * a recipient receives the message and on the server policy 
-     * for aggregating delivery reports.
+     * Notifies the application that delivery reports were received. 
      * 
      * @param service - the concerned Service
      * @param reports - an array of received delivery reports

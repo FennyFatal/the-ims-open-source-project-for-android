@@ -47,9 +47,15 @@ import java.util.Map;
 
 /**
  * Registry is the storage for configurational data for each application QoS
- * level selection is incremental; level 1 (QOS_LEVEL_BACKGROUND) covers only
- * level 1, level 2 covers levels 1 and 2, level 3 covers levels 1, 2 and 3.
- * Level 4 (QOS_LEVEL_STREAMING) covers all levels from 1 to 4.
+ * levels.
+ *
+ * This functionality is limited on Android.
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  */
 public final class Registry {
     /**
@@ -91,15 +97,6 @@ public final class Registry {
      * @param contentTypes
      *            Application to propose QosLevels prior REGISTER
      * @param qosLevel
-     *            qosLevel indicates the requested level of QoS for the lifetime
-     *            of the application. via the RegistryListener IMS Stack
-     *            indicates which level is available for delivery. The intended
-     *            level is not guaranteed until the
-     *            <code>RegistryListener.QosLevelStatusSignal(int)</code> has
-     *            signaled what level is available. The discovery is based on
-     *            network selection that might take place during the SIP
-     *            REGISTER and around that time the level is indicated via the
-     *            Listener-interface.
      * 
      * @throws IllegalArgumentException
      *             - if the properties argument is null

@@ -56,23 +56,14 @@ public class SubscriptionImpl extends ServiceMethodImpl implements Subscription 
 
     private ISubscription mSubscription;
 
-    private SubscriptionListener mCurrentSubscriptionListener;
-    private final RemoteSubscriptionListener remoteSubscriptionListener;
+    private SubscriptionListener mCurrentSubscriptionListener = null;
+    private RemoteSubscriptionListener remoteSubscriptionListener = null;
 
     
     public SubscriptionImpl(final IServiceMethod serviceMethod, ISubscription mSubscription) {
         super(serviceMethod);
-        
-        this.mSubscription = mSubscription;
-        
-        
-        this.remoteSubscriptionListener = new RemoteSubscriptionListener(this);
-        try {
-            mSubscription.addListener(remoteSubscriptionListener);
-        } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
 
+        this.mSubscription = mSubscription;
     }
 
     
@@ -146,13 +137,38 @@ public class SubscriptionImpl extends ServiceMethodImpl implements Subscription 
 
     
     public void setListener(SubscriptionListener listener) {
+        if (remoteSubscriptionListener == null) {
+            remoteSubscriptionListener = new RemoteSubscriptionListener(this);
+
+            try {
+                mSubscription.addListener(remoteSubscriptionListener);
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+                remoteSubscriptionListener = null;
+
+                return;
+            }
+        }
+
         if (mCurrentSubscriptionListener != null) {
             remoteSubscriptionListener.removeListener(mCurrentSubscriptionListener);
         }
 
         if (listener != null) {
             remoteSubscriptionListener.addListener(listener);
+        } else {
+            try {
+                mSubscription.removeListener(remoteSubscriptionListener);
+                remoteSubscriptionListener = null;
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+                remoteSubscriptionListener = null;
+                mCurrentSubscriptionListener = listener;
+
+                return;
+            }
         }
+
         mCurrentSubscriptionListener = listener;
     }
 
@@ -181,5 +197,4 @@ public class SubscriptionImpl extends ServiceMethodImpl implements Subscription 
         Log.i(TAG, "getState#finished");
         return state;
     }
-
 }

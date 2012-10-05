@@ -46,6 +46,7 @@ import android.util.Log;
 
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.msrp.listener.ChatExtensionListener;
 
 public class ChatImpl extends IChat.Stub {
@@ -108,7 +109,8 @@ public class ChatImpl extends IChat.Stub {
             listenerHolder.getNotifier().chatExtended(ChatImpl.this, conferenceImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -119,7 +121,8 @@ public class ChatImpl extends IChat.Stub {
             listenerHolder.getNotifier().chatExtensionFailed(ChatImpl.this, reason);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 }

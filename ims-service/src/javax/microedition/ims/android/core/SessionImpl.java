@@ -50,6 +50,7 @@ import javax.microedition.ims.android.core.media.IMedia;
 import javax.microedition.ims.android.core.media.SdpBuilder;
 import javax.microedition.ims.android.core.media.SdpConvertor;
 import javax.microedition.ims.common.DefaultTimeoutUnit;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.dialog.DialogStateEvent;
@@ -194,7 +195,7 @@ class SessionImpl extends ISession.Stub {
 
         @Override
         public void onSessionEventBefore(final DialogStateEvent<BaseSipMessage> event) {
-            Log.i(TAG, "onSessionEventBefore#started event = " + event + ", state = " + state);
+            Logger.log(TAG, "onSessionEventBefore#started event = " + event + ", state = " + state);
             switch (state.get()) {
                 case STATE_NEGOTIATING: {
                     switch (event.getSessionState()) {
@@ -293,7 +294,7 @@ class SessionImpl extends ISession.Stub {
 
             notifyListeners(event.getSessionState());
 
-            Log.i(TAG, "onSessionEventBefore#finished");
+            Logger.log(TAG, "onSessionEventBefore#finished");
         }
     };
 
@@ -327,7 +328,7 @@ class SessionImpl extends ISession.Stub {
     }
 
     public void preaccept(List<IMedia> medias) throws RemoteException {
-        Log.i(TAG, "preaccept#started state:" + state);
+        Logger.log(TAG, "preaccept#started state:" + state);
         switch (state.get()) {
             case STATE_NEGOTIATING: {
                 dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
@@ -335,38 +336,51 @@ class SessionImpl extends ISession.Stub {
                 break;
             }
             default:
-                Log.i(TAG, "accept#Not handled for state: " + state);
+                Logger.log(TAG, "accept#Not handled for state: " + state);
                 break;
         }
-        Log.i(TAG, "preaccept#finished");
+        Logger.log(TAG, "preaccept#finished");
     }
 
     private void doPreaccept(Dialog dialog) {
         acceptable.preAccept();
     }
 
-    public void accept(List<IMedia> medias) throws RemoteException {
-        Log.i(TAG, "accept#started state:" + state);
-        switch (state.get()) {
-            case STATE_NEGOTIATING: {
-                setState(StateCode.STATE_ESTABLISHING);
-                dialog.getOutgoingSdpMessage().getMedias().clear();
-                dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
-                doAccept(dialog);
-                break;
+    @Override
+    public void accept(List<IMedia> medias, boolean isAutoAccept) throws RemoteException {
+        Logger.log(TAG, "accept#started state:" + state);
+        try {
+            switch (state.get()) {
+                case STATE_NEGOTIATING: {
+                    //auto accept during rr haven't lead to new state.la
+                    if(!dialog.isUpdateInProgress()) {
+                        setState(StateCode.STATE_ESTABLISHING);    
+                    }
+                    dialog.getOutgoingSdpMessage().getMedias().clear();
+                    dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
+                    doAccept(dialog);
+                    break;
+                }
+                case STATE_RENEGOTIATING: {
+                    setState(StateCode.STATE_REESTABLISHING);
+                    dialog.setSdpStatus((medias.size() != 0) ? true : false);
+                    if (medias.size() != 0)
+                        dialog.getOutgoingSdpMessage().setSessionVersion(dialog.getIncomingSdpMessage().getSessionVersion());
+                    dialog.getOutgoingSdpMessage().getMedias().clear();
+                    dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
+                    doAccept(dialog);
+                    break;
+                }
+                default:
+                    Logger.log(TAG, "accept#Not handled for state: " + state);
+                    break;
             }
-            case STATE_RENEGOTIATING: {
-                setState(StateCode.STATE_REESTABLISHING);
-                dialog.getOutgoingSdpMessage().getMedias().clear();
-                dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
-                doAccept(dialog);
-                break;
-            }
-            default:
-                Log.i(TAG, "accept#Not handled for state: " + state);
-                break;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
-        Log.i(TAG, "accept#finished");
+
+        Logger.log(TAG, "accept#finished");
     }
 
     public void addListener(ISessionListener listener)
@@ -377,12 +391,12 @@ class SessionImpl extends ISession.Stub {
     }
 
     public List<IMedia> getMedias() throws RemoteException {
-        Log.i(TAG, "getMedias#started");
+        Logger.log(TAG, "getMedias#started");
         final List<IMedia> medias = new ArrayList<IMedia>();
         if (dialog.getIncomingSdpMessage() != null) {
             medias.addAll(SdpConvertor.buildMedias(dialog.getIncomingSdpMessage()));
         }
-        Log.i(TAG, "getMedias#finished medias:" + medias);
+        Logger.log(TAG, "getMedias#finished medias:" + medias);
         return medias;
     }
 
@@ -395,7 +409,7 @@ class SessionImpl extends ISession.Stub {
     }
 
     public void reject(int statusCode) throws RemoteException {
-        Log.i(TAG, "reject#started");
+        Logger.log(TAG, "reject#started");
         switch (state.get()) {
             case STATE_NEGOTIATING: {
                 doReject(dialog, statusCode, null);
@@ -410,10 +424,10 @@ class SessionImpl extends ISession.Stub {
                 break;
             }
             default:
-                Log.i(TAG, "reject#Not handled for state: " + state);
+                Logger.log(TAG, "reject#Not handled for state: " + state);
                 break;
         }
-        Log.i(TAG, "reject#finished");
+        Logger.log(TAG, "reject#finished");
     }
 
     public void rejectWithDiversion(String alternativeUserAddress)
@@ -431,7 +445,7 @@ class SessionImpl extends ISession.Stub {
     }
 
     public void start(List<IMedia> medias) throws RemoteException {
-        Log.i(TAG, "start#started");
+        Logger.log(TAG, "start#started");
         setState(StateCode.STATE_NEGOTIATING);
 
         dialog.getOutgoingSdpMessage().addMedias(SdpBuilder.buildMedias(medias));
@@ -443,66 +457,67 @@ class SessionImpl extends ISession.Stub {
             e.printStackTrace();
             assert false : "exception during invite " + dialog + " " + e.toString();
         }
-        Log.i(TAG, "start#finished");
+        Logger.log(TAG, "start#finished");
     }
 
     void startByRemoteParty() {
-        Log.i(TAG, "startByRemoteParty#started");
+        Logger.log(TAG, "startByRemoteParty#started");
         setState(StateCode.STATE_NEGOTIATING);
 
         inviteService.addDialogStateListener(dialog, dialogStateListener);
-        Log.i(TAG, "startByRemoteParty#finished");
+        Logger.log(TAG, "startByRemoteParty#finished");
     }
 
     void referenceRecieved(/*final Dialog dialog, */final Acceptable<Refer> acceptable, final Refer refer) {
-        Log.i(TAG, "referenceRecieved#started");
+        Logger.log(TAG, "referenceRecieved#started");
 
         ReferenceImpl reference = ReferenceImpl.createOnServerSide(/*dialog, */referService, refer, acceptable);
         notifyReferenceReceived(reference);
 
-        Log.i(TAG, "referenceRecieved#finished");
+        Logger.log(TAG, "referenceRecieved#finished");
     }
 
     private void printUnhandledState(StateCode state, SessionState dialogState) {
-        Log.e(TAG, String.format("Invalid state: state = %s, DIALOG state = %s", state, dialogState));
+        Logger.log(TAG, String.format("Invalid state: state = %s, DIALOG state = %s", state, dialogState));
     }
 
     private void setState(StateCode state) {
-        Log.i(TAG, "setState#started =================== state: " + state);
+        Logger.log(TAG, "setState#started =================== state: " + state);
         this.state.set(state);
         if (state == StateCode.STATE_TERMINATED) {
             close();
         }
-        Log.i(TAG, "setState#finished");
+        Logger.log(TAG, "setState#finished");
     }
 
     private void close() {
-        Log.i(TAG, "close#started");
+        Logger.log(TAG, "close#started");
         inviteService.removeDialogStateListener(dialogStateListener);
 
         sessionOnCloseListener.onClose(dialog.getCallId());
-        Log.i(TAG, "close#finished");
+        Logger.log(TAG, "close#finished");
     }
 
     private void notifyReferenceReceived(ReferenceImpl reference) {
-        Log.i(TAG, "notifyReferenceReceived#started");
+        Logger.log(TAG, "notifyReferenceReceived#started");
         final int N = listeners.beginBroadcast();
         for (int i = 0; i < N; i++) {
             ISessionListener listener = listeners.getBroadcastItem(i);
             try {
-                Log.i(TAG, "notifyReferenceReceived# listener:" + listener.toString());
+                Logger.log(TAG, "notifyReferenceReceived# listener:" + listener.toString());
                 listener.sessionReferenceReceived(this, reference);
             }
             catch (RemoteException e) {
-                Log.e(TAG, e.getMessage(), e);
+                e.printStackTrace();
+                Logger.log(TAG, e.getMessage());
             }
         }
         listeners.finishBroadcast();
-        Log.i(TAG, "notifyReferenceReceived#finished");
+        Logger.log(TAG, "notifyReferenceReceived#finished");
     }
 
     private void notifyListeners(final SessionState state) {
-        Log.i(TAG, "notifyListeners#started state:" + state);
+        Logger.log(TAG, "notifyListeners#started state:" + state);
         final int N = listeners.beginBroadcast();
         for (int i = 0; i < N; i++) {
             ISessionListener listener = listeners.getBroadcastItem(i);
@@ -515,11 +530,11 @@ class SessionImpl extends ISession.Stub {
                         listener.sessionStarted(this);
                         break;
                     case SESSION_START_FAILED:
-                        Log.i(TAG, "SESSION_START_FAILED at service side");
+                        Logger.log(TAG, "SESSION_START_FAILED at service side");
                         listener.sessionStartFailed(this);
                         break;
                     case SESSION_TERMINATED:
-                        Log.i(TAG, "SESSION_TERMINATED at service side");
+                        Logger.log(TAG, "SESSION_TERMINATED at service side");
                         listener.sessionTerminated(this);
                         break;
                     case SESSION_UPDATE_FAILED:
@@ -528,20 +543,34 @@ class SessionImpl extends ISession.Stub {
                     case SESSION_UPDATE_RECEIVED:
                    		listener.sessionUpdateReceived(this);	
                         break;
-                    case SESSION_UPDATED:
-                        listener.sessionUpdated(this);
+                    case SESSION_UPDATED: {
+                        StateCode sessionState = SessionImpl.this.state.get();
+                        
+                        switch(sessionState) {
+                            case STATE_TERMINATED:
+                            case STATE_TERMINATING: {
+                                //while answer to update request is comming session went to terminating state
+                                listener.sessionUpdateFailed(this);
+                                break;
+                            } default: {
+                                listener.sessionUpdated(this);
+                                break;
+                            }
+                        } 
+                                
                         break;
-                    default:
-                        Log.e(TAG, "Unknown state: " + state);
+                    } default:
+                        Logger.log(TAG, "Unknown state: " + state);
                         break;
                 }
             }
             catch (RemoteException e) {
-                Log.e(TAG, e.getMessage(), e);
+                e.printStackTrace();
+                Logger.log(TAG, e.getMessage());
             }
         }
         listeners.finishBroadcast();
-        Log.i(TAG, "notifyListeners#finished");
+        Logger.log(TAG, "notifyListeners#finished");
     }
 
 
@@ -561,6 +590,7 @@ class SessionImpl extends ISession.Stub {
                 break;
             case STATE_RENEGOTIATING:
                 setState(StateCode.STATE_TERMINATING);
+                doBye(dialog);
                 //TODO send cancel
                 break;
             case STATE_ESTABLISHING:
@@ -578,13 +608,13 @@ class SessionImpl extends ISession.Stub {
                 //will not do anything
                 break;
             default:
-                Log.i(TAG, "terminate#Not handled for state: " + state);
+                Logger.log(TAG, "terminate#Not handled for state: " + state);
                 break;
         }
     }
 
     public void update(List<IMedia> medias) throws RemoteException {
-        Log.i(TAG, "update#started state=" + state);
+        Logger.log(TAG, "update#started state=" + state);
         switch (state.get()) {
             case STATE_ESTABLISHED:
                 setState(StateCode.STATE_RENEGOTIATING);
@@ -620,10 +650,10 @@ class SessionImpl extends ISession.Stub {
                 }
                 break;
             default:
-                Log.i(TAG, "update#Not handled for state: " + state);
+                Logger.log(TAG, "update#Not handled for state: " + state);
                 break;
         }
-        Log.i(TAG, "update#finished");
+        Logger.log(TAG, "update#finished");
     }
 
     public ISessionDescriptor getSessionDescriptor() {

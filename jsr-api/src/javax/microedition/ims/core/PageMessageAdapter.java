@@ -41,6 +41,13 @@
 
 package javax.microedition.ims.core;
 
+/**
+ * Adapter for PageMessageListener
+ * {@link PageMessageListener}
+ * 
+ * @author ext-akhomush
+ *
+ */
 public abstract class PageMessageAdapter implements PageMessageListener{
 
     

@@ -44,56 +44,12 @@ package javax.microedition.ims.im;
 import javax.microedition.ims.Service;
 
 /**
- * The IMService is the entry point for handling instant message functionality 
- * according to the OMA SIMPLE IM 1.0, see [OMA_IM_SPEC]. This includes 
- * functionality for sending instant messages, handling file transfers, 
- * setting up a conference with one or more participants, and handling 
- * deferred messages and history messages.
- * <p/>
- * Creating an IMService
- * <p/>
- * Connector.open(String name)
- * <p/>
- * An IMService is created with Connector.open(), according to the Generic 
- * Connection Framework (GCF), using a name string in the following format {scheme}:{target}[{params}] where:
- * <p/>
- * - {scheme} is the protocol for IM "imsim"
- * <p/>
- * - {target} is always a double slash "//" followed by the application id
- * <p/>
- * - {params} is an optional parameter that can be used to set the local 
- * user identity on the format ;userId=<sip user identity>. This can be 
- * used to override the default user identity provisioned by the IMS network 
- * and the sip user identity must be on the format described in UserIdentity.
- * <p/>
- * Connector.open(String name, int mode)
- * <p/>
- * The optional second parameter mode in Connector.open() specifies 
- * the access mode. This is not applicable when creating an IMService.
- * <p/>
- * Connector.open(String name, int mode, boolean timeouts)
- * <p/>
- * The optional third parameter is a boolean flag that indicates if 
- * the calling code can handle timeout exceptions. If this parameter 
- * is set the implementation may throw an InterruptedIOException when it detects a timeout condition.
- * <p/>
- * Exceptions when opening an IMService
- * <p/>
- * IMService does not define any new exceptions, see Service for exceptions that can be thrown.
- * <p/>
- * Examples
- * <p/>
- * The following example shows how an application can get an instance of IMService using GCF.
- * <pre>
- *  IMService service = (IMService) Connector
- *      .open("imsim://com.myCompany.apps.myApp");
- * </pre>
- * <p/>
- * Closing an IMService
- * <p/>
- * The application SHOULD invoke close on IMService when it is finished 
- * using it. The IMS engine may also close the IMService due to external 
- * events. This will trigger a call to serviceClosed in the IMServiceListener interface. 
+ * The IMService is the entry point for handling instant messaging.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface IMService extends Service {
     
@@ -115,10 +71,7 @@ public interface IMService extends Service {
      * used to retrieve deferred messages from the IM server. The device 
      * may be configured to have deferred messages pushed automatically 
      * to the device when the IM user becomes available for messaging. 
-     * Otherwise, the deferred messages must be retrieved manually from the IM server.
      * <p/>
-     * Note: If the listener on the DeferredMessageManager is not set, 
-     * the application will not be able to receive incoming deferred messages. 
      * 
      * @return a handle to the deferred message manager
      */
@@ -129,8 +82,6 @@ public interface IMService extends Service {
      * both file requests that the IM user wants to send and file requests 
      * that are sent to the IM user.
      * <p/>
-     * Note: If the listener on the FileTransferManager is not set, the 
-     * application will not be able to receive incoming file requests.
      * 
      * @return a handle to the file transfer manager
      */
@@ -155,8 +106,6 @@ public interface IMService extends Service {
      * Returns a handle to the message manager.  This manager handles both 
      * messages that the IM user wants to send and messages that are sent to the IM user.
      * <p/>
-     * Note: If the listener on the MessageManager is not set, the 
-     * application will not be able to receive incoming messages.
      * 
      * @return a handle to the message manager
      */

@@ -48,8 +48,4 @@ package javax.microedition.ims.core.sipservice;
  */
 public interface SteppedAcceptable<T> extends Acceptable<T> {
     void preAccept();
-
-    void reject(T parameter, int statusCode, String alternativeUserAddress);
-
-    void accept(T parameter);
 }

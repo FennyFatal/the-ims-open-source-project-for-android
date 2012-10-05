@@ -56,7 +56,7 @@ import java.util.Set;
  * @author Andrei Khomushko
  */
 public class DefaultCommonRegistry implements CommonRegistry {
-
+    private final String appId;
     private final Set<RegisterProperty> registerProperties = new HashSet<RegisterProperty>();
     private final Set<CapabilityProperty> capabilityProperties = new HashSet<CapabilityProperty>();
     private final Set<MprofProperty> mprofProperties = new HashSet<MprofProperty>();
@@ -67,7 +67,8 @@ public class DefaultCommonRegistry implements CommonRegistry {
     private final AuthenticationProperty xdmAuthenticationProperty;
 
     private DefaultCommonRegistry(CommonRegistryBuilder builder) {
-        this(builder.registerProperties, builder.capabilityProperties,
+        this(   builder.appId,
+                builder.registerProperties, builder.capabilityProperties,
                 builder.mprofProperties, builder.connections,
                 builder.writeHeaders, builder.readHeaders,
                 builder.authenticationProperty,
@@ -80,6 +81,7 @@ public class DefaultCommonRegistry implements CommonRegistry {
                           Set<String> writeHeaders, Set<String> readHeaders,
                           AuthenticationProperty authenticationProperty,
                           AuthenticationProperty xdmAuthenticationProperty) {
+        this.appId = "";
         this.registerProperties.addAll(registerProperties);
         this.capabilityProperties.addAll(capabilityProperties);
         this.mprofProperties.addAll(mprofProperties);
@@ -90,6 +92,27 @@ public class DefaultCommonRegistry implements CommonRegistry {
         this.xdmAuthenticationProperty = xdmAuthenticationProperty;
     }
 
+    DefaultCommonRegistry(String appId,
+                          Set<RegisterProperty> registerProperties,
+                          Set<CapabilityProperty> capabilityProperties,
+                          Set<MprofProperty> mprofProperties, Set<String> connectionValues,
+                          Set<String> writeHeaders, Set<String> readHeaders,
+                          AuthenticationProperty authenticationProperty,
+                          AuthenticationProperty xdmAuthenticationProperty) {
+        this.appId = appId;
+        this.registerProperties.addAll(registerProperties);
+        this.capabilityProperties.addAll(capabilityProperties);
+        this.mprofProperties.addAll(mprofProperties);
+        this.connectionValues.addAll(connectionValues);
+        this.writeHeaders.addAll(writeHeaders);
+        this.readHeaders.addAll(readHeaders);
+        this.authenticationProperty = authenticationProperty;
+        this.xdmAuthenticationProperty = xdmAuthenticationProperty;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
     
     public CapabilityProperty[] getCapabilityProperties() {
         return capabilityProperties.toArray(new CapabilityProperty[capabilityProperties.size()]);
@@ -260,6 +283,7 @@ public class DefaultCommonRegistry implements CommonRegistry {
 
 
     public static class CommonRegistryBuilder {
+        private final String appId;
         private final Set<RegisterProperty> registerProperties = new HashSet<RegisterProperty>();
         private final Set<CapabilityProperty> capabilityProperties = new HashSet<CapabilityProperty>();
         private final Set<MprofProperty> mprofProperties = new HashSet<MprofProperty>();
@@ -268,6 +292,18 @@ public class DefaultCommonRegistry implements CommonRegistry {
         private final Set<String> readHeaders = new HashSet<String>();
         private AuthenticationProperty authenticationProperty;
         private AuthenticationProperty xdmAuthenticationProperty;
+
+        public CommonRegistryBuilder() {
+            this("");
+        }
+
+        public CommonRegistryBuilder(String appId) {
+            if (appId == null) {
+                throw new IllegalArgumentException("The appId argument is null");
+            }
+
+            this.appId = appId;
+        }
 
         public CommonRegistryBuilder buildRegisterProperty(String serviceId,
                                                            String agentId, Map<String, String> headers) {

@@ -282,9 +282,9 @@ public class MSRPServiceImpl extends AbstractService implements MSRPService, Inc
 
 
             for (Media m : sdpMessage.getMedias()) {
-                if (DirectionsType.DirectionSendOnly.equals(m.getDirection())) {
+                if (DirectionsType.DirectionSendOnly.equals(m.getDirection(sdpMessage))) {
                     type = MSRPSessionType.FILE_IN;
-                } else if (DirectionsType.DirectionReceiveOnly.equals(m.getDirection())) {
+                } else if (DirectionsType.DirectionReceiveOnly.equals(m.getDirection(sdpMessage))) {
                     type = MSRPSessionType.FILE_OUT;
                 }
             }

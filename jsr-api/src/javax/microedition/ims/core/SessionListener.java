@@ -44,6 +44,10 @@ package javax.microedition.ims.core;
 /**
  * A listener type for receiving notification on session events. When an event is generated for a Session the application is notified by having one of the methods called on the SessionListener.
  *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @see Session#setListener(SessionListener)
  */
 public interface SessionListener {

@@ -50,15 +50,12 @@ import java.util.Date;
 /**
  * 
  * The ServiceInfo component models the forms of communication that the
- * presentity potentially has access to. An example of presence information that
- * can be represented by the ServiceInfo components is the presentitys
- * willingness to communicate with IM. One other important characteristic of
- * each ServiceInfo might be the devices on which that service executes. A
- * service may contain a device identifier to indicate on which device that
- * service is available. See DeviceInfo for more information regarding device
- * identifier. The ServiceInfo component (defined in [RFC4479]) is mapped to the
- * <tuple> element. The <tuple> element is specified in [RFC3863].
- * 
+ * presentity potentially has access to.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

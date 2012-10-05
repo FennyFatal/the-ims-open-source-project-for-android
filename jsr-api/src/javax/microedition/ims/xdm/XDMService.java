@@ -49,79 +49,12 @@ import javax.microedition.ims.ServiceClosedException;
 import java.io.IOException;
 
 /**
- * The XDMService is the entry point for handling XDM functionality according to
- * the OMA XDM 2.0 release [OMA_XDM_SPEC]. This includes functionality to:
- * 
- * <ul>
- * <li>Manipulate XML documents by using the IETF XML Configuration Access
- * Protocol (XCAP) as defined in [RFC4825].</li>
- * <li>Search for information in XML documents stored on XDM servers.</li>
- * <li>Subscribe to changes in XML documents stored on XDM servers.</li>
- * </ul>
- * 
- * XCAP defines a technique for using HTTP GET, PUT, and DELETE methods for
- * various document manipulation operations (create, delete, retrieve, and
- * modify). The XML documents can be manipulated either directly with XCAP
- * requests or by using one of the provided high-level APIs.
- * 
- * <p>
- * <h4>Creating an XDMService</h4>
- * </p>
- * <code>Connector.open(String name)</code> An XDMService is created with
- * Connector.open(), according to the Generic Connection Framework (GCF), using
- * a name string of the format: {scheme}:{target}[{params}] where
- * 
- * {scheme} is the protocol for XDM "imsxdm" {target} is always a double slash
- * "//" followed by the application id {params} is an optional parameter that
- * can be used to set the local user identity on the format ;userId=<sip user
- * identity>. This can be used to override the default user identity provisioned
- * by the IMS network and the sip user identity must be on the format described
- * in UserIdentity.
- * 
- * <p>
- * <h4>Closing an XDMService</h4>
- * </p>
- * The application SHOULD invoke close on XDMService when it is finished using
- * it. The IMS engine may also close the XDMService due to external events. This
- * will trigger a call to serviceClosed on the XDMServiceListener interface.
- * 
- * <p>
- * <h4>XDM documents</h4>
- * </p>
- * This API defines the following high-level XDM documents, see XDMDocument for
- * more information and examples. The application can use the listDocuments
- * method in this interface to list XML documents on the XDM server.
- * 
- * <p>
- * <h4>XCAP requests</h4>
- * </p>
- * The application can also do XCAP requests without using any of the provided
- * high-level XDM documents listed above. This can be useful for example if the
- * desired functionality is missing. See the sendXCAPRequest method in this
- * interface and the XCAPRequest class for more information and examples.
- * 
- * <p>
- * <h4>Searching document</h4>
- * </p>
- * The application can search for data in XML documents on the XDM server. It is
- * possible to make a generic search based on an XQuery query or to use any of
- * the high-level search classes listed below. See the Search class for more
- * information and examples.
- * <ul>
- * <li>GroupSearch</li>
- * <li>IMDeferredMessageSearch</li>
- * <li>IMHistorySearch</li>
- * <li>UserProfileSearch</li>
- * </ul>
- * 
- * <p>
- * <h4>Subscribing to document changes</h4>
- * </p>
- * The application can subscribe to changes in a set of documents on the XDM
- * server. When the subscription is active the application will be notified of
- * document changes through the documentUpdateReceived event in the
- * DocumentSubscriberListener.
- * 
+ * The XDMService is the entry point for handling XDM functionality.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

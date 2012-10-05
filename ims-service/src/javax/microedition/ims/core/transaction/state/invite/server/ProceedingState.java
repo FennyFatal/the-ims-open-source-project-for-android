@@ -50,7 +50,6 @@ import javax.microedition.ims.core.sipservice.invite.TUResponseEvent.OperationTy
 import javax.microedition.ims.core.sipservice.timer.TimeoutTimer;
 import javax.microedition.ims.core.sipservice.timer.TimeoutTimer.TimeoutListener;
 import javax.microedition.ims.core.transaction.server.ServerCommonInviteTransaction;
-import javax.microedition.ims.core.transaction.state.invite.server.CompletedState.RequestState;
 import javax.microedition.ims.messages.utils.StatusCode;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -127,18 +126,21 @@ public class ProceedingState extends TransactionState<ServerCommonInviteTransact
         if (!tuAnswerReceived.get()) {
             tuAnswerReceived.set(true);
 
+            BaseSipMessage triggeringMessage = null;
+            if (event instanceof TUResponseEvent) {
+                triggeringMessage = ((TUResponseEvent) event).getTriggeringMessage();
+            }
+            
             TUResponseEvent inviteEvent = (TUResponseEvent) event;
             if (inviteEvent.getOpType() == OperationType.ACCEPT_INVITE) {
-                sendResponse(RequestState.ACCEPTED, null);
+                sendResponse(RequestState.ACCEPTED,  triggeringMessage);
             } else if (inviteEvent.getOpType() == OperationType.REJECT_INVITE) {
-                sendResponse(RequestState.REJECTED, inviteEvent.getStatusCode(), null);
+                sendResponse(RequestState.REJECTED, inviteEvent.getStatusCode(), triggeringMessage);
+            } else if (inviteEvent.getOpType() == OperationType.ACCEPT_UPDATE) {
+                sendResponse(RequestState.ACCEPTED_UPDATE,  triggeringMessage);
+            } else if (inviteEvent.getOpType() == OperationType.REJECT_UPDATE) {
+                sendResponse(RequestState.REJECTED_UPDATE, inviteEvent.getStatusCode(), triggeringMessage);
             } else if (inviteEvent.getOpType() == OperationType.CANCEL) {
-
-                BaseSipMessage triggeringMessage = null;
-
-                if (event instanceof TUResponseEvent) {
-                    triggeringMessage = ((TUResponseEvent) event).getTriggeringMessage();
-                }
                 sendResponse(RequestState.CANCELED, inviteEvent.getStatusCode(), triggeringMessage);
             }
         }
@@ -201,6 +203,31 @@ public class ProceedingState extends TransactionState<ServerCommonInviteTransact
                                 null
                         );
 
+                transaction.transitToState(new CompletedState(transaction, requestState), event);
+            }
+            case ACCEPTED_UPDATE: {
+                transaction.sendResponse(triggeringMessage, StatusCode.OK, true);
+
+                final TransactionStateChangeEvent<BaseSipMessage> event =
+                        createStateChangeEvent(
+                                StateChangeReason.CLIENT_UPDATE_SUCCESS,
+                                null
+                        );
+
+                transaction.transitToState(new CompletedState(transaction, requestState), event);
+                //transaction.notifyTU(event);
+            }
+            break;
+            case REJECTED_UPDATE: {
+                transaction.sendResponse(triggeringMessage, customCode, true);
+
+                final TransactionStateChangeEvent<BaseSipMessage> event =
+                        createStateChangeEvent(
+                                StateChangeReason.CLIENT_UPDATE_FAILED,
+                                null
+                        );
+
+                //transaction.notifyTU(event);
                 transaction.transitToState(new CompletedState(transaction, requestState), event);
             }
             break;

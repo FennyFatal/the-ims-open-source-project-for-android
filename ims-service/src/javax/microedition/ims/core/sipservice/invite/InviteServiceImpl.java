@@ -58,6 +58,8 @@ import javax.microedition.ims.core.transaction.*;
 import javax.microedition.ims.core.transaction.client.InviteClntTransaction;
 import javax.microedition.ims.core.transaction.server.InviteSrvTransaction;
 import javax.microedition.ims.core.transaction.server.ServerCommonInviteTransaction;
+import javax.microedition.ims.core.transaction.server.UpdateServerTransaction;
+import javax.microedition.ims.core.transaction.server.UpdateSrvTransaction;
 import javax.microedition.ims.messages.utils.SipMessageUtils;
 import javax.microedition.ims.messages.wrappers.sdp.SdpMessage;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
@@ -197,7 +199,8 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
             final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
 
             //DIALOG.putCustomParameter(Dialog.ParamKey.REINVITE_IN_PROGRESS, Boolean.TRUE);
-            dialog.markReInviteInProgress(InitiateParty.REMOTE);
+            //TODo reinvire is used for update too
+            //dialog.markReInviteInProgress(InitiateParty.REMOTE);
 
             //listener will un-subscribe automatically on transaction complete
             transaction.addListener(
@@ -221,9 +224,16 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
                     }
             );
             //listener will un-subscribe automatically on transaction complete
-            transaction.addListener(
-                    new ReinviteInProgressListener<BaseSipMessage>(transaction, dialog, InitiateParty.REMOTE)
-            );
+            //TODO change
+            if(dialog.isUpdateInProgress()) {
+                transaction.addListener(
+                        new UpdateInProgressListener<BaseSipMessage>(transaction, dialog, InitiateParty.REMOTE)
+                );
+            } else {
+                transaction.addListener(
+                        new ReinviteInProgressListener<BaseSipMessage>(transaction, dialog, InitiateParty.REMOTE)
+                );
+            }
             //listener will un-subscribe automatically on transaction complete
             transaction.addListener(
                     new DialogCleanUpListener<BaseSipMessage>(transaction, dialog, false) {
@@ -232,6 +242,41 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
                             getStackContext().getDialogStorage().cleanUpDialog(dialog);
                         }
                     }
+            );
+        }
+    };
+    
+    private final TransactionBuildUpListener<BaseSipMessage> serverUpdateListener = new TransactionBuildUpListener<BaseSipMessage>() {
+        public void onTransactionCreate(final TransactionBuildUpEvent<BaseSipMessage> event) {
+            assert SIP_UPDATE_SERVER == event.getTransaction().getTransactionType();
+
+            Dialog dialog = (Dialog) event.getEntity();
+            final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
+
+            //DIALOG.putCustomParameter(Dialog.ParamKey.REINVITE_IN_PROGRESS, Boolean.TRUE);
+            //TODo reinvire is used for update too
+            //dialog.markReInviteInProgress(InitiateParty.REMOTE);
+
+            //listener will un-subscribe automatically on transaction complete
+
+            transaction.addListener(
+                    new IncomingReInviteListener<BaseSipMessage>(
+                            dialog,
+                            createSafeInviteAcceptable(dialog),
+                            transaction,
+                            incomingCallListenerHolder
+                    )
+            );
+            
+            transaction.addListener(
+                    new DialogStateMiddleMan<BaseSipMessage>(transaction, dialog, dialogStateListenerHolder)
+            );
+            
+            //listener will un-subscribe automatically on transaction complete
+            transaction.addListener(new MiddleManForServerMessageBuildingSupport(transaction, dialog));
+            
+            transaction.addListener(
+                new UpdateInProgressListener<BaseSipMessage>(transaction, dialog, InitiateParty.REMOTE)
             );
         }
     };
@@ -335,22 +380,26 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
                     private final Dialog dlg = dialog;
 
                     public void reject(Dialog parameter, int statusCode, String alternativeUserAddress) {
-                        if (!dialog.isUpdateInProgress()) {
-                            InviteServiceImpl.this.doReject(dlg, statusCode, alternativeUserAddress);
-                        }
-                        else {
+                        if (dialog.isUpdateInProgress()) {
                             InviteServiceImpl.this.doRejectUpdate(dlg, statusCode, alternativeUserAddress);
                             dialog.unmarkUpdateInProgress();
+                        }
+                        else {
+                            InviteServiceImpl.this.doReject(dlg, statusCode, alternativeUserAddress);
                         }
                     }
 
                     public void accept(Dialog parameter) {
-                        if (!dialog.isUpdateInProgress()) {
-                            InviteServiceImpl.this.doAccept(dlg);
-                        }
-                        else {
+                        Logger.log("SteppedAcceptable", "accept#dialog.isUpdateInProgress() = " + dialog.isUpdateInProgress());
+                        
+                        if (dialog.isUpdateInProgress()) {
+                            Logger.log("SteppedAcceptable", "doAcceptUpdate");
                             InviteServiceImpl.this.doAcceptUpdate(dialog);
                             dialog.unmarkUpdateInProgress();
+                        }
+                        else {
+                            Logger.log("SteppedAcceptable", "doAccept");
+                            InviteServiceImpl.this.doAccept(dlg);
                         }
                     }
 
@@ -549,7 +598,9 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
             getTransactionManager().findTransaction(dialog, SIP_INVITE_CLIENT).rejectUpdate(statusCode, alternativeUserAddress);
         }
         else {
-            getTransactionManager().findTransaction(dialog, SIP_INVITE_SERVER).rejectUpdate(statusCode, alternativeUserAddress);
+            //getTransactionManager().findTransaction(dialog, SIP_INVITE_SERVER).rejectUpdate(statusCode, alternativeUserAddress);
+            TransactionType<UpdateSrvTransaction, UpdateServerTransaction> transactionType = SIP_UPDATE_SERVER;
+            getTransactionManager().findTransaction(dialog, transactionType).reject(statusCode, alternativeUserAddress);
         }
 
     }
@@ -558,13 +609,27 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
         assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
         assert !done.get();
 
-        if (dialog.getInitiateParty() == InitiateParty.LOCAL) {
+        
+        
+        if (dialog.isReInviteInProgress() || dialog.isUpdateInProgress()) {
+            //transactionType = SIP_REINVITE_SERVER;
+            TransactionType<UpdateSrvTransaction, UpdateServerTransaction> transactionType = SIP_UPDATE_SERVER;
+            getTransactionManager().findTransaction(dialog, transactionType).accept();
+        }
+        else {
+            TransactionType<InviteSrvTransaction, ? extends ServerCommonInviteTransaction> transactionType = SIP_INVITE_SERVER;
+            getTransactionManager().findTransaction(dialog, transactionType).acceptUpdate();
+        }
+        
+        
+        
+/*        if (dialog.getInitiateParty() == InitiateParty.LOCAL) {
             getTransactionManager().findTransaction(dialog, SIP_INVITE_CLIENT).acceptUpdate();
         }
         else {
             getTransactionManager().findTransaction(dialog, SIP_INVITE_SERVER).acceptUpdate();
         }
-    }
+*/    }
 
     private void doPreAccept(final Dialog dialog) {
         assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
@@ -739,6 +804,7 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
             assert dialog != null;
 
             checkReInvitePreconditions(dialog, msg);
+            dialog.markReInviteInProgress(InitiateParty.REMOTE);
 
             TransactionType<InviteSrvTransaction, ? extends ServerCommonInviteTransaction> transactionType = SIP_REINVITE_SERVER;
 
@@ -758,7 +824,11 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
 
             checkUpdatePreconditions(dialog, msg);
 
-            TransactionType<InviteSrvTransaction, ? extends ServerCommonInviteTransaction> transactionType = SIP_REINVITE_SERVER;
+            Logger.log(TAG, "mark dialog as update in progress");
+            dialog.markUpdateInProgress(InitiateParty.REMOTE);
+
+            //TransactionType<InviteSrvTransaction, ? extends ServerCommonInviteTransaction> transactionType = SIP_REINVITE_SERVER;
+            TransactionType<UpdateSrvTransaction, UpdateServerTransaction> transactionType = SIP_UPDATE_SERVER;
 
             doHandleIncomingUpdate(msg, dialog, transactionType);
         }
@@ -767,15 +837,18 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
     private void doHandleIncomingUpdate(
             Request msg,
             Dialog dialog,
-            TransactionType<InviteSrvTransaction, ? extends ServerCommonInviteTransaction> transactionType) {
+            TransactionType<UpdateSrvTransaction, UpdateServerTransaction> transactionType) {
 
+        dialog.getMessageHistory().addMessage(msg, true);
         SdpMessage sdp = SipMessageUtils.getSdpFromMessage(msg);
         if (sdp != null) {
             dialog.setIncomingSdpMessage(sdp);
         }
 
         final TransactionManager transactionManager = getTransactionManager();
-        final InviteSrvTransaction transaction = transactionManager.lookUpTransaction(
+        transactionManager.addListener(new FirstMessageResolver(transactionType.getName(), dialog, msg, transactionManager));
+
+        final UpdateSrvTransaction transaction = transactionManager.lookUpTransaction(
                 dialog,
                 null,
                 transactionType
@@ -922,6 +995,7 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
         getTransactionManager().addListener(clientReInviteListener, TransactionType.Name.SIP_REINVITE_CLIENT);
         getTransactionManager().addListener(serverInviteListener, TransactionType.Name.SIP_INVITE_SERVER);
         getTransactionManager().addListener(serverReInviteListener, TransactionType.Name.SIP_REINVITE_SERVER);
+        getTransactionManager().addListener(serverUpdateListener, TransactionType.Name.SIP_UPDATE_SERVER);
         getTransactionManager().addListener(clientByeListener, TransactionType.Name.SIP_BYE_CLIENT);
         getTransactionManager().addListener(serverByeListener, TransactionType.Name.SIP_BYE_SERVER);
     }
@@ -931,6 +1005,7 @@ public class InviteServiceImpl extends AbstractService implements InviteService,
         getTransactionManager().removeListener(clientReInviteListener);
         getTransactionManager().removeListener(serverInviteListener);
         getTransactionManager().removeListener(serverReInviteListener);
+        getTransactionManager().removeListener(serverUpdateListener);
         getTransactionManager().removeListener(clientByeListener);
         getTransactionManager().removeListener(serverByeListener);
     }

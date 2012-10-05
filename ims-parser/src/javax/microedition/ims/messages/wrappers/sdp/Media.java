@@ -199,8 +199,23 @@ public class Media {
         return add? attributes.add(a) : add;
     }
 
-    public DirectionsType getDirection() {
+    public DirectionsType getDirection(SdpMessage sdp) {
         DirectionsType direction = DirectionsType.DirectionNotSet;
+        // use session layer direction as default value
+        for (Attribute att : sdp.getAttributes()) {
+            if (att.getName().equals(DirectionsType.DirectionInactive.getValue())) {
+                direction = DirectionsType.DirectionInactive;
+            }
+            else if (att.getName().equals(DirectionsType.DirectionSendReceive.getValue())) {
+                direction = DirectionsType.DirectionSendReceive;
+            }
+            else if (att.getName().equals(DirectionsType.DirectionSendOnly.getValue())) {
+                direction = DirectionsType.DirectionSendOnly;
+            }
+            else if (att.getName().equals(DirectionsType.DirectionReceiveOnly.getValue())) {
+                direction = DirectionsType.DirectionReceiveOnly;
+            }
+        }
         for (Attribute att : attributes) {
             if (att.getName().equals(DirectionsType.DirectionInactive.getValue())) {
                 direction = DirectionsType.DirectionInactive;

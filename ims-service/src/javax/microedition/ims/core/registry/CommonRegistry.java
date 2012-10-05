@@ -50,6 +50,8 @@ import javax.microedition.ims.core.registry.property.RegisterProperty;
  * @author Andrei Khomushko
  */
 public interface CommonRegistry extends StackCapabilities {
+    String getAppId();
+
     RegisterProperty getRegisterProperty(String serviceId);
 
     RegisterProperty[] getRegisterProperties();

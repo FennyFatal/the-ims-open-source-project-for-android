@@ -169,7 +169,7 @@ public final class Logger {
         String osName = System.getProperties().getProperty("os.name");
 
         Method androidLogMethod = null;
-        if (osName.matches("Linux|linux") && Boolean.valueOf(androidFile) == Boolean.TRUE) {
+        if (osName.matches("Linux|linux")/* && Boolean.valueOf(androidFile) == Boolean.TRUE*/) {
             try {
                 Class<?> androidLogger = Class.forName("android.util.Log");
                 androidLogMethod = androidLogger.getMethod("i", String.class, String.class);

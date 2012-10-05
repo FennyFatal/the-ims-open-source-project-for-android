@@ -63,6 +63,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Time: 17.48.06
  */
 public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
+    private final static String TAG = "MessageRouterSIP";
+    private final static boolean DBG = false;
 
     private final static Object SIP_ROUTER_KEY = new Object();
 
@@ -91,26 +93,32 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
         return IMSEntityType.SIP;
     }
 
-    public Route getRoute(final IMSMessage msg) {
-        //TODO AK
+   public Route getRoute(final IMSMessage msg) {
+        if (DBG) Logger.log(TAG, "getRoute: msg = " + msg + ", currentRoute = " + currentRoute.get());
 
-        Protocol transport = suggestProtocolForMessage(msg);
+        final Route defaultRoute = routeResolver.getDefaultRoute(getEntityType());
 
-        //msgTransport = sipMessageUtil.getMessageTransport(msg);
-        //final Protocol transport = msgTransport == null ? config.getConnectionType() : msgTransport;
+        if (currentRoute.get() == null ||
+                currentRoute.get().getDstHost().compareTo(defaultRoute.getDstHost()) != 0 ||
+                currentRoute.get().getDstPort() != defaultRoute.getDstPort() ||
+                currentRoute.get().getLocalPort() != defaultRoute.getLocalPort() ||
+                currentRoute.get().getEntityType() != defaultRoute.getEntityType()) {
 
-        if (checkTransport(transport)) {
-            if (currentRoute.get() == null) {
-                final Route defaultRoute = routeResolver.getDefaultRoute(getEntityType());
+            if (DBG) Logger.log(TAG, "getRoute: defaultRoute = " + defaultRoute);
 
-                if (currentRoute.compareAndSet(null, prepareRoute(defaultRoute, defaultRoute.getTransportType()))) {
-                    currentRouteTCP.set(prepareRoute(defaultRoute, Protocol.TCP));
-                    currentRouteUDP.set(prepareRoute(defaultRoute, Protocol.UDP));
-                    //currentRouteTLS.set(prepareRoute(defaultRoute, Protocol.TLS));
-                }
+            if (currentRoute.compareAndSet(null, prepareRoute(defaultRoute, defaultRoute.getTransportType()))) {
+                currentRouteTCP.set(prepareRoute(defaultRoute, Protocol.TCP));
+                currentRouteUDP.set(prepareRoute(defaultRoute, Protocol.UDP));
+                //currentRouteTLS.set(prepareRoute(defaultRoute, Protocol.TLS));
             }
         }
 
+        Protocol transport = suggestProtocolForMessage(msg);
+
+        if (DBG) Logger.log(TAG, "getRoute: transport = " + transport);
+        //msgTransport = sipMessageUtil.getMessageTransport(msg);
+        //final Protocol transport = msgTransport == null ? config.getConnectionType() : msgTransport;
+        checkTransport(transport);
 
         final Route route;
         Protocol transportType = currentRoute.get().getTransportType();
@@ -121,18 +129,22 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
         else {
             route = Protocol.UDP == transport ? currentRouteUDP.get() : currentRouteTCP.get();
         }
+        if (DBG) Logger.log(TAG, "getRoute: isCurrentRouteSecure = " + isCurrentRouteSecure + ", route = " + route);
 
         return route;
     }
 
     private Protocol suggestProtocolForMessage(final IMSMessage msg) {
+        if (DBG) Logger.log(TAG, "suggestProtocolForMessage: msg = " + msg);
         Protocol transport;
 
         Protocol currentProtocol = retrieveCurrentProtocol();
+        if (DBG) Logger.log(TAG, "suggestProtocolForMessage: currentProtocol = " + currentProtocol);
         boolean secured = supportedSecuredProtocols.contains(currentProtocol);
         boolean supportedSimulteneousProtocol = supportedSimulteneousProtocols.contains(currentProtocol);
 
         if (!secured && !supportedSimulteneousProtocol) {
+            if (DBG) Logger.log(TAG, "suggestProtocolForMessage: secured = " + secured + ", supportedSimulteneousProtocol = " + supportedSimulteneousProtocol);
             throw new IllegalArgumentException("Unsup");//
         }
 
@@ -146,15 +158,20 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
                 transport = currentProtocol;
             }
         }
+        if (DBG) Logger.log(TAG, "suggestProtocolForMessage: transport = " + transport);
 
         return transport;
     }
 
     private Protocol retrieveCurrentProtocol() {
+        if (DBG) Logger.log(TAG, "retrieveCurrentProtocol: currentProtocol = " + (currentRoute.get() == null ? "null" : currentRoute.get()));
+        if (DBG) Logger.log(TAG, "retrieveCurrentProtocol: config.getConnectionType() = " + config.getConnectionType());
         return currentRoute.get() == null ? config.getConnectionType() : currentRoute.get().getTransportType();
     }
 
     public void addRoute(final Route route, final RouteDescriptor routeDescriptor) {
+        if (DBG) Logger.log(TAG, "addRoute: Route: " + route + ", RouteDescriptor: " + routeDescriptor);
+
         final Protocol transport = route.getTransportType();
 
         if (checkTransport(transport)) {
@@ -201,6 +218,8 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
     }
 
     private Route doRemoveRoute() {
+        if (DBG) Logger.log(TAG, "doRemoveRoute");
+
         currentRouteTCP.set(null);
         currentRouteUDP.set(null);
         final Route retValue = currentRoute.getAndSet(null);

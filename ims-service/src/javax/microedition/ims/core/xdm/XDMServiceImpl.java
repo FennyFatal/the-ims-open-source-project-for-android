@@ -50,6 +50,9 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -65,6 +68,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -74,6 +78,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
+
+//import android.os.SystemProperties;
 
 import javax.microedition.ims.DefaultStackContext;
 import javax.microedition.ims.StackHelper;
@@ -181,7 +187,13 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
              * schemeRegistry); HttpClient httpClient = new
              * DefaultHttpClient(manager, parameters);
              */
-            final HttpClient httpClient = new DefaultHttpClient();
+            HttpParams httpParamters = new BasicHttpParams();
+            int timeoutConnection = 3000;
+            HttpConnectionParams.setConnectionTimeout(httpParamters, timeoutConnection);
+            int timeoutSocket = 5000;
+            HttpConnectionParams.setSoTimeout(httpParamters, timeoutSocket);
+
+            final HttpClient httpClient = new DefaultHttpClient(httpParamters);
             try {
                 prepareHttpClient(httpClient);
             } catch (InstantiationException e) {
@@ -330,13 +342,18 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
                 }
                 throw xcapException;
             }
+        } catch (SocketTimeoutException e) {
+            Logger.log(TAG, e.getMessage());
+            XCAPException xcapException = new XCAPException(408, "Request Timeout");
+            throw xcapException;
         } catch (IOException e) {
             Logger.log(TAG, e.getMessage());
             e.printStackTrace();
         } finally {
             if (response != null) {
                 try {
-                    response.getEntity().consumeContent();
+                    if (response.getEntity() != null)
+                        response.getEntity().consumeContent();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -433,6 +450,14 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
             httpRequest.addHeader(mapEntry.getKey(), mapEntry.getValue());
         }
 
+        //String headerString = SystemProperties.get("ro.product.manufacturer") + "." +
+        //                    SystemProperties.get("ro.product.model") + "." +
+        //                    SystemProperties.get("ro.build.display.id");
+        String headerString = "Test.0.1";
+
+        httpRequest.addHeader("X-3GPP-Intended-Identity", "\"" + getStackContext().getRegistrationIdentity().getUserInfo().toUri() + "\"");
+        httpRequest.addHeader("XCAP-User-Agent", headerString);
+
         String requestBody = requestDescriptor.getBody();
 
         if (httpRequest instanceof HttpPut) {
@@ -482,7 +507,7 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
         // $uname, $realm, $nonce, $uri, $responce, $cnonce, $qop, $nc, $cnonce;
         return DIGEST_TEMPLATE.replaceAll("#uname", userName).replaceAll("#realm", realm)
                 .replaceAll("#nonce", nonce).replaceAll("#uri", uri)
-                .replaceAll("#responce", authResponce).replaceAll("#opaque", challenge.getOpaque())
+                .replaceAll("#responce", authResponce).replaceAll("#opaque", challenge.getOpaque() != null ? challenge.getOpaque() : "")
                 .replaceAll("#qop", auth).replaceAll("#nc", nc).replaceAll("#cnonce", clientNonce);
     }
 
@@ -774,7 +799,7 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
         return retValue;
     }
 
-    private URIListDocumentData retrieveURIListDocument(XDMRequest xdmRequest) throws IOException {
+    private URIListDocumentData retrieveURIListDocument(XDMRequest xdmRequest) throws IOException, XCAPException {
         final URIListDocumentData retValue;
 
         try {
@@ -794,6 +819,8 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
             final String errMsg = "Cann't parse xml, e = " + e.getMessage();
             Logger.log(Logger.Tag.WARNING, errMsg);
             throw new IOException(errMsg);
+        } catch (XCAPException e) {
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             final String errMsg = "Cann't parse xml, e = " + e.getMessage();
@@ -1064,7 +1091,7 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
                 MockStackRegistryHelper.COMMON_REGISTRY);
 
         ConnectionDataProvider connDataProvider = new ConnectionDataProviderConfigVsDnsImpl(
-                configuration, new DNSResolverDNSJavaImpl());
+                configuration, new DNSResolverDNSJavaImpl(configuration));
 
         connDataProvider.refresh();
 
@@ -1101,6 +1128,9 @@ public class XDMServiceImpl extends AbstractService implements XDMService, Shutd
 
     public void shutdown() {
         // TODO: put real code here
+
+        // do not add shutdown(), the HttpClientHolder is static
+        // httpclient.getConnectionManager().shutdown();
     }
 
 }

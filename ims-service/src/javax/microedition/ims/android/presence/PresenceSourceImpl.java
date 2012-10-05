@@ -47,6 +47,7 @@ import android.util.Log;
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.EventPackage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.ReasonInfo;
@@ -178,7 +179,8 @@ public class PresenceSourceImpl extends IPresenceSource.Stub implements PublishS
             listenerHolder.getNotifier().publicationDelivered();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -189,7 +191,8 @@ public class PresenceSourceImpl extends IPresenceSource.Stub implements PublishS
             listenerHolder.getNotifier().publicationFailed(createReasonInfo(event.getReasonInfo()));
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -202,7 +205,8 @@ public class PresenceSourceImpl extends IPresenceSource.Stub implements PublishS
             listenerHolder.getNotifier().publicationTerminated(createReasonInfo(event.getReasonInfo()));
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 

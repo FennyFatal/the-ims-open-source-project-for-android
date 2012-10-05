@@ -45,7 +45,10 @@ package javax.microedition.ims;
  * Interface that imitates javax.microedition.io.Connection, which is missing from
  * the platform, but is needed by the concept if jsr's we are implementing here.
  * <p/>
- * TODO: this needs rethinking.
+ *
+ * For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface Connection {
     /**

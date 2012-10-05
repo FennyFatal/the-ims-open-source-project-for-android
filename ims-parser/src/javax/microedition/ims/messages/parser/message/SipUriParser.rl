@@ -331,7 +331,7 @@ public class SipUriParser {
     }*/
 
 
-	public static UriHeader parseUri(String input) {
+	public synchronized static UriHeader parseUri(String input) {
 	    //uri = new UriHeader();
         SipUri.SipUriBuilder uriBuilder = new SipUri.SipUriBuilder();
         ParamList uriParamList = new ParamListDefaultImpl();

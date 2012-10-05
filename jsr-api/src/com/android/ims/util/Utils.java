@@ -54,7 +54,7 @@ import java.util.*;
 public final class Utils {
     private static final String TAG = "Utils";
 
-    private static final int PORT_FIRST = 1024;
+    private static final int PORT_FIRST = 42000;
     private static final int PORT_LAST = 65535;
 
     private static Random random = new Random();
@@ -135,7 +135,7 @@ public final class Utils {
     public static int generateRandomPortNumber(int first, int last) {
         int port = random.nextInt(last - first) + first;
         if (port % 2 != 0) {
-            port += 1;
+            port -= 1;
         }
         return port;
     }

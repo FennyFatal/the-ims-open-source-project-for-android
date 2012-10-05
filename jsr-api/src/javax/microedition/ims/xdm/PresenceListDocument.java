@@ -57,12 +57,16 @@ import java.util.List;
 
 /**
  * The PresenceListDocument class represents the remotely stored XML document
- * that holds the user's presence lists. Presence lists are defined by
- * [OMA_PRES_RLS_XDM]. The document is retrieved with a call to the static
- * retrieveDocument method. The document can also be loaded from a cached copy
- * by using the static loadDocument method.
- * 
- * @see XDMDocument, PresenceList
+ * that holds the user's presence lists. 
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
+ * @see XDMDocument
+ * @see PresenceList
  * 
  * @author Andrei Khomushko
  * 

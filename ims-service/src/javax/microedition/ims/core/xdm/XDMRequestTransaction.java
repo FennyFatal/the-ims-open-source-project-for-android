@@ -46,6 +46,7 @@ import javax.microedition.ims.core.StackContext;
 import javax.microedition.ims.core.sipservice.DefaultTransactionStateChangeEvent;
 import javax.microedition.ims.core.sipservice.TransactionStateChangeEvent;
 import javax.microedition.ims.core.transaction.CommonXDMTransaction;
+import javax.microedition.ims.core.transaction.TransactionDescription;
 import javax.microedition.ims.core.transaction.TransactionType;
 import javax.microedition.ims.core.transaction.TransactionUtils;
 import javax.microedition.ims.core.transaction.state.noninvite.sip.client.TryingState;
@@ -87,6 +88,12 @@ public class XDMRequestTransaction extends CommonXDMTransaction {
 
     @Override
     protected RepetitiousTaskManager.RepetitiousTimeStrategy getResendRequestInterval() {
+        return null;
+    }
+    
+    @Override
+    public TransactionDescription getDescription() {
+        // TODO Auto-generated method stub
         return null;
     }
 }

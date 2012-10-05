@@ -41,11 +41,19 @@
 
 package javax.microedition.ims.core;
 
+	 /**
+	 * PageMessageListener offers delivery feedback about sent
+	 * PageMessge-transactions.
+	 *
+	 * </p><p>For detailed implementation guidelines and for complete API docs,
+	 * please refer to JSR-281 and JSR-235 documentation
+	 */
 public interface PageMessageListener {
 
     /**
      * Notifies the application that the PageMessage was successfully delivered.
      *
+	 *
      * @param pageMessage
      */
     void pageMessageDelivered(PageMessage pageMessage);

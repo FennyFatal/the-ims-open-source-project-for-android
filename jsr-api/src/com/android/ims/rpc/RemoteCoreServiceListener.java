@@ -82,7 +82,7 @@ public class RemoteCoreServiceListener extends ICoreServiceListener.Stub {
         
         boolean handled = session.handlingIncommingInvite();
         if (handled) {
-            session.prepare(new SessionImpl.SessionPrepareListener() {
+            session.handleIncomingCall(new SessionImpl.SessionPrepareListener() {
                 
                 public void sessionPrepared() {
                     mDestination.sessionInvitationReceived(mCoreService, session);

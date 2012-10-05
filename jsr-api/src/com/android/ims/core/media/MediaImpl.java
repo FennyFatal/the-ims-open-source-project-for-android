@@ -41,16 +41,17 @@
 
 package com.android.ims.core.media;
 
-import android.util.Log;
 import com.android.ims.core.media.util.DirectionUtils;
 import com.android.ims.core.media.util.StreamTypeUtils;
+
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.ims.core.media.Media;
 import javax.microedition.ims.core.media.MediaDescriptor;
 import javax.microedition.ims.core.media.MediaListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Default implementation Media interface.
@@ -58,7 +59,7 @@ import java.util.List;
  *
  * @author ext-akhomush
  */
-public abstract class MediaImpl implements Media {
+public abstract class MediaImpl implements MediaExt {
     private final static String TAG = "MediaImpl";
 
     private int state = STATE_INACTIVE;
@@ -70,7 +71,7 @@ public abstract class MediaImpl implements Media {
 
     private MediaListener mediaListener;
     private final boolean isSecured;
-
+    
     /**
      * Mode properties
      */
@@ -81,6 +82,7 @@ public abstract class MediaImpl implements Media {
         this.isSecured = isSecured;
     }
 
+    @Override
     public void setMediaDescriptors(MediaDescriptorImpl[] mediaDescriptors) {
         this.mediaDescriptors.clear();
         for (MediaDescriptorImpl descriptor : mediaDescriptors) {
@@ -89,6 +91,7 @@ public abstract class MediaImpl implements Media {
         }
     }
 
+    @Override
     public void setRemoteMediaDescriptor(MediaDescriptorImpl descriptor) {
         remoteMediaDescriptors.clear();
         descriptor.setMedia(this);
@@ -117,9 +120,7 @@ public abstract class MediaImpl implements Media {
         return propertyChanged;
     }
 
-    /**
-     * Invoke recalculating media related properties.
-     */
+    @Override
     public void updateModeProperties() {
         updateModeProperties(false);
     }
@@ -259,15 +260,12 @@ public abstract class MediaImpl implements Media {
         return result;
     }
 
-    /**
-     * Return local media descriptors
-     *
-     * @return local media descriptors
-     */
+    @Override
     public MediaDescriptorImpl[] getLocalMediaDescriptors() {
         return mediaDescriptors.toArray(new MediaDescriptorImpl[0]);
     }
 
+    @Override
     public MediaDescriptorImpl getLocalMediaDescriptor(int index) {
         MediaDescriptorImpl descriptor = null;
         if (index < mediaDescriptors.size()) {
@@ -290,11 +288,11 @@ public abstract class MediaImpl implements Media {
 
     public Media getProposal() {
         if (updateState != Media.UPDATE_MODIFIED) {
-            throw new IllegalStateException("update state must be UPDATE_MODIFIED, state: " + updateState);
+            throw new IllegalStateException("update state must be UPDATE_MODIFIED, state: " + UpdateStateUtils.toUpdateStateString(updateState));
         }
 
         if (state != Media.STATE_ACTIVE) {
-            throw new IllegalStateException("state must be STATE_ACTIVE, state: " + state);
+            throw new IllegalStateException("state must be STATE_ACTIVE, state: " + StateUtils.toStateString(state));
         }
 
         return proposal;
@@ -304,12 +302,7 @@ public abstract class MediaImpl implements Media {
         return proposal;
     }
 
-
-    /**
-     * Sets the media proposal.
-     *
-     * @param proposal the proposal
-     */
+    @Override
     public void setProposal(MediaProposalImpl proposal) {
         this.proposal = proposal;
     }
@@ -328,12 +321,13 @@ public abstract class MediaImpl implements Media {
 
     public int getUpdateState() {
         if (state != Media.STATE_ACTIVE) {
-            throw new IllegalStateException("state must be STATE_ACTIVE, state: " + state);
+            throw new IllegalStateException("state must be STATE_ACTIVE, state: " + StateUtils.toStateString(state));
         }
 
         return updateState;
     }
 
+    @Override
     public void setUpdateState(int updateState) {
         this.updateState = updateState;
     }
@@ -345,7 +339,7 @@ public abstract class MediaImpl implements Media {
     public void setDirection(int direction) {
         if (state != STATE_ACTIVE && state != STATE_INACTIVE) {
             throw new IllegalStateException(
-                    "if the Media is not in STATE_INACTIVE or STATE_ACTIVE, state: " + state);
+                    "if the Media is not in STATE_INACTIVE or STATE_ACTIVE, state: " + StateUtils.toStateString(state));
         }
 
         if (!DirectionUtils.isDirectionValid(direction)) {
@@ -391,9 +385,10 @@ public abstract class MediaImpl implements Media {
         }
     }
 
+    @Override
     public void setState(int state) {
 
-        Log.d(TAG, "*** MediaImpl.setState() state = " + state);
+        Log.d(TAG, "*** MediaImpl.setState() state = " + StateUtils.toStateString(state));
 
         this.state = state;
 //        if(state == STATE_ACTIVE) {
@@ -421,24 +416,17 @@ public abstract class MediaImpl implements Media {
      */
     protected abstract MediaProposalImpl createMediaProposal();
 
+    @Override
     public boolean isMediaInitiated() {
         return mediaInitiated;
     }
 
+    @Override
     public void setMediaInitiated(boolean mediaInitiated) {
         this.mediaInitiated = mediaInitiated;
     }
 
-    /**
-     * Removes an attribute to one of the media descriptors of an active media.
-     * <p/>
-     * This operation does not modify the actual media but instead the media
-     * proposal. If no media proposal exists, one will be created.
-     *
-     * @param descr     - the media descriptor the attribute should be removed from
-     * @param attribute - the attribute to remove
-     * @throws IllegalArgumentException - if attribute not set
-     */
+    @Override    
     public void removeAttributeFromActiveMedia(final MediaDescriptorImpl descr,
                                                final String attribute) {
 
@@ -471,16 +459,7 @@ public abstract class MediaImpl implements Media {
         proposalDescr.removeAttributeInternal(attribute);
     }
 
-    /**
-     * Adds an attribute to one of the media descriptors of an active media.
-     * <p/>
-     * This operation does not modify the actual media but instead the media
-     * proposal. If no media proposal exists, one will be created.
-     *
-     * @param descr     the media descriptor the attribute should be added to
-     * @param attribute the attribute to add
-     * @throws IllegalArgumentException - Attribute already set
-     */
+    @Override
     public void addAttributeToActiveMedia(final MediaDescriptorImpl descr,
                                           final String attribute) {
 
@@ -513,17 +492,14 @@ public abstract class MediaImpl implements Media {
         proposalDescr.addAttributeInternal(attribute);
     }
 
-
-    /**
-     * Creates a media proposal based on the media object and a received media
-     * offer.
-     */
+    @Override
     public MediaProposalImpl createMediaProposalBasedOnIncomingOffer(
             MediaDescriptorImpl offeredDescriptor) {
         MediaProposalImpl proposal = createMediaProposal();
         proposal.setMediaDescriptors(new MediaDescriptorImpl[]{offeredDescriptor});
 
-        int direction = DirectionUtils.reverseDirection(proposal.getDirection());
+//        int direction = DirectionUtils.reverseDirection(proposal.getDirection());
+        int direction = DirectionUtils.parseDirection(getDirection(), proposal.getDirection());
         proposal.setDirectionInternal(direction);
 
         for (int i = 0; i < proposal.getMediaDescriptors().length; i++) {
@@ -583,40 +559,10 @@ public abstract class MediaImpl implements Media {
         return "MediaImpl [canRead=" + canRead + ", canWrite=" + canWrite
                 + ", exists=" + exists + ", mediaDescriptors="
                 + mediaDescriptors + ", mediaInitiated=" + mediaInitiated
-                + ", mediaListener=" + mediaListener + ", proposal=" + proposal
+                + ", mediaListener=" + (mediaListener !=null? mediaListener.getClass().getName(): null) + ", proposal=" + proposal
                 + ", remoteMediaDescriptors=" + remoteMediaDescriptors
-                + ", state=" + state + ", updateState=" + updateState + "]";
+                + ", state=" + StateUtils.toStateString(state) + ", updateState=" + UpdateStateUtils.toUpdateStateString(updateState) + "]";
     }
-
-    /**
-     * Check if media contains at least one supported codec.
-     * Handle rtpmap attributes. If codec doesn't supported then attribute should be deleted.
-     *
-     * @return true if media contains at least one supported codec.
-     */
-    public abstract boolean handleSupportedCodec();
-
-    /**
-     * This method is responsible for early media preparation.
-     * This method should be invoked immediately after session#start
-     *
-     * @throws IOException
-     */
-    public abstract void prepareMedia() throws IOException;
-
-    /**
-     * Invoked before session#sessionStarted.
-     * This method is responsible for sockets, buffers preparation and etc.
-     *
-     * @throws IOException If an IO error occurs.
-     */
-    public abstract void processMedia() throws IOException;
-
-    /**
-     * Invoked after session#sessionTerminated.
-     * This method is responsible for closing sockets, free buffers etc.
-     */
-    public abstract void cleanMedia() throws IOException;
 
     protected boolean isSecured() {
         return isSecured;

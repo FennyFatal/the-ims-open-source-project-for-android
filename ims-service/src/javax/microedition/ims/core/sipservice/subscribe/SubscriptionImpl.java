@@ -110,34 +110,32 @@ public class SubscriptionImpl implements Subscription, Shutdownable {
                     final Dialog dialog = (Dialog) event.getEntity();
                     final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
 
-                    transaction.addListener(
-                            new TransactionListenerAdapter<BaseSipMessage>() {
+                    transaction.addListener(new TransactionListenerAdapter<BaseSipMessage>() {
 
-                                public void onTransactionInit(
-                                        final TransactionEvent<BaseSipMessage> transactionEvent) {
+                            public void onTransactionInit(
+                                    final TransactionEvent<BaseSipMessage> transactionEvent) {
 
-                                    final SubscribeTransactionDescription transactionDescription
-                                            = getTransactionDescription(transactionEvent);
+                                final SubscribeTransactionDescription transactionDescription
+                                        = getTransactionDescription(transactionEvent);
 
-                                    State expectedState = State.NO_SUBSCRIPTION;
-                                    if (transactionDescription != null &&
-                                            SubscribeTransactionDescription.Type.REFRESH == transactionDescription.getType()) {
+                                State expectedState = State.NO_SUBSCRIPTION;
+                                if (transactionDescription != null &&
+                                        SubscribeTransactionDescription.Type.REFRESH == transactionDescription.getType()) {
 
-                                        expectedState = State.SUBSCRIBED;
-                                    }
-
-
-                                    final boolean stateChanged =
-                                            stateHolder.compareAndTransitNextState(
-                                                    expectedState,
-                                                    true,
-                                                    transactionDescription
-                                            );
-
-                                    assert stateChanged : "Can not proceed to next state. Current state " +
-                                            stateHolder.getState() + " expected state " + expectedState;
+                                    expectedState = State.SUBSCRIBED;
                                 }
+
+                                final boolean stateChanged =
+                                        stateHolder.compareAndTransitNextState(
+                                                expectedState,
+                                                true,
+                                                transactionDescription
+                                );
+
+                                assert stateChanged : "Can not proceed to next state. Current state " +
+                                        stateHolder.getState() + " expected state " + expectedState;
                             }
+                        }
                     );
 
                     transaction.addListener(new TransactionListenerAdapter<BaseSipMessage>() {
@@ -156,9 +154,21 @@ public class SubscriptionImpl implements Subscription, Shutdownable {
                                     success,
                                     getTransactionDescription(event)
                             );
+
                             assert stateChanged : "Can not proceed to next state. Current state " +
                                     stateHolder.getState() + " expected state " + State.SUBSCRIBING;
 
+                            if (!success) {
+                                //TODO: set a timer for non-481 fail
+                                //currently terminate all failure
+                                //if (getTransactionDescription(event).getType()==SubscribeTransactionDescription.Type.REFRESH) {
+                                //    if (errocode == 481) {
+                                //    } else {
+                                //    }
+                                //} else if (getTransactionDescription(event).getType()==SubscribeTransactionDescription.Type.SUBSCRIBE) {
+                                //}
+                                shutdown();
+                            }
                         }
 
                         private void notifyListeners(Boolean success, final Dialog dialog, final SubscriptionInfo info) {
@@ -297,10 +307,10 @@ public class SubscriptionImpl implements Subscription, Shutdownable {
         SubscribeTransactionDescription retValue = null;
 
         if (transactionEvent.getTransaction() instanceof CommonSIPTransaction) {
-            final CommonSIPTransaction commonSIPTransaction =
-                    (CommonSIPTransaction) transactionEvent.getTransaction();
+            /*final CommonSIPTransaction commonSIPTransaction =
+                    (CommonSIPTransaction) transactionEvent.getTransaction();*/
 
-            final TransactionDescription transactionDescription = commonSIPTransaction.getDescription();
+            final TransactionDescription transactionDescription = transactionEvent.getTransaction().getDescription();
             if (transactionDescription instanceof SubscribeTransactionDescription) {
                 retValue = (SubscribeTransactionDescription) transactionDescription;
             }
@@ -476,7 +486,6 @@ public class SubscriptionImpl implements Subscription, Shutdownable {
     }
 
     private void finalizeSubscription(final RemoteState remoteState) {
-
         final SubscriptionTerminatedEvent subscriptionStateEvent = new DefaultSubscriptionTerminatedEvent(
                 dialog,
                 info,
@@ -485,7 +494,6 @@ public class SubscriptionImpl implements Subscription, Shutdownable {
         );
 
         subscriptionStateListenerHolder.getNotifier().onSubscriptionTerminated(subscriptionStateEvent);
-
 
         stateHolder.transitFinalState();
         shutdown();

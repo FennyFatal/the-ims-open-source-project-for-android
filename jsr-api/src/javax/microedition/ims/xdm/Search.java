@@ -46,32 +46,12 @@ import org.w3c.dom.Document;
 /**
  * Represents a search for data in XML documents on the server.
  * 
- * When performing a search there is normally no need to use this class
- * directly. If possible, use one of its subclasses since they provide high
- * level functionality for specific types of searches.
- * 
- * Performing a search consists of the following four steps: 1. Create a search
- * object. Chose a subclass of this class that fits the needs of the search. If
- * no such subclass exists an instance of this class can be created directly,
- * but that requires a more detailed knowledge of XDM search. 2. If necessary,
- * modify the search to fit the specific needs. For instance, the setMaxResults
- * method can be used to limit the number of search results returned. 3. Perform
- * the search using the performSearch method in XDMService. 4. Analyze the
- * results of the search. To help with the analysis, many subclasses of this
- * class define a parseResult method.
- * 
- * In XDM, performing a search is implemented by posting an XML document to the
- * server, see [OMA_XDM_SPEC]. The result is then returned by the server in
- * another XML document. This class describes the search request, that is, the
- * XML document that is sent to the server.
- * 
- * For most applications, it is possible to perform a search using the high
- * level methods of this class and its subclasses. However, occasionally there
- * might be a need to fine-tune the search on a lower level, for instance when
- * implementing search functionality for a document not supported by the API. By
- * using the getDOM method, the XML document that makes up the search request
- * can be accessed and modified directly.
- * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */
@@ -91,23 +71,6 @@ public class Search {
      * Creates a search based on a search target and an XML representation of a
      * search document.
      * 
-     * Use this constructor when absolute control of the search is needed. It
-     * requires a detailed knowledge of XDM search. Subclasses of this class
-     * provide more specialized ways of creating a search that are easier to
-     * use.
-     * 
-     * The searchDocument parameter holds the XML document sent to the server
-     * when making the request. It must contain a valid search document as
-     * described in [OMA_XDM_SPEC].
-     * 
-     * The target parameter is a string that specifies which XML documents to
-     * perform the search in, see [OMA_XDM_SPEC] for details. The exact meaning
-     * of the target depends on the type of search being performed.
-     * 
-     * It is possible to use this method to create a search that is illegal by
-     * supplying it with an illegal search document or search target. If this is
-     * done, the behavior is undefined but the search will most likely fail.
-     * 
      * @param searchDocument
      *            - the search document
      * @param target
@@ -124,23 +87,6 @@ public class Search {
     /**
      * Creates a search based on a search target and an XQuery query.
      * 
-     * Use this constructor when control of the query of the search is needed.
-     * Subclasses of this class provide more specialized ways of creating a
-     * search that are easier to use.
-     * 
-     * The query parameter will be used when creating the search document, that
-     * is, the XML document sent to the server when performing the search. It
-     * must be an XQuery query and it will be inserted verbatim in a CDATA
-     * section in the <query> element of the search document.
-     * 
-     * The target parameter is a string that specifies which XML documents to
-     * perform the search in, see [OMA_XDM_SPEC] for details. The exact meaning
-     * of the target depends on the type of search being performed.
-     * 
-     * It is possible to use this method to create a search that is illegal by
-     * supplying it with an illegal query or search target. If this is done, the
-     * behavior is undefined but the search will most likely fail.
-     * 
      * @param query
      *            - the XQuery query
      * @param target
@@ -156,12 +102,7 @@ public class Search {
 
     /**
      * Given a number of XQuery conditions, creates a new condition that is met
-     * if all of the supplied conditions are met. This results in a XQuery
-     * condition on the form (condition1) and (condition2) and (condition3)
-     * and....
-     * 
-     * This method is useful when creating XQuery conditions. An XQuery
-     * condition is required when instantiating many of the subclasses.
+     * if all of the supplied conditions are met.
      * 
      * @param conditions
      *            - an array of conditions
@@ -189,11 +130,7 @@ public class Search {
 
     /**
      * Given two XQuery conditions, creates a new condition that is met if both
-     * of the supplied conditions are met. This results in a XQuery condition on
-     * the form (condition1) and (condition2).
-     * 
-     * This method is useful when creating XQuery conditions. An XQuery
-     * condition is required when instantiating many of the subclasses.
+     * of the supplied conditions are met. 
      * 
      * @param condition1
      * @param condition2
@@ -213,11 +150,7 @@ public class Search {
 
     /**
      * Given an XQuery condition, creates a new condition that is the negation
-     * of the condition. This results in a XQuery condition on the form
-     * not(condition).
-     * 
-     * This method is useful when creating XQuery conditions. An XQuery
-     * condition is required when instantiating many of the subclasses.
+     * of the condition.
      * 
      * @param condition
      *            - the condition to negate
@@ -236,11 +169,7 @@ public class Search {
 
     /**
      * Given a number of XQuery conditions, creates a new condition that is met
-     * if any of the supplied conditions are met. This results in a XQuery
-     * condition on the form (condition1) or (condition2) or (condition3) or....
-     * 
-     * This method is useful when creating XQuery conditions. An XQuery
-     * condition is required when instantiating many of the subclasses.
+     * if any of the supplied conditions are met.
      * 
      * @param conditions
      *            - an array of conditions
@@ -270,8 +199,6 @@ public class Search {
      * of the supplied conditions are met. This results in a XQuery condition on
      * the form (condition1) or (condition2).
      * 
-     * This method is useful when creating XQuery conditions. An XQuery
-     * condition is required when instantiating many of the subclasses.
      * 
      * @param condition1
      * @param condition2
@@ -294,10 +221,6 @@ public class Search {
     /**
      * Returns the DOM representation of the search document.
      * 
-     * The returned DOM can be modified. This can sometimes be useful to create
-     * a special search not supported by the API. Care should be taken not to
-     * create an invalid search document.
-     * 
      * @return the DOM of the search document
      */
     public Document getDOM() {
@@ -307,14 +230,7 @@ public class Search {
 
     /**
      * Returns the domain or domains to search in.
-     * 
-     * The returned value can be one of the following: 1. DOMAIN_HOME,
-     * indicating that the search is performed in the user's home domain only.
-     * 2. DOMAIN_ALL, indicating that the search is performed in all domains. 3.
-     * A list of domains to search in, separated by a single space.
-     * 
-     * The default value for domain is DOMAIN_HOME.
-     * 
+     *
      * @return the domain or domains to search in
      */
     public String getDomain() {
@@ -325,11 +241,7 @@ public class Search {
     /**
      * Returns the maximum number of search results that should be returned by
      * the server.
-     * 
-     * If the maximum number of search results is not set, -1 is returned. This
-     * means that there is no upper bound on the number of search results being
-     * returned.
-     * 
+	 *
      * @return the maximum number of search results, or -1 if there is no upper
      *         limit
      */
@@ -341,11 +253,6 @@ public class Search {
     /**
      * Returns the target of the search.
      * 
-     * The target of the search is a string that specifies which XML documents
-     * to perform the search in. Search targets are explained in [OMA_XDM_SPEC].
-     * The exact meaning of the target depends on the type of search being
-     * performed.
-     * 
      * @return the target of the search
      */
     public String getTarget() {
@@ -355,11 +262,6 @@ public class Search {
 
     /**
      * Sets the domain or domains to search in.
-     * 
-     * The domain can be one of the following: 1. DOMAIN_HOME, indicating that
-     * the search is performed in the user's home domain only. 2. DOMAIN_ALL,
-     * indicating that the search is performed in all domains. 3. A list of one
-     * or more domains to search in, separated by at least one space.
      * 
      * @param domain
      *            - the domain or domains to search in
@@ -374,13 +276,6 @@ public class Search {
     /**
      * Sets the maximum number of search results that should be returned by the
      * server. A negative number removes any existing value.
-     * 
-     * For efficiency reasons, it is recommended to set the maximum number of
-     * search results to a value as small as possible.
-     * 
-     * Note that the server may have its own limit on the maximum number of
-     * search results to return. It can not, however, return more matches than
-     * specified by this method.
      * 
      * @param maxResults
      *            - the maximum number of search results, or a negative number

@@ -48,66 +48,10 @@ import javax.microedition.ims.ServiceClosedException;
  * The ConferenceManager interface can be used to set up a conference with 
  * one or more IM users, join a predefined conference, or start a chat 
  * with another IM user.
- * <p/>
- * A conference is created as an ad hoc session by sending an invitation 
- * to one or more individual users.
- * <p/>
- * A chat always consists of only two participants (One-to-One session) 
- * with no conference server involved, and is created by sending an invitation 
- * to the other participant. However, if additional participants are invited 
- * during the session, the chat is replaced by a conference. If it is 
- * anticipated that new participants will be added, it is recommended 
- * to send a conference invitation instead of a chat invitation.
- * <p/>
- * A conference with a predefined IM group can be joined through the URI 
- * of the predefined group. Depending on the settings of the predefined 
- * group (see SharedGroupDocument in the XDM enabler for more information), 
- * invitations may then be automatically sent to the other members of the 
- * group if the conference is not already active.
- * <p/>
- * The ConferenceManagerListener must be set in order to receive conference 
- * and chat invitations from other IM users.
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice sends a conference invitation to two IM users called Bob and Charlotte.
- * <p/>
- * <pre>
- *  IMService service = (IMService) Connector
- *      .open("imsim://com.myCompany.apps.myApp");
- *  service.setListener(imServiceListener);
- *  ConferenceManager conferenceManager = service.getConferenceManager();
- *  conferenceManager.setListener(conferenceManagerListener);
- *  
- *  String sessionId = conferenceManager.sendConferenceInvitation(null, 
- *                                           new String[]{"sip:bob@example.org", 
- *                                           "sip:charlotte@example.org"}, 
- *                                           null);
- *  
- *  ...
- *  
- *  void conferenceStarted(Conference conference) {
- *      // indicates that the conference has been started
- *      conference.setListener(conferenceListener);
- *  }
- * </pre>
- * <p/>
- * This example shows how Bob receives an invitation to a conference and decides to accept it.
- * <p/>
- * <pre>
- *  void conferenceInvitationReceived(ConferenceInvitation conferenceInvitation) {
- *      // indicates that a conference invitation has been received
- *  
- *      // here the application may provide the user with the possibility
- *      // to accept or reject the conference
- *      conferenceInvitation.accept();
- *  }
- *  
- *  void conferenceStarted(Conference conference) {
- *      // indicates that the conference has been started
- *      conference.setListener(conferenceListener);
- *  }
- * </pre>
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface ConferenceManager {
 

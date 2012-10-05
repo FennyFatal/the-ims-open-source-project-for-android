@@ -47,17 +47,12 @@ import java.io.*;
 
 /**
  * A ContentPart carries a content that can be set through the constructor 
- * or an output stream. After creating a ContentPart it can be attached 
- * to a Message by using the addContentPart method.
- * <p/>
- * Examples
- * <p/>
- * This example creates a simple textual content part.
- * <p/>
- * <pre>
- *  ContentPart contentPart = new ContentPart("My name is Alice".getBytes(),
- *      "text/plain");
- * </pre>
+ * or an output stream.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public class ContentPart {
     

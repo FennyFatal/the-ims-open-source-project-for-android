@@ -42,10 +42,10 @@
 package javax.microedition.ims.android.core;
 
 import android.os.RemoteException;
-import android.util.Log;
 
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.EventPackage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.dialog.IncomingNotifyListener;
@@ -114,7 +114,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
         
         public void onSubscriptionStarted(SubscriptionStateEvent event) {
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionStarted#started");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionStarted#started");
 
             setState(SubscriptionState.STATE_ACTIVE);
 
@@ -124,12 +124,12 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
             stackSubscriptionObj.addSubscriptionNotifyListener(notifyListener);
 
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionStarted#finished");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionStarted#finished");
         }
 
         
         public void onSubscriptionStartFailed(SubscriptionFailedEvent event) {
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionStartFailed#started");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionStartFailed#started");
 
             setState(SubscriptionState.STATE_INACTIVE);
 
@@ -137,12 +137,12 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
             unSubscribe();
 
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionStartFailed#finished");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionStartFailed#finished");
         }
 
         
         public void onSubscriptionTerminated(SubscriptionTerminatedEvent event) {
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionTerminated#started");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionTerminated#started");
 
             setState(SubscriptionState.STATE_INACTIVE);
 
@@ -150,7 +150,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
             unSubscribe();
 
-            Log.i(TAG, "SubscriptionStateListenerImpl.onSubscriptionTerminated#finished");
+            Logger.log(TAG, "SubscriptionStateListenerImpl.onSubscriptionTerminated#finished");
         }
 
         private void unSubscribe() {
@@ -165,7 +165,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
     private class IncomingNotifyListenerImpl implements IncomingNotifyListener {
         
         public void notificationReceived(final NotifyEvent event) {
-            Log.i(TAG, "IncomingNotifyListenerImpl.notificationReceived#started");
+            Logger.log(TAG, "IncomingNotifyListenerImpl.notificationReceived#started");
 
             if (subscriptionMode == Mode.POLL) {
                 setState(SubscriptionState.STATE_INACTIVE);
@@ -179,7 +179,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
             notifySubscriptionNotify(notify);
 
-            Log.i(TAG, "IncomingNotifyListenerImpl.notificationReceived#finished");
+            Logger.log(TAG, "IncomingNotifyListenerImpl.notificationReceived#finished");
         }
     }
 
@@ -194,7 +194,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
         this.event = event;
         //this.subscribeService = subscribeService;
 
-        SubscriptionInfo subscriptionDescr = new SubscriptionInfoImpl(event);
+        SubscriptionInfo subscriptionDescr = new SubscriptionInfoImpl(event, subscribeService.getExpirationTime(), "");
         stackSubscriptionObj = subscribeService.lookUpSubscription(localParty, remoteParty, subscriptionDescr);
 
         this.serviceMethod = new SubscriptionServiceMethod(
@@ -205,7 +205,7 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
 
     public void subscribe() throws RemoteException {
-        Log.i(TAG, "subscribe#started");
+        Logger.log(TAG, "subscribe#started");
 
         setState(SubscriptionState.STATE_PENDING);
 
@@ -215,12 +215,12 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
         stackSubscriptionObj.subscribe();
 
-        Log.i(TAG, "subscribe#finished");
+        Logger.log(TAG, "subscribe#finished");
     }
 
     
     public void poll() throws RemoteException {
-        Log.i(TAG, "poll#started");
+        Logger.log(TAG, "poll#started");
 
         setState(SubscriptionState.STATE_PENDING);
 
@@ -230,18 +230,18 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
         stackSubscriptionObj.subscribe();
 
-        Log.i(TAG, "poll#finished");
+        Logger.log(TAG, "poll#finished");
     }
 
     
     public void unsubscribe() {
-        Log.i(TAG, "unsubscribe#started");
+        Logger.log(TAG, "unsubscribe#started");
 
         setState(SubscriptionState.STATE_PENDING);
 
         stackSubscriptionObj.unsubscribe();
 
-        Log.i(TAG, "unsubscribe#finished");
+        Logger.log(TAG, "unsubscribe#finished");
     }
 
     
@@ -256,6 +256,8 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
     
     public void addListener(ISubscriptionListener listener) throws RemoteException {
+        Logger.log(TAG, "addListener: listener: " + listener);
+
         if (listener != null) {
             listenerHolder.addListener(listener);
         }
@@ -263,6 +265,8 @@ public class SubscriptionImpl extends ISubscription.Stub {
 
     
     public void removeListener(ISubscriptionListener listener) throws RemoteException {
+        Logger.log(TAG, "removeListener: listener: " + listener);
+
         if (listener != null) {
             listenerHolder.removeListener(listener);
         }
@@ -278,47 +282,51 @@ public class SubscriptionImpl extends ISubscription.Stub {
     }
 
     private void notifySubscriptionStarted() {
-        Log.i(TAG, "notifySubscriptionStarted#started");
+        Logger.log(TAG, "notifySubscriptionStarted#started");
         try {
             listenerHolder.getNotifier().subscriptionStarted();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifySubscriptionStarted#finished");
+        Logger.log(TAG, "notifySubscriptionStarted#finished");
     }
 
     private void notifySubscriptionStartFailed() {
-        Log.i(TAG, "notifySubscriptionStartFailed#started");
+        Logger.log(TAG, "notifySubscriptionStartFailed#started");
         try {
             listenerHolder.getNotifier().subscriptionStartFailed();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifySubscriptionStartFailed#finished");
+        Logger.log(TAG, "notifySubscriptionStartFailed#finished");
     }
 
     private void notifySubscriptionTerminated() {
-        Log.i(TAG, "notifySubscriptionTerminated#started");
+        Logger.log(TAG, "notifySubscriptionTerminated#started");
         try {
             listenerHolder.getNotifier().subscriptionTerminated();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifySubscriptionTerminated#finished");
+        Logger.log(TAG, "notifySubscriptionTerminated#finished");
     }
 
     private void notifySubscriptionNotify(IMessage notify) {
-        Log.i(TAG, "notifySubscriptionNotify#started");
+        Logger.log(TAG, "notifySubscriptionNotify#started");
         try {
             listenerHolder.getNotifier().subscriptionNotify(notify);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifySubscriptionNotify#finished");
+        Logger.log(TAG, "notifySubscriptionNotify#finished");
     }
 
 }

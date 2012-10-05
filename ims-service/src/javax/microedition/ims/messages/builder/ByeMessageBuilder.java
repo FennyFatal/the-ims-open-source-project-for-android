@@ -44,11 +44,13 @@ package javax.microedition.ims.messages.builder;
 import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.messages.wrappers.common.Uri;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import javax.microedition.ims.messages.wrappers.sip.Request;
 import javax.microedition.ims.messages.wrappers.sip.Response;
+import javax.microedition.ims.messages.wrappers.sip.UriHeader;
 
 public class ByeMessageBuilder extends RequestMessageBuilder {
 
@@ -85,6 +87,7 @@ Content-Length: 0
         byeBuilder.buildMaxForwards();
         byeBuilder.buildCallId();
         byeBuilder.buildCSeq();
+        byeBuilder.buildPAccessNetwork();
 
         return byeBuilder.getByeRequest().getBuilder();
     }
@@ -157,21 +160,22 @@ Content-Length: 0
         }
 
         public void buildFrom() {
-            if (source.getTo().buildContent().contains(dialog.getRemoteParty())) {
-                addFromHeader(source.getFrom(), byeBuilder);
-            }
-            else {
-                addFromHeader(source.getTo(), byeBuilder);
-            }
+            addFromHeader(dialog, byeBuilder);
         }
 
         public void buildTo() {
-            if (source.getTo().buildContent().contains(dialog.getRemoteParty())) {
-                addToHeader(source.getTo(), byeBuilder);
-            }
-            else {
-                addToHeader(source.getFrom(), byeBuilder);
-            }
+            final UriHeader toUriHeader = constructUriHeader(dialog.getRemoteParty());
+            UriHeader.UriHeaderBuilder uriHeaderTo = new UriHeader.UriHeaderBuilder(toUriHeader);
+            String remoteTag = dialog.getRemoteTag();
+            assert remoteTag != null;
+
+            uriHeaderTo.tag(remoteTag);
+            addToHeader(uriHeaderTo, byeBuilder);
+        }
+
+        public void buildPAccessNetwork() {
+            final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+            addPAccessNetworkHeader(locationInfo, byeBuilder);
         }
 
         public abstract void buildVia();

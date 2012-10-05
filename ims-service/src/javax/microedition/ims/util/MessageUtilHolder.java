@@ -701,8 +701,9 @@ public final class MessageUtilHolder {
         }
 
         public MessageType[] getAllowedMessages(final CommonRegistry commonRegistry, final Configuration config) {
-            final List<MessageType> supportedRequests =
-                    new ArrayList<MessageType>(Arrays.asList(commonRegistry.getMethods()));
+            List<MessageType> supportedRequests = new ArrayList<MessageType>();
+            if (commonRegistry != null && commonRegistry.getMethods() != null)
+                supportedRequests.addAll(Arrays.asList(commonRegistry.getMethods()));
 
             //final List<OptionFeature> supportedFeatures = Arrays.asList(getSupportedFeatures());
 

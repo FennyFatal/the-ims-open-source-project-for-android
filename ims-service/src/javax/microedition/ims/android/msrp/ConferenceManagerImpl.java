@@ -47,6 +47,7 @@ import android.util.Log;
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.util.SIPUtil;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.IMSStack;
@@ -80,27 +81,27 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
         private final MSRPSession msrpSession;
 
         public DefaultMSRPSessionStartListener(MSRPSession msrpSession) {
-            Log.i(TAG, "DefaultMSRPSessionStartListener()");
+            Logger.log(TAG, "DefaultMSRPSessionStartListener()");
             this.msrpSession = msrpSession;
         }
 
         public void onMSRPSessionStarted() {
-            Log.i(TAG, "msrpSessionStartListener.onMSRPSessionStarted#started");
+            Logger.log(TAG, "msrpSessionStartListener.onMSRPSessionStarted#started");
             notifyChatStarted(msrpSession);
             cleanUp();
-            Log.i(TAG, "msrpSessionStartListener.onMSRPSessionStarted#finished");
+            Logger.log(TAG, "msrpSessionStartListener.onMSRPSessionStarted#finished");
         }
 
         
         public void onMSRPSessionStartFailed(final int reasonType, final String reasonPhrase, final int statusCode) {
-            Log.i(TAG, "msrpSessionStartListener.onMSRPSessionStartFailed#started");
+            Logger.log(TAG, "msrpSessionStartListener.onMSRPSessionStartFailed#started");
             notifyChatStartFailed(msrpSession.getIMSEntityId().stringValue(), reasonType, reasonPhrase, statusCode);
             cleanUp();
-            Log.i(TAG, "msrpSessionStartListener.onMSRPSessionStartFailed#finished");
+            Logger.log(TAG, "msrpSessionStartListener.onMSRPSessionStartFailed#finished");
         }
 
         private void cleanUp() {
-            Log.i(TAG, "DefaultMSRPSessionStartListener.cleanUp()");
+            Logger.log(TAG, "DefaultMSRPSessionStartListener.cleanUp()");
             msrpSession.removeMSRPSessionStartListener(this);
         }
     }
@@ -111,12 +112,12 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
 
         private DefaultMSRPSessionStopListener(MSRPSession msrpSession) {
             this.msrpSession = msrpSession;
-            Log.i(TAG, "DefaultMSRPSessionStopListener()");
+            Logger.log(TAG, "DefaultMSRPSessionStopListener()");
         }
 
         
         public void onMSRPSessionFinished() {
-            Log.i(TAG, "msrpSessionStopListener.onMSRPSessionFinished#started");
+            Logger.log(TAG, "msrpSessionStopListener.onMSRPSessionFinished#started");
 
             String sessionId = msrpSession.getIMSEntityId().stringValue();
 
@@ -129,11 +130,11 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             }
             cleanUp();
 
-            Log.i(TAG, "msrpSessionStopListener.onMSRPSessionFinished#finished");
+            Logger.log(TAG, "msrpSessionStopListener.onMSRPSessionFinished#finished");
         }
 
         private void cleanUp() {
-            Log.i(TAG, "DefaultMSRPSessionStopListener.cleanUp()");
+            Logger.log(TAG, "DefaultMSRPSessionStopListener.cleanUp()");
             msrpSession.removeMSRPSessionStopListener(this);
         }
     }
@@ -142,7 +143,7 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
     private IncomingMSRPChatInviteListener incomingMSRPInviteListener = new IncomingMSRPChatInviteListener() {
         
         public void onIncomingInvite(IncomingMSRPChatInviteEvent event) {
-            Log.i(TAG, "incomingMSRPInviteListener.onIncomingInvite#started");
+            Logger.log(TAG, "incomingMSRPInviteListener.onIncomingInvite#started");
 
             MSRPSession msrpSession = event.getMsrpSession();
 
@@ -151,7 +152,7 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
 
             notifyChatInvitationReceived(event.getAcceptable(), msrpSession);
 
-            Log.i(TAG, "incomingMSRPInviteListener.onIncomingInvite#finished");
+            Logger.log(TAG, "incomingMSRPInviteListener.onIncomingInvite#finished");
         }
     };
 
@@ -171,7 +172,7 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
     }
 
     public String sendChatInvitation(String sender, String recipient, String subject) throws RemoteException {
-        Log.i(TAG, "sendChatInvitation#started");
+        Logger.log(TAG, "sendChatInvitation#started");
 
         final MSRPService msrpService = imsStack.getMSRPService();
         final StackContext stackContext = imsStack.getContext();
@@ -201,12 +202,14 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             msrpSession.openChatSession();
 
             //sessionId = msrpService.openSession(sender, recipient, subject);
-            Log.i(TAG, "sendChatInvitation#finish - " + msrpSession.getIMSEntityId().stringValue());
+            Logger.log(TAG, "sendChatInvitation#finish - " + msrpSession.getIMSEntityId().stringValue());
 
         }
         catch (Throwable e) {
             msrpSession = null;
-            Log.e(TAG, e.getMessage(), e);
+            
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
 
         return msrpSession == null ? null : msrpSession.getIMSEntityId().stringValue();
@@ -230,14 +233,14 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
 
     
     public void cancelInvitation(String sessionId) throws RemoteException {
-        Log.i(TAG, "cancelInvitation#started");
+        Logger.log(TAG, "cancelInvitation#started");
 
         final MSRPSession msrpSession = imsStack.getMSRPService().findMSRPSession(sessionId);
         if (msrpSession != null) {
             msrpSession.cancelSessionOpening();
         }
 
-        Log.i(TAG, "cancelInvitation#finished");
+        Logger.log(TAG, "cancelInvitation#finished");
     }
 
     
@@ -257,7 +260,7 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
     }
 
     private void notifyChatInvitationReceived(final Acceptable acceptable, final MSRPSession msrpSession) {
-        Log.i(TAG, "notifyChatInvitationReceived#started");
+        Logger.log(TAG, "notifyChatInvitationReceived#started");
 
         String msrtSessioId = msrpSession.getIMSEntityId().stringValue();
         Dialog msrpDialog = msrpSession.getMsrpDialog();
@@ -268,28 +271,29 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
 
             chatInvitationsMap.put(msrtSessioId, chatInvitationImpl);
 
-            Log.i(TAG, "notifyChatInvitationReceived#before notifier");
+            Logger.log(TAG, "notifyChatInvitationReceived#before notifier");
             listenerHolder.getNotifier().chatInvitationReceived(chatInvitationImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyChatInvitationReceived#finish");
+        Logger.log(TAG, "notifyChatInvitationReceived#finish");
     }
 
     private void notifyChatStarted(MSRPSession msrpSession) {
-        Log.i(TAG, "notifyChatStarted#started");
+        Logger.log(TAG, "notifyChatStarted#started");
         try {
             ChatImpl chatImpl;
-            Log.i(TAG, "notifyChatStarted#1");
+            Logger.log(TAG, "notifyChatStarted#1");
 
             String sessionId = msrpSession.getIMSEntityId().stringValue();
             if (chatMap.containsKey(sessionId)) {
-                Log.i(TAG, "notifyChatStarted#2");
+                Logger.log(TAG, "notifyChatStarted#2");
                 chatImpl = chatMap.get(sessionId);
             }
             else {
-                Log.i(TAG, "notifyChatStarted#3");
+                Logger.log(TAG, "notifyChatStarted#3");
                 IMSessionImpl imSessionImpl = new IMSessionImpl(msrpSession, imsStack.getMSRPService());
 
                 chatImpl = new ChatImpl(imSessionImpl);
@@ -297,19 +301,20 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
                 chatMap.put(sessionId, chatImpl);
             }
 
-            Log.i(TAG, "notifyChatStarted#4");
+            Logger.log(TAG, "notifyChatStarted#4");
 
             listenerHolder.getNotifier().chatStarted(chatImpl);
-            Log.i(TAG, "notifyChatStarted#5");
+            Logger.log(TAG, "notifyChatStarted#5");
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyChatStarted#finish");
+        Logger.log(TAG, "notifyChatStarted#finish");
     }
 
     private void notifyChatStartFailed(String sessionId, int reasonType, String reasonPhrase, int statusCode) {
-        Log.i(TAG, "notifyChatStartFailed#started");
+        Logger.log(TAG, "notifyChatStartFailed#started");
         if (chatInvitationsMap.containsKey(sessionId)) {
             chatInvitationsMap.get(sessionId).expire();
         }
@@ -320,16 +325,17 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             listenerHolder.getNotifier().chatStartFailed(sessionId, reasonInfoImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyChatStartFailed#finished");
+        Logger.log(TAG, "notifyChatStartFailed#finished");
     }
 
     /*
     * TODO call this method
     */
     private void notifyConferenceInvitationReceived(String sessionId) {
-        Log.i(TAG, "notifyConferenceInvitationReceived#started");
+        Logger.log(TAG, "notifyConferenceInvitationReceived#started");
         try {
             ConferenceInvitationImpl conferenceInvitationImpl = new ConferenceInvitationImpl();
 
@@ -338,16 +344,17 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             listenerHolder.getNotifier().conferenceInvitationReceived(conferenceInvitationImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyConferenceInvitationReceived#finished");
+        Logger.log(TAG, "notifyConferenceInvitationReceived#finished");
     }
 
     /*
      * TODO call this method
      */
     private void notifyConferenceStarted(MSRPSession msrpSession) {
-        Log.i(TAG, "notifyConferenceStarted#started");
+        Logger.log(TAG, "notifyConferenceStarted#started");
         try {
             IMSessionImpl imSessionImpl = new IMSessionImpl(msrpSession, imsStack.getMSRPService());
 
@@ -356,16 +363,17 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             listenerHolder.getNotifier().conferenceStarted(conferenceImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifyConferenceStarted#finished");
+        Logger.log(TAG, "notifyConferenceStarted#finished");
     }
 
     /*
      * TODO call this method
      */
     private void notifyConferenceStartFailed(String sessionId, int reasonType, String reasonPhrase, int statusCode) {
-        Log.i(TAG, "notifyConferenceStartFailed#started");
+        Logger.log(TAG, "notifyConferenceStartFailed#started");
         if (conferenceInvitationsMap.containsKey(sessionId)) {
             conferenceInvitationsMap.get(sessionId).expire();
         }
@@ -376,9 +384,10 @@ public class ConferenceManagerImpl extends IConferenceManager.Stub {
             listenerHolder.getNotifier().conferenceStartFailed(sessionId, reasonInfoImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyConferenceStartFailed#finished");
+        Logger.log(TAG, "notifyConferenceStartFailed#finished");
     }
 
 }

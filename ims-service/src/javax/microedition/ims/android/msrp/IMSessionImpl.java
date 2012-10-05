@@ -106,34 +106,34 @@ public class IMSessionImpl extends IIMSession.Stub {
 
     private class MSRPFileSendingListenersImpl implements MSRPFileSendingProgressListener, MSRPFileSendingListener {
         public void onBytesTransfered(FileDescriptor fileDescriptor, long bytesTransferred, long bytesTotal) {
-            Log.i(TAG, "MSRPFileTransferProgressListenerImpl.onBytesTransfered#started");
+            Logger.log(TAG, "MSRPFileTransferProgressListenerImpl.onBytesTransfered#started");
 
             String requestId = fileRequestIdsMap.get(FileRequestKey.getKey(msrpSession, fileDescriptor));
 
             notifyFileTransferProgress(requestId, fileDescriptor.getFileId(), bytesTransferred, bytesTotal);
 
-            Log.i(TAG, "MSRPFileTransferProgressListenerImpl.onBytesTransfered#finished");
+            Logger.log(TAG, "MSRPFileTransferProgressListenerImpl.onBytesTransfered#finished");
         }
 
         public void onFileSent(final FileDescriptor fileDescriptor) {
-            Log.i(TAG, "MSRPFileSendingListenerImpl.onFileSent#started");
+            Logger.log(TAG, "MSRPFileSendingListenerImpl.onFileSent#started");
 
             String requestId = fileRequestIdsMap.get(FileRequestKey.getKey(msrpSession, fileDescriptor));
 
             notifyFileSent(requestId, fileDescriptor.getFileId());
             unSubscribe();
-            Log.i(TAG, "MSRPFileSendingListenerImpl.onFileSent#finished");
+            Logger.log(TAG, "MSRPFileSendingListenerImpl.onFileSent#finished");
         }
 
         public void onFileSendFailed(FileDescriptor fileDescriptor, int failCode, String failReasonPhrase) {
-            Log.i(TAG, "MSRPFileSendingListenerImpl.onFileSendFailed#started");
+            Logger.log(TAG, "MSRPFileSendingListenerImpl.onFileSendFailed#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo(failReasonPhrase, 0, failCode);
 
             String requestId = fileRequestIdsMap.get(FileRequestKey.getKey(msrpSession, fileDescriptor));
 
             notifyFileSendFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
             unSubscribe();
-            Log.i(TAG, "MSRPFileSendingListenerImpl.onFileSendFailed#finished");
+            Logger.log(TAG, "MSRPFileSendingListenerImpl.onFileSendFailed#finished");
         }
 
         private void unSubscribe() {
@@ -153,24 +153,24 @@ public class IMSessionImpl extends IIMSession.Stub {
     private class MSRPFileReceivingListenerImpl implements MSRPFileReceivingListener {
 
         public void onFileReceived(FileDescriptor fileDescriptor, String filePath) {
-            Log.i(TAG, "MSRPFileReceivingListenerImpl.onFileReceived#started");
+            Logger.log(TAG, "MSRPFileReceivingListenerImpl.onFileReceived#started");
 
             String requestId = fileRequestIdsMap.get(FileRequestKey.getKey(msrpSession, fileDescriptor));
 
             notifyFileReceived(requestId, fileDescriptor.getFileId(), filePath);
             cleanUp();
-            Log.i(TAG, "MSRPFileReceivingListenerImpl.onFileReceived#finished");
+            Logger.log(TAG, "MSRPFileReceivingListenerImpl.onFileReceived#finished");
         }
 
         public void onFileReceiveFailed(FileDescriptor fileDescriptor, int failCode, String failReasonPhrase, boolean localy) {
-            Log.i(TAG, "MSRPFileReceivingListenerImpl.onFileReceiveFailed#started");
+            Logger.log(TAG, "MSRPFileReceivingListenerImpl.onFileReceiveFailed#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo(failReasonPhrase, 0, failCode);
 
             String requestId = fileRequestIdsMap.get(FileRequestKey.getKey(msrpSession, fileDescriptor));
 
             notifyFileReceiveFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
             cleanUp();
-            Log.i(TAG, "MSRPFileReceivingListenerImpl.onFileReceiveFailed#finished");
+            Logger.log(TAG, "MSRPFileReceivingListenerImpl.onFileReceiveFailed#finished");
         }
 
         private void cleanUp() {
@@ -181,31 +181,31 @@ public class IMSessionImpl extends IIMSession.Stub {
     private MSRPMessageSendingListener msrpMessageSendingListener = new MSRPMessageSendingListener() {
 
         public void onMessageSent(String messageId) {
-            Log.i(TAG, "msrpMessageSendingListener.onMessageSent#started");
+            Logger.log(TAG, "msrpMessageSendingListener.onMessageSent#started");
             notifyMessageSent(messageId);
-            Log.i(TAG, "msrpMessageSendingListener.onMessageSent#finished");
+            Logger.log(TAG, "msrpMessageSendingListener.onMessageSent#finished");
         }
 
 
         public void onMessageSendFailed(String messageId, String reasonPhrase, int reasonType, int statusCode) {
-            Log.i(TAG, "msrpMessageSendingListener.onMessageSendFailed#started");
+            Logger.log(TAG, "msrpMessageSendingListener.onMessageSendFailed#started");
             notifyMessageSendFailed(messageId, reasonPhrase, reasonType, statusCode);
-            Log.i(TAG, "msrpMessageSendingListener.onMessageSendFailed#finished");
+            Logger.log(TAG, "msrpMessageSendingListener.onMessageSendFailed#finished");
         }
     };
 
     private IncomingMSRPMessageListener incomingMSRPMessageListener = new IncomingMSRPMessageAdapter() {
 
         public void onMessageReceived(IncomingMSRPMessageEvent event) {
-            Log.i(TAG, "incomingMSRPMessageListener.onMessageReceived#started");
+            Logger.log(TAG, "incomingMSRPMessageListener.onMessageReceived#started");
             notifyMessageReceived(event.getMsg());
-            Log.i(TAG, "incomingMSRPMessageListener.onMessageReceived#finished");
+            Logger.log(TAG, "incomingMSRPMessageListener.onMessageReceived#finished");
         }
 
         public void onComposingIndicatorReceived(IncomingMSRPMessageEvent event) {
-            Log.i(TAG, "incomingMSRPMessageListener.onComposingIndicatorReceived#started");
+            Logger.log(TAG, "incomingMSRPMessageListener.onComposingIndicatorReceived#started");
             notifyComposingIndicatorReceived(event.getMsg());
-            Log.i(TAG, "incomingMSRPMessageListener.onComposingIndicatorReceived#finished");
+            Logger.log(TAG, "incomingMSRPMessageListener.onComposingIndicatorReceived#finished");
         }
     };
 
@@ -225,42 +225,44 @@ public class IMSessionImpl extends IIMSession.Stub {
 
 
     public void sendMessage(IMessage message, boolean deliveryReport) throws RemoteException {
-        Log.i(TAG, "sendMessage#started");
+        Logger.log(TAG, "sendMessage#started");
 
         MsrpMessage msrpMessage = IMessageBuilderUtils.iMessageToMsrpMessage(message);
 
-        Log.i(TAG, "sendMessage#converted");
+        Logger.log(TAG, "sendMessage#converted");
 
         try {
             msrpSession.sendMessage(msrpMessage);
 
         } catch (Throwable e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
 
-        Log.i(TAG, "sendMessage#finish");
+        Logger.log(TAG, "sendMessage#finish");
     }
 
     public void sendComposingIndicator(IMessage message) throws RemoteException {
-        Log.i(TAG, "sendComposingIndicator#started");
+        Logger.log(TAG, "sendComposingIndicator#started");
 
         MsrpMessage msrpMessage = IMessageBuilderUtils.iMessageToMsrpMessage(message);
 
-        Log.i(TAG, "sendComposingIndicator#converted");
+        Logger.log(TAG, "sendComposingIndicator#converted");
 
         try {
             msrpSession.sendMessage(msrpMessage);
 
         } catch (Throwable e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
 
-        Log.i(TAG, "sendComposingIndicator#finished");
+        Logger.log(TAG, "sendComposingIndicator#finished");
     }
 
 
     public String sendFiles(IFileInfo[] files, boolean deliveryReport) throws RemoteException {
-        Log.i(TAG, "sendFiles#started");
+        Logger.log(TAG, "sendFiles#started");
 
         String requestId = MsrpUtils.generateFileRequestId();
 
@@ -268,7 +270,7 @@ public class IMSessionImpl extends IIMSession.Stub {
         for (int i = 0; i < files.length; i++) {
             fileDescrs[i] = IFileInfoConverter.convert(files[i]);
         }
-        Log.i(TAG, "sendFiles#converted");
+        Logger.log(TAG, "sendFiles#converted");
 
         for (int i = 0; i < fileDescrs.length; i++) {
             try {
@@ -294,18 +296,19 @@ public class IMSessionImpl extends IIMSession.Stub {
                 }
                 fileIds.add(fileDescrs[i].getFileId());
 
-                Log.i(TAG, "sendFiles#sent file " + (i + 1) + "/" + fileDescrs.length);
+                Logger.log(TAG, "sendFiles#sent file " + (i + 1) + "/" + fileDescrs.length);
             } catch (Throwable e) {
-                Log.e(TAG, e.getMessage(), e);
+                Logger.log(TAG, e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        Log.i(TAG, "sendFiles#finished");
+        Logger.log(TAG, "sendFiles#finished");
         return requestId;
     }
 
     public void cancelFileTransfer(String identifier) throws RemoteException {
-        Log.i(TAG, "cancelFileTransfer#started");
+        Logger.log(TAG, "cancelFileTransfer#started");
         if (requestRepository.containsKey(identifier)) {
 
             Set<String> fileIds = requestRepository.get(identifier);
@@ -318,21 +321,22 @@ public class IMSessionImpl extends IIMSession.Stub {
             FileTransferEnv fileTransferEnv = fileRepository.get(identifier);
             fileTransferEnv.getMsrpSession().cancelFileSending(fileTransferEnv.getFileDescriptor());
         }
-        Log.i(TAG, "cancelFileTransfer#finished");
+        Logger.log(TAG, "cancelFileTransfer#finished");
     }
 
 
     public void close() throws RemoteException {
-        Log.i(TAG, "close#started");
+        Logger.log(TAG, "close#started");
 
         try {
             msrpSession.close();
-            Log.i(TAG, "close#sent");
+            Logger.log(TAG, "close#sent");
         } catch (Throwable e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
 
-        Log.i(TAG, "close#finish");
+        Logger.log(TAG, "close#finish");
     }
 
     protected MSRPService getMsrpService() {
@@ -354,51 +358,55 @@ public class IMSessionImpl extends IIMSession.Stub {
     }
 
     private void notifyMessageSent(String messageId) {
-        Log.i(TAG, "notifyMessageSent#started");
+        Logger.log(TAG, "notifyMessageSent#started");
         try {
             listenerHolder.getNotifier().messageSent(messageId);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageSent#finished");
+        Logger.log(TAG, "notifyMessageSent#finished");
     }
 
     private void notifyMessageSendFailed(String messageId, String reasonPhrase, int reasonType, int statusCode) {
-        Log.i(TAG, "notifyMessageSendFailed#started");
+        Logger.log(TAG, "notifyMessageSendFailed#started");
         IReasonInfo reasonInfoImpl = new IReasonInfo(reasonPhrase, reasonType, statusCode);
 
         try {
             listenerHolder.getNotifier().messageSendFailed(messageId, reasonInfoImpl);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageSendFailed#finished");
+        Logger.log(TAG, "notifyMessageSendFailed#finished");
     }
 
     private void notifyMessageReceived(MsrpMessage msrpMessage) {
-        Log.i(TAG, "notifyMessageReceived#started");
+        Logger.log(TAG, "notifyMessageReceived#started");
         IMessage messageImpl = IMessageBuilderUtils.msrpMessageToIMessage(msrpMessage);
 
         try {
             listenerHolder.getNotifier().messageReceived(messageImpl);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageReceived#finished");
+        Logger.log(TAG, "notifyMessageReceived#finished");
     }
 
     void notifySessionClosed(IReasonInfo reasonInfoImpl) {
-        Log.i(TAG, "notifySessionClosed#started");
+        Logger.log(TAG, "notifySessionClosed#started");
         try {
             listenerHolder.getNotifier().sessionClosed(reasonInfoImpl);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifySessionClosed#finished");
+        Logger.log(TAG, "notifySessionClosed#finished");
     }
 
     private void notifyComposingIndicatorReceived(MsrpMessage msrpMessage) {
-        Log.i(TAG, "notifyComposingIndicatorReceived#started");
+        Logger.log(TAG, "notifyComposingIndicatorReceived#started");
 
         String sender = msrpSession.getMsrpDialog().getRemoteParty();
         String messageBody = new String(msrpMessage.getBody());
@@ -406,49 +414,54 @@ public class IMSessionImpl extends IIMSession.Stub {
         try {
             listenerHolder.getNotifier().composingIndicatorReceived(sender, messageBody);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyComposingIndicatorReceived#finished");
+        Logger.log(TAG, "notifyComposingIndicatorReceived#finished");
     }
 
     private void notifyFileReceived(String requestId, String fileId, String filePath) {
-        Log.i(TAG, "notifyFileReceived#started");
+        Logger.log(TAG, "notifyFileReceived#started");
         try {
             listenerHolder.getNotifier().fileReceived(requestId, fileId, filePath);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileReceived#finished");
+        Logger.log(TAG, "notifyFileReceived#finished");
     }
 
     private void notifyFileReceiveFailed(String requestId, String fileId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileReceiveFailed#started");
+        Logger.log(TAG, "notifyFileReceiveFailed#started");
         try {
             listenerHolder.getNotifier().fileReceiveFailed(requestId, fileId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileReceiveFailed#finished");
+        Logger.log(TAG, "notifyFileReceiveFailed#finished");
     }
 
     private void notifyFileSendFailed(String requestId, String fileId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileSendFailed#started");
+        Logger.log(TAG, "notifyFileSendFailed#started");
         try {
             listenerHolder.getNotifier().fileSendFailed(requestId, fileId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileSendFailed#finished");
+        Logger.log(TAG, "notifyFileSendFailed#finished");
     }
 
     private void notifyFileSent(String requestId, String fileId) {
-        Log.i(TAG, "notifyFileSent#started");
+        Logger.log(TAG, "notifyFileSent#started");
         try {
             listenerHolder.getNotifier().fileSent(requestId, fileId);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileSent#finished");
+        Logger.log(TAG, "notifyFileSent#finished");
     }
 
     /*
@@ -456,13 +469,14 @@ public class IMSessionImpl extends IIMSession.Stub {
      */
 
     private void notifyFileTransferFailed(String requestId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileTransferFailed#started");
+        Logger.log(TAG, "notifyFileTransferFailed#started");
         try {
             listenerHolder.getNotifier().fileTransferFailed(requestId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileTransferFailed#finished");
+        Logger.log(TAG, "notifyFileTransferFailed#finished");
     }
 
     /*
@@ -470,13 +484,14 @@ public class IMSessionImpl extends IIMSession.Stub {
      */
 
     private void notifyFileTransferProgress(String requestId, String fileId, long bytesTransferred, long bytesTotal) {
-        Log.i(TAG, "notifyFileTransferProgress#started");
+        Logger.log(TAG, "notifyFileTransferProgress#started");
         try {
             listenerHolder.getNotifier().fileTransferProgress(requestId, fileId, bytesTransferred, bytesTotal);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileTransferProgress#finished");
+        Logger.log(TAG, "notifyFileTransferProgress#finished");
     }
 
     /*
@@ -484,13 +499,14 @@ public class IMSessionImpl extends IIMSession.Stub {
     */
 
     private void notifyIncomingFilePushRequest(String requestId, FilePushRequestImpl filePushRequest) {
-        Log.i(TAG, "notifyIncomingFilePushRequest#started");
+        Logger.log(TAG, "notifyIncomingFilePushRequest#started");
         try {
             listenerHolder.getNotifier().incomingFilePushRequest(filePushRequest);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyIncomingFilePushRequest#finished");
+        Logger.log(TAG, "notifyIncomingFilePushRequest#finished");
     }
 
     /*
@@ -498,15 +514,16 @@ public class IMSessionImpl extends IIMSession.Stub {
      */
 
     private void notifySystemMessageReceived(MsrpMessage msrpMessage) {
-        Log.i(TAG, "notifySystemMessageReceived#started");
+        Logger.log(TAG, "notifySystemMessageReceived#started");
         IMessage messageImpl = IMessageBuilderUtils.msrpMessageToIMessage(msrpMessage);
 
         try {
             listenerHolder.getNotifier().systemMessageReceived(messageImpl);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifySystemMessageReceived#finished");
+        Logger.log(TAG, "notifySystemMessageReceived#finished");
     }
 
 }

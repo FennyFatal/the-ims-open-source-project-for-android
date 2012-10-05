@@ -44,6 +44,7 @@ package javax.microedition.ims.messages.builder;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.messages.wrappers.common.Uri;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
@@ -99,6 +100,8 @@ public class UpdateMessageBuilder extends RequestMessageBuilder {
         generateContactHeader(context.getConfig(), retValue);
         addAuthorizationHeader(retValue, MessageType.SIP_UPDATE);
 
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         /*      if(dialog.getOutgoingSdpMessage().typeSupported(SDPType.MSRP)){
             retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;+g.oma.sip-im");

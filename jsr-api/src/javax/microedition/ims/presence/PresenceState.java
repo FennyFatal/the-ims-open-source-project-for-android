@@ -45,6 +45,8 @@ package javax.microedition.ims.presence;
 /**
  * The PresenceState class represents the states of some elements in the
  * PresenceDocument.
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
  * @author Andrei Khomushko
  * 

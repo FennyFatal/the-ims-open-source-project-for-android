@@ -54,6 +54,7 @@ import java.util.*;
  * Time: 16:13:39
  */
 public class ListenerHolder<T> implements ListenerSupportWithId<T>, Shutdownable {
+    private static final String LOG_TAG = "ListenerHolder";
     private static final long METHOD_EXECUTION_TIME_LIMIT = 5000l;
 
     private static class EntityDescriptor {
@@ -169,7 +170,7 @@ public class ListenerHolder<T> implements ListenerSupportWithId<T>, Shutdownable
                 final EntityDescriptor entity = TimeObserver.needProfiling ? new EntityDescriptor(method.getName(), currListener, Thread.currentThread()) : null;
                 try {
                     if (currListenerTypes == null || currListenerTypes.size() == 0 ||
-                            supportedListenerTypes.containsAll(currListenerTypes)) {
+                            isListenerTypesSupported(supportedListenerTypes, currListenerTypes)) {
 
                         if (TimeObserver.needProfiling) {
                             timeObserver.addEntity(entity);
@@ -217,6 +218,12 @@ public class ListenerHolder<T> implements ListenerSupportWithId<T>, Shutdownable
             }
 
             return null;
+        }
+
+        private boolean isListenerTypesSupported(Set<Object> supportedListenerTypes,
+                Collection<?> currListenerTypes) {
+            Logger.log(LOG_TAG, String.format("isListenerTypesSupported#supportedListenerTypes = %s, currListenerTypes = %s", supportedListenerTypes, currListenerTypes));
+            return supportedListenerTypes.containsAll(currListenerTypes);
         }
 
         private Set<Object> getSupportedListenerTypes(Object[] args) {

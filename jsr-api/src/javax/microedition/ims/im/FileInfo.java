@@ -47,39 +47,12 @@ import com.android.ims.core.media.util.UtilsMSRP;
 import java.util.Date;
 
 /**
- * The FileInfo class is a container for metadata about a file to be sent in 
- * a push request. The basic information is the file path which is formatted 
- * as a File URL according to [JSR75], and the content MIME type of the file. 
- * The file can then be further described with description, hash, size, file 
- * disposition, creation date, modification date, read date, and a file icon.
- * <p/>
- * To send a part of a file, a range may also be specified. The start offset 
- * value refers to the byte position of the file where the file transfer 
- * should start. The first byte of a file is denoted by the ordinal number 1. 
- * The stop offset value refers to the byte position of the file where the 
- * file transfer should stop, inclusive of this byte. If no stop offset 
- * value is specified, the transfer will continue until the end of the file 
- * is reached. If no range at all is specified, the entire file will be sent.
- * <p/>
- * To describe the file with a hash, the 160-bit string resulting from the 
- * computation of Secure Hash Algorithm 1 (SHA-1) should be used. The hash 
- * should be set using the following syntax: hash-algorithm : hash-value, 
- * where hash-value is a byte string with each byte in upper-case hex, 
- * separated by colons.
- * <p/>
- * Example
- * <p/>
- * <pre>
- *  FileInfo fileInfo = new FileInfo("file:///CFCard/img/bob.png", "image/png");
- *  fileInfo
- *      .setHash("sha-1:72:24:5F:E8:65:3D:DA:F3:71:36:2F:86:D4:71:91:3E:E4:A2:CE:2E");
- *  fileInfo.setDescription("My avatar");
- *  fileInfo.setFileDisposition("render");
- *  fileInfo.setSize(32349);
- *  fileInfo.setRange(new int[] {
- *      1, 32349
- *  });
- *  </pre>
+ * The FileInfo class is a container for metadata about a files used in filetransfers.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public class FileInfo {
     

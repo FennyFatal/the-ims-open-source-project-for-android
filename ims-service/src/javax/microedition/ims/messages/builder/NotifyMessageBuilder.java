@@ -44,6 +44,7 @@ package javax.microedition.ims.messages.builder;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.subscribe.NotifyInfo;
 import javax.microedition.ims.messages.wrappers.common.Uri;
@@ -131,6 +132,9 @@ SIP/2.0 200 OK
         String[] notifyBodyMessages = notifyInfo.getNotifyBodyMessages();
         assert notifyBodyMessages != null && notifyBodyMessages.length > 0 : "notifyBodyMessages will contain at least one body message";
         retValue.body(notifyBodyMessages[0].getBytes());
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         //???
         addAuthorizationHeader(retValue, MessageType.SIP_NOTIFY);

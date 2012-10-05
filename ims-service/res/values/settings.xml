@@ -48,10 +48,13 @@
 
 	<string name="def_registrar_host">dummy.com</string>
 	<string name="def_registrar_port">5061</string>
-	<string name="def_registrar_expire_time">3600</string>
 	<string name="def_registrar_user_name_schema">sip</string>
 	<string name="def_registrar_user_name">12345678</string>
 	<string name="def_registrar_user_name_domain" >dummy.com</string>
+
+	<string name="def_registrar_expire_time">3600</string>
+	<string name="def_subscription_expire_time">3600</string>
+	<string name="def_publication_expire_time">3600</string>
 
     <string name="def_preferred_identity">sip:12345678@dummy.com</string>
 	
@@ -71,22 +74,22 @@
 	<string name="def_realm">dummy.com</string>
 
 	<string name="def_global_ip_discovery">false</string>
-	<string name="def_dns_lookup">false</string>
+	<string name="def_dns_lookup">true</string>
 	<string name="def_connection_type">TLS</string>
 	<string name="def_max_forwards">70</string>
 	<string name="def_use_rport">false</string>
 	<string name="def_required_100rel">false</string>
  	<string name="def_supported_100rel">true</string>
- 	<string name="def_supported_eventlist">false</string>
+ 	<string name="def_supported_eventlist">true</string>
  	<string name="def_use_resource_reservation">true</string>
  	<string name="def_supported_path">false</string>
 
- 	<string name="def_xdm_xcap_root">https://xxx.xxx.xx:443/xcap_rff/xcap</string>
- 	<string name="def_xdm_xui_name">sip:12345678@dummy.com</string>
+ 	<string name="def_xdm_xcap_root">https://xxx.xxx.xx:443/ap</string>
+ 	<string name="def_xdm_xui_name">sip:reguser@dummy.com</string>
  	<string name="def_xdm_xui_password"></string>
  	<string name="def_xdm_auth_name"></string>
  	<string name="def_xdm_password"></string>
-	<string name="def_xdm_send_full_document">false</string>
+	<string name="def_xdm_send_full_document">true</string>
 
 	<string name="def_msrp_chunk_size" >4096</string>
 	<string name="def_msrp_local_port" >8509</string>
@@ -102,4 +105,5 @@
 
 	<string name="def_dtmf_payload_type">inband</string>
 
+    <string name="def_use_feature_tags">true</string>
 </resources>

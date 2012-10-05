@@ -44,129 +44,13 @@ package javax.microedition.ims.core;
 /**
  * The <code>ServiceMethod</code> interface provides methods to manipulate the
  * next client request message and to inspect previously sent request and
- * response messages. The headers and body parts that are set will be
- * transmitted in the next message that is triggered by an interface method, see
- * code example below:
- * </p><p>
- * <p/>
- * </p><pre> Session mySession;
- * Message myMessage;
- * <p/>
- * mySession = coreService.createSession(null, "sip:bob@home.net");
- * myMessage = mySession.getNextRequest();
- * myMessage.addHeader("P-ImageIncluded", "yes");
- * mySession.start();
- * </pre>
- * <p/>
- * <p/>
- * In this code example, <code>mySession.start</code> is the triggering
- * interface method that sends a session invitation with a header
- * <code>"P-ImageIncluded"</code> that is set to <code>"yes"</code>.
- * <p>
- * <p/>
- * The latest transaction is saved for each interface method that triggers
- * messages to be sent, see <code>Message</code> interface for available message
- * identifiers.
- * </p><p>
- * <p/>
- * <p/>
- * </p><h2>Service Methods</h2>
- * Instances of service methods can be created by using factory methods in the
- * <code>CoreService</code> interface. To learn more about using the different
- * service methods please refer to the related interfaces, see list below:
- * <p/>
- * <ul>
- * <li><code>Session</code></li>
- * </ul>
- * <p/>
- * In general the methods in the subinterfaces should supply all the
- * functionality an application needs for each respective method. Should this
- * not be enough this superinterface gives some additional and powerful control
- * such as manipulating headers and body.
- * <p/>
- * <h2>Service Method Transactions</h2>
- * <p/>
- * The simplest form of communication in the IMS consists of two messages, an
- * initial request sent to a remote endpoint and then an answer message or
- * response. This interaction is commonly known as a transaction. Figure 1,
- * shows an example transaction.
- * <p/>
- * <br>
- * <p/>
- * <br>
- * <img src="doc-files/transaction-1.png"><br>
- * <br>
- * <i><b>Figure 1:</b> A simple transaction.</i> <br>
- * <br>
- * <p/>
- * The communication can grow in complexity and include several transactions. An
- * example could be the session invitation procedure with resource reservations,
- * see figure 2 below.
- * <p/>
- * <br>
- * <p/>
- * <br>
- * <img src="doc-files/transaction-2.png"><br>
- * <br>
- * <i><b>Figure 2:</b> The session invite procedure.</i> <br>
- * <br>
- * <p/>
- * A transaction is defined by one request and its related responses. There can
- * be more than one response for each request and there can be transactions with
- * no responses at all. All messages in the figure above are given a number to
- * clarify which transaction the different messages belong to.
- * <p>
- * <p/>
- * <p/>
- * </p><h2>Example of how to access headers and body parts</h2>
- * In this example, an image is attached as a separate body part and it is
- * indicated by setting a <code>"P-ImageIncluded"</code> header in the initial
- * INVITE method on the originating side.<br>
- * On the terminating side, the application retrieves the image and confirms
- * this by setting the header in the 200 Ok response message.
- * <p/>
- * <h3>Originating endpoint</h3>
- * <p/>
- * <pre> Session mySession = myService.createSession(...);
- * ...
- * Message myMessage = mySession.getNextRequest();
- * myMessage.addHeader("P-ImageIncluded", "yes");
- * MessageBodyPart messagePart = myMessage.createBodyPart();
- * messagePart.setHeader("Content-Type", "image/jpeg");
- * OutputStream os = messagePart.openContentOutputStream();
- * os.write(imageData);
- * os.flush();
- * os.close();
- * mySession.start();
- * </pre>
- * <p/>
- * <p/>
- * <h3>Terminating endpoint</h3>
- * <p/>
- * <pre> public void sessionInvitationReceived(CoreService service, Session session) {
- * <p/>
- * Message request = session.getPreviousRequest(Message.SESSION_START);
- * Message resp;
- * if ("yes".equals(mess.getHeaders("P-ImageIncluded")[0])) {
- * MessageBodyPart[] parts = mess.getBodyParts();
- * <p/>
- * for (int i = 0; i &lt; parts.length; i++) {
- * if ("image/jpeg".equals(parts[i].getHeader("Content-Type"))) {
- * InputStream is = parts[i].openContentInputStream();
- * byte[] data = new byte[1024];
- * // read content
- * while ((is.read(data)) != -1) {
- * ...
- * }
- * }
- * }
- * }
- * // Add header to accept response to session invitation
- * resp = session.getNextResponse();
- * resp.addHeader("P-ImageIncluded", "yes");
- * session.accept();
- * }
- * </pre>
+ * response messages.
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  */
 
 public interface ServiceMethod {

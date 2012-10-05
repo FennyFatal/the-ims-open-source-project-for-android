@@ -1,5 +1,5 @@
 /*
- * This software code is © 2010 T-Mobile USA, Inc. All Rights Reserved.
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
  *
  * Unauthorized redistribution or further use of this material is
  * prohibited without the express permission of T-Mobile USA, Inc. and
@@ -17,7 +17,7 @@
  * used to endorse or promote products derived from this software without
  * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ON AN “AS IS” AND “WITH ALL FAULTS” BASIS
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
  * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
  * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
@@ -78,7 +78,7 @@ public class TlsSocketFactory implements SocketFactory {
             tcpSocket = (SSLSocket) sslContext.getSocketFactory().createSocket();
             Logger.log(TAG, "Socket created");
 
-            tcpSocket.connect(new InetSocketAddress(route.getDstHost(), route.getDstPort()));
+            tcpSocket.connect(new InetSocketAddress(route.getDstHost(), route.getDstPort()), CONNECT_TIMEOUT);
             Logger.log(TAG, "Socket connected");
 
             tcpSocket.startHandshake();

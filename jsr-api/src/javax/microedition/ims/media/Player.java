@@ -72,6 +72,8 @@ public interface Player {
 
     void putOnHold(boolean onHold);
 
+    void putOnHold(boolean onHold, int direction);
+
     boolean isOnHold();
 
     void deallocate();

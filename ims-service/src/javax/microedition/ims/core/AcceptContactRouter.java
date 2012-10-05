@@ -67,10 +67,11 @@ public class AcceptContactRouter {
         MESSAGE("message"),
         EVENTS("events"),
         APPLICATION("application"),
-        APP_SUBTYPE("app_subtype"),
-        IARI_REF("+g.3gpp.iari_ref"),
-        ISCI_REF("+3gpp.icsi_ref"),
-        APP_REF("+g.3gpp.app_ref");
+        APP_SUBTYPE("app-subtype"),
+        IARI_REF("+g.3gpp.iari-ref"),
+//        ISCI_REF("+3gpp.icsi-ref"),
+        ISCI_REF("+g.3gpp.icsi-ref"),
+        APP_REF("+g.3gpp.app-ref");
 
         private static final Map<String, FeatureTag> mapping = new HashMap<String, FeatureTag>();
 
@@ -136,8 +137,8 @@ public class AcceptContactRouter {
          */
 
         /*
-        * Accept-Contact: *; application; app_subtype="myChess"; message;events="Presence"
-        * Accept-Contact: *; +g.3gpp.iari_ref="urn:IMSAPI:com.myCompany.iari.myChess"; require
+        * Accept-Contact: *; application; app-subtype="myChess"; message;events="Presence"
+        * Accept-Contact: *; +g.3gpp.iari-ref="urn:IMSAPI:com.myCompany.iari.myChess"; require
         */
 
         final Map<String, Float> csScores = new HashMap<String, Float>(clientRegistries.length);

@@ -42,6 +42,7 @@
 package javax.microedition.ims.messages.builder;
 
 import javax.microedition.ims.FeatureMapper;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.common.OptionFeature;
@@ -51,6 +52,9 @@ import javax.microedition.ims.common.util.StringUtils;
 import javax.microedition.ims.config.Configuration;
 import javax.microedition.ims.config.UserInfo;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
+import javax.microedition.ims.core.connection.NetworkType;
+import javax.microedition.ims.core.connection.NetworkSubType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.register.RegistrationInfo;
 import javax.microedition.ims.messages.history.BodyPartData;
@@ -478,5 +482,97 @@ public abstract class BaseMessageBuilder {
 
             retValue.customHeader("Retry-After", Integer.toString(randomSeconds_0_10));
         }
+    }
+
+    //examples:
+    //P-Access-Network-Info: 3GPP2-1X-HRPD; ci-3gpp2=1234123412341234123412341234123411
+    //P-Access-Network-Info: wlan-mac-addr=00BA5550EEFF
+    //P-Access-Network-Info: 3GPP-UTRAN-TDD; utran-cell-id-3gpp=544542332
+
+    protected void addPAccessNetworkHeader(
+            final GsmLocationInfo gsmLocationInfo,
+            final BaseSipMessage.Builder retValue) {
+
+        String headerValue = buildNetworkInfo(gsmLocationInfo);
+
+        if (headerValue != null) {
+            //retValue.customHeader("P-Access-Network-Info", headerValue);
+            retValue.customHeader(Header.PAccessNetwork.stringValue(), headerValue);
+        }
+        else{
+            String errMsg = Header.PAccessNetwork.stringValue() +
+                    " is empty because GsmLocationInfo proceeded to null value. GsmLocationInfo = " + gsmLocationInfo;
+
+            Logger.log(Logger.Tag.WARNING, errMsg);
+        }
+    }
+
+    protected void addPLastAccessNetworkHeader(
+            final GsmLocationInfo gsmLocationInfo,
+            final BaseSipMessage.Builder retValue) {
+
+        /*
+        if (gsmLocationInfo != null && gsmLocationInfo.getCid() != 0) {
+            retValue.customHeader(Header.PLastAccessNetwork, String.valueOf(gsmLocationInfo.getCid()));
+        }
+        */
+
+        String headerValue = buildLastNetworkInfo(gsmLocationInfo);
+
+        if (headerValue != null) {
+            //retValue.customHeader("P-Access-Network-Info", headerValue);
+            retValue.customHeader(Header.PLastAccessNetwork.stringValue(), headerValue);
+        }
+        else{
+            String errMsg = Header.PLastAccessNetwork.stringValue() +
+                    " is empty because GsmLocationInfo proceeded to null value. GsmLocationInfo = " + gsmLocationInfo;
+
+            Logger.log(Logger.Tag.WARNING, errMsg);
+        }
+    }
+
+    protected String buildMACHeaderPart() {
+        final String pointMAC = context.getEnvironment().getConnectionManager().getAccessPointMAC();
+        String escapedMAC = null;
+
+        if (pointMAC != null) {
+            escapedMAC = pointMAC.replaceAll(":", "").replaceAll("-", "");
+        }
+
+        return escapedMAC == null ? null : "i-wlan-node-id=" + escapedMAC;
+    }
+
+    private String buildNetworkInfo(GsmLocationInfo locationInfo) {
+        final NetworkType networkType = context.getEnvironment().getConnectionManager().getNetworkType();
+        final NetworkSubType networkSubType = context.getEnvironment().getConnectionManager().getNetworkSubType();
+
+        String headerValue = null;
+
+        if (networkSubType != null) {
+
+            if (NetworkType.MOBILE == networkType && locationInfo != null) {
+                // In emulator environment we don't necessarily have location info available
+                //headerValue += "; utran-cell-id-3gpp=" + locationInfo.getCid();
+                headerValue = locationInfo.toCellIdentity();
+            } else if (NetworkType.WIFI == networkType) {
+                final String macKeyValuePair = buildMACHeaderPart();
+                if (macKeyValuePair != null) {
+                    headerValue = networkSubType.stringValue() + "; " + macKeyValuePair;
+                }
+            }
+        }
+        return headerValue;
+    }
+
+    private String buildLastNetworkInfo(GsmLocationInfo locationInfo) {
+
+        String retValue = null;
+
+        if (locationInfo != null) {
+            //return "3GPP-UTRAN-TDD; utran-cell-id-3gpp=" + locationInfo.toUtranCellId3gppValue();
+            retValue = locationInfo.toCellIdentity();
+        }
+
+        return retValue;
     }
 }

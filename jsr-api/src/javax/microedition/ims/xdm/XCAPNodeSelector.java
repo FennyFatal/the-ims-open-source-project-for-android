@@ -47,31 +47,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an XCAP node selector. An XCAP node selector is part of an XCAP
- * request, see the XCAPRequest class for details.
- * 
- * To use this class, some knowledge of XCAP node selectors as described in
- * [RFC4825] is required.
- * 
- * A node selector consists of a number of steps, see [RFC4825]. When an XCAP
- * server evaluates a node selector and matches it against an XML document, each
- * step of the selector will be examined in turn given the current document
- * context. When starting to evaluate the selector, the document context is the
- * root of the document. After each step of the selector, the document context
- * is updated, moving down in the document tree. This will traverse the XML
- * document from the root to exactly one of its nodes.
- * 
- * When building an XCAPNodeSelector a similar process is used. There is a
- * number of methods in this class that add a step to the node selector. The
- * steps are added one at a time in a process analogous to the server's
- * evaluation.
- * 
- * For example, the first step of the node selector should select the root
- * element of the document. If the root element is called watcherinfo, such a
- * step can be added to the selector using selectElementByName("watcherinfo").
- * Other select methods exist for selecting elements based on name, position,
- * and/or attribute.
- * 
+ * Represents an XCAP node selector. 
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

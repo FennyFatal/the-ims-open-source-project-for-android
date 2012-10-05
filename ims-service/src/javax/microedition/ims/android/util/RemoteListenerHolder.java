@@ -44,8 +44,8 @@ package javax.microedition.ims.android.util;
 
 import android.os.IInterface;
 import android.os.RemoteCallbackList;
-import android.util.Log;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.Shutdownable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -76,7 +76,8 @@ public class RemoteListenerHolder<T extends IInterface> implements ListenerHolde
                     method.invoke(listener, args);
                 }
                 catch (Exception localException) {
-                    Log.e(TAG, localException.getMessage(), localException);
+                    Logger.log(TAG, localException.getMessage());
+                    localException.printStackTrace();
                     if (firstMetException == null) {
                         firstMetException = localException;
                     }

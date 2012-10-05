@@ -170,6 +170,11 @@ public class AndroidVoipPlayer extends BasePlayerImpl {
         // TODO: Implement Me
     }
 
+    public void putOnHold(boolean onHold, int direction) {
+        if(mRemote == null) return;
+        // TODO: Implement Me
+    }
+
     public boolean isOnHold() {
         // TODO: Implement Me
         return false;

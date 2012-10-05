@@ -300,7 +300,8 @@ public class ReferenceImpl extends IReference.Stub {
             referService.createSubscription(sess.getDialog(), refer, listener);
         }
         catch (IMSStackException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -320,7 +321,8 @@ public class ReferenceImpl extends IReference.Stub {
             listenerHolder.getNotifier().referenceNotify(notify);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -329,7 +331,8 @@ public class ReferenceImpl extends IReference.Stub {
             listenerHolder.getNotifier().referenceTerminated();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -339,7 +342,8 @@ public class ReferenceImpl extends IReference.Stub {
             listenerHolder.getNotifier().referenceDelivered();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -349,7 +353,8 @@ public class ReferenceImpl extends IReference.Stub {
             listenerHolder.getNotifier().referenceDeliveryFailed();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 

@@ -55,6 +55,7 @@ import javax.microedition.ims.transport.messagerouter.Route;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * User: Pavel Laboda (pavel.laboda@gmail.com)
@@ -62,11 +63,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 11.41.02
  */
 class IMSDefaultRouteResolver implements DefaultRouteResolver {
+    private final static String TAG = "IMSDefaultRouteResolver";
 
+    //private static final int FAULT_TRY_COUNT = 1;
     private final Map<IMSEntityType, Route> defaultRouteMap = new ConcurrentHashMap<IMSEntityType, Route>(new HashMap<IMSEntityType, Route>());
     private final Configuration config;
     private final ConnectionDataProvider connDataProvider;
 
+    //private final AtomicInteger faultCountBeforeRefresh = new AtomicInteger(FAULT_TRY_COUNT);
+    
     public IMSDefaultRouteResolver(final Configuration config, final ConnectionDataProvider connDataProvider) {
         this.config = config;
         this.connDataProvider = connDataProvider;
@@ -77,6 +82,7 @@ class IMSDefaultRouteResolver implements DefaultRouteResolver {
             final ConnectionData connectionData,
             final IMSEntityType imsEntityType) {
 
+        Logger.log(TAG, "createDefaultRoute: Protocol: " + connectionData.getProtocol());
         return new DefaultRoute(
                 connectionData.getAddress(),
                 connectionData.getPort(),
@@ -107,10 +113,12 @@ class IMSDefaultRouteResolver implements DefaultRouteResolver {
     }
 
     private Route doGetDefaultRoute(final IMSEntityType entityType) {
+        Logger.log(TAG, "doGetDefaultRoute: " + entityType);
         ConcurrentHashMap<IMSEntityType, Route> routeMap = (ConcurrentHashMap<IMSEntityType, Route>) defaultRouteMap;
         Route retValue;
 
         if (!routeMap.containsKey(entityType)) {
+            Logger.log(TAG, "doGetDefaultRoute: !routeMap.containsKey(" + entityType + ")");
             routeMap.putIfAbsent(
                     entityType,
                     createDefaultRoute(
@@ -121,17 +129,22 @@ class IMSDefaultRouteResolver implements DefaultRouteResolver {
             );
         }
         retValue = defaultRouteMap.get(entityType);
-
+        Logger.log(TAG, "doGetDefaultRoute: retValue = " + retValue);
 
         return retValue;
     }
-
+    
     void resetRoutes() throws IMSStackException {
         Logger.log(Logger.Tag.WARNING, "Refreshing the connection data in case useDNSLookup is set");
 
-        Logger.log(Logger.Tag.WARNING, "*** IMSDefaultRouteResolver.resetRoutes#before - ConnectionDataProviderConfigVsDnsImpl.obtainSecurityInfo()");
-        ((ConnectionDataProviderConfigVsDnsImpl) connDataProvider).refresh();
-        Logger.log(Logger.Tag.WARNING, "*** IMSDefaultRouteResolver.resetRoutes#after - ConnectionDataProviderConfigVsDnsImpl.obtainSecurityInfo()");
+        //if(faultCountBeforeRefresh.getAndDecrement() == 0) {
+            Logger.log(TAG, "*** IMSDefaultRouteResolver.resetRoutes#before - ConnectionDataProviderConfigVsDnsImpl.obtainSecurityInfo()");
+            ((ConnectionDataProviderConfigVsDnsImpl) connDataProvider).refresh();
+            Logger.log(TAG, "*** IMSDefaultRouteResolver.resetRoutes#after - ConnectionDataProviderConfigVsDnsImpl.obtainSecurityInfo()");
+        /*    faultCountBeforeRefresh.set(FAULT_TRY_COUNT);
+        } else {
+            Logger.log(Logger.Tag.WARNING, "connDataProvider.refresh was skipped in order to have a change to establish connection with current connection data");
+        }*/
 
         Logger.log(Logger.Tag.WARNING, "Clearing the route map");
         defaultRouteMap.clear();

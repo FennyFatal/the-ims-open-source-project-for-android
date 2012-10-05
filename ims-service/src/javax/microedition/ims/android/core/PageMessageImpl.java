@@ -101,7 +101,7 @@ public class PageMessageImpl extends IPageMessage.Stub {
                     pageMessageDeliverFailed();
                     break;
                 default:
-                    Log.e(TAG, "Unknown state = " + event.getSessionState());
+                    Logger.log(TAG, "Unknown state = " + event.getSessionState());
                     //return;
                     break;
             }
@@ -110,28 +110,30 @@ public class PageMessageImpl extends IPageMessage.Stub {
     };
 
     private void pageMessageDelivered() {
-        Log.i(TAG, "pageMessageDelivered#");
+        Logger.log(TAG, "pageMessageDelivered#");
         try {
             listenerHolder.getNotifier().pageMessageDelivered(this);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
     private void pageMessageDeliverFailed() {
-        Log.i(TAG, "pageMessageDeliverFailed#");
+        Logger.log(TAG, "pageMessageDeliverFailed#");
         try {
             listenerHolder.getNotifier().pageMessageDeliveryFailed(this);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
 
     public void send(final byte[] content, final String contentType) throws RemoteException {
-        Log.i(TAG, String.format("send#content length = %s, contentType = %s", content.length, contentType));
+        Logger.log(TAG, String.format("send#content length = %s, contentType = %s", content.length, contentType));
         MessageImpl message = getServiceMethodInternally().getNextRequestInternally();
         MessageBodyPartImpl bodyPart = message.createBodyPartInternally();
         bodyPart.setContent(content);

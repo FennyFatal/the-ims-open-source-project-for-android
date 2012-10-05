@@ -84,7 +84,7 @@ public class BodyPartUtils {
         for (int i = 0; i < l; i++) {
             ret += BOUNDARY_CHARS.charAt(rs.nextInt(BOUNDARY_CHARS.length()) % BOUNDARY_CHARS.length());
         }
-        ret += BOUNDARY_CHARS.charAt(rs.nextInt(BOUNDARY_CHARS.length()) % BOUNDARY_CHARS.length() - 1); // space is not allowed to be the last character
+        ret += BOUNDARY_CHARS.charAt(rs.nextInt(BOUNDARY_CHARS.length()) % (BOUNDARY_CHARS.length() - 1)); // space is not allowed to be the last character
 
         return ret;
     }

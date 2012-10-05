@@ -46,9 +46,11 @@ import com.android.ims.presence.ActivitiesValues;
 
 /**
  * The Activities class defines constants that can be used by the PersonInfo
- * class. These constants are equivalent with the activities defined in
- * [RFC4480].
+ * class. 
  * 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

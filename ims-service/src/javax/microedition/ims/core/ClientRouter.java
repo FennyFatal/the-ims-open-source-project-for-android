@@ -44,7 +44,7 @@ package javax.microedition.ims.core;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 
 public interface ClientRouter {
-    AcceptContactDescriptor[] buildClientPreferences(ClientIdentity clientIdentity);
+    AcceptContactDescriptor[] buildClientPreferences(ClientIdentity clientIdentity, boolean containFT);
 
     ClientIdentity findAddressee(BaseSipMessage message);
 }

@@ -46,6 +46,7 @@ import android.util.Log;
 
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.util.SIPUtil;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.IMSStack;
@@ -86,21 +87,21 @@ public class MessageManagerImpl extends IMessageManager.Stub {
         }
 
         public void onMSRPSessionStarted() {
-            Log.i(TAG, "LargeMessageSendingRunner.onMSRPSessionStarted#started");
+            Logger.log(TAG, "LargeMessageSendingRunner.onMSRPSessionStarted#started");
 
             msrpSession.sendMessage(msrpMessage);
 
             unSubscribe();
-            Log.i(TAG, "LargeMessageSendingRunner.onMSRPSessionStarted#finished");
+            Logger.log(TAG, "LargeMessageSendingRunner.onMSRPSessionStarted#finished");
         }
 
         public void onMSRPSessionStartFailed(int reasonType, String reasonPhrase, int statusCode) {
-            Log.i(TAG, "LargeMessageSendingRunner.onMSRPSessionStartFailed#started");
+            Logger.log(TAG, "LargeMessageSendingRunner.onMSRPSessionStartFailed#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo(reasonPhrase, reasonType, statusCode);
             notifyMessageSendFailed(msrpMessage.getMessageId(), reasonInfoImpl);
 
             unSubscribe();
-            Log.i(TAG, "LargeMessageSendingRunner.onMSRPSessionStartFailed#finished");
+            Logger.log(TAG, "LargeMessageSendingRunner.onMSRPSessionStartFailed#finished");
         }
 
         private void unSubscribe() {
@@ -121,20 +122,20 @@ public class MessageManagerImpl extends IMessageManager.Stub {
         }
 
         public void onMessageSent(String messageId) {
-            Log.i(TAG, "MSRPMessageSendingListenerImpl.onMessageSent#started");
+            Logger.log(TAG, "MSRPMessageSendingListenerImpl.onMessageSent#started");
             notifyMessageSent(messageId);
             msrpSession.close();
             unSubscribe();
-            Log.i(TAG, "MSRPMessageSendingListenerImpl.onMessageSent#finished");
+            Logger.log(TAG, "MSRPMessageSendingListenerImpl.onMessageSent#finished");
         }
 
         public void onMessageSendFailed(String messageId, String reasonPhrase, int reasonType, int statusCode) {
-            Log.i(TAG, "MSRPMessageSendingListenerImpl.onMessageSendFailed#started");
+            Logger.log(TAG, "MSRPMessageSendingListenerImpl.onMessageSendFailed#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo(reasonPhrase, reasonType, statusCode);
             notifyMessageSendFailed(messageId, reasonInfoImpl);
             msrpSession.close();
             unSubscribe();
-            Log.i(TAG, "MSRPMessageSendingListenerImpl.onMessageSendFailed#finished");
+            Logger.log(TAG, "MSRPMessageSendingListenerImpl.onMessageSendFailed#finished");
         }
 
         private void unSubscribe() {
@@ -150,20 +151,20 @@ public class MessageManagerImpl extends IMessageManager.Stub {
 
 
     public void sendMessage(IMessage message, boolean deliveryReport) throws RemoteException {
-        Log.i(TAG, "sendMessage#started");
+        Logger.log(TAG, "sendMessage#started");
 
         //TODO Implement
 
-        Log.i(TAG, "sendMessage#finished");
+        Logger.log(TAG, "sendMessage#finished");
     }
 
     
     public void sendLargeMessage(IMessage message, boolean deliveryReport) throws RemoteException {
-        Log.i(TAG, "sendLargeMessage#started");
+        Logger.log(TAG, "sendLargeMessage#started");
 
         MsrpMessage msrpMessage = IMessageBuilderUtils.iMessageToMsrpMessage(message);
 
-        Log.i(TAG, "sendLargeMessage#converted");
+        Logger.log(TAG, "sendLargeMessage#converted");
 
         for (String recepient : message.getRecipients()) {
 
@@ -187,21 +188,22 @@ public class MessageManagerImpl extends IMessageManager.Stub {
 
             }
             catch (DialogStateException e) {
-                Log.e(TAG, e.getMessage(), e);
+                Logger.log(TAG, e.getMessage());
+                e.printStackTrace();
             }
 
         }
 
-        Log.i(TAG, "sendLargeMessage#finished");
+        Logger.log(TAG, "sendLargeMessage#finished");
     }
 
     
     public void cancel(String messageId) throws RemoteException {
-        Log.i(TAG, "cancel#started");
+        Logger.log(TAG, "cancel#started");
 
         //TODO Implement
 
-        Log.i(TAG, "cancel#finished");
+        Logger.log(TAG, "cancel#finished");
     }
 
     
@@ -222,81 +224,87 @@ public class MessageManagerImpl extends IMessageManager.Stub {
     * TODO call this method
     */
     private void notifyIncomingLargeMessage() {
-        Log.i(TAG, "notifyIncomingLargeMessage#started");
+        Logger.log(TAG, "notifyIncomingLargeMessage#started");
         try {
             LargeMessageRequestImpl largeMessageRequestImpl = new LargeMessageRequestImpl();
 
             listenerHolder.getNotifier().incomingLargeMessage(largeMessageRequestImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyIncomingLargeMessage#finished");
+        Logger.log(TAG, "notifyIncomingLargeMessage#finished");
     }
 
     /*
     * TODO call this method
     */
     private void notifyMessageReceived(MsrpMessage msrpMessage) {
-        Log.i(TAG, "notifyMessageReceived#started");
+        Logger.log(TAG, "notifyMessageReceived#started");
         IMessage messageImpl = IMessageBuilderUtils.msrpMessageToIMessage(msrpMessage);
         try {
             listenerHolder.getNotifier().messageReceived(messageImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageReceived#finished");
+        Logger.log(TAG, "notifyMessageReceived#finished");
     }
 
     /*
     * TODO call this method
     */
     private void notifyMessageReceiveFailed(String messageId, IReasonInfo reasonInfoImpl) {
-        Log.i(TAG, "notifyMessageReceiveFailed#started");
+        Logger.log(TAG, "notifyMessageReceiveFailed#started");
         try {
             listenerHolder.getNotifier().messageReceiveFailed(messageId, reasonInfoImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageReceiveFailed#finished");
+        Logger.log(TAG, "notifyMessageReceiveFailed#finished");
     }
 
     private void notifyMessageSendFailed(String messageId, IReasonInfo reasonInfoImpl) {
-        Log.i(TAG, "notifyMessageSendFailed#started");
+        Logger.log(TAG, "notifyMessageSendFailed#started");
         try {
             listenerHolder.getNotifier().messageSendFailed(messageId, reasonInfoImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageSendFailed#finished");
+        Logger.log(TAG, "notifyMessageSendFailed#finished");
     }
 
     private void notifyMessageSent(String messageId) {
-        Log.i(TAG, "notifyMessageSent#started");
+        Logger.log(TAG, "notifyMessageSent#started");
         try {
             listenerHolder.getNotifier().messageSent(messageId);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyMessageSent#finished");
+        Logger.log(TAG, "notifyMessageSent#finished");
     }
 
     /*
     * TODO call this method
     */
     private void notifyTransferProgress(String messageId, int bytesTransferred, int bytesTotal) {
-        Log.i(TAG, "notifyTransferProgress#started");
+        Logger.log(TAG, "notifyTransferProgress#started");
         try {
             listenerHolder.getNotifier().transferProgress(messageId, bytesTransferred, bytesTotal);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyTransferProgress#finished");
+        Logger.log(TAG, "notifyTransferProgress#finished");
     }
 
 }

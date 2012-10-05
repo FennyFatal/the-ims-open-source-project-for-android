@@ -44,6 +44,10 @@ package javax.microedition.ims.core;
 /**
  * This listener type is responsible for notifying an application about <code>references</code> events.
  *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @see Reference#setListener(ReferenceListener)
  */
 public interface ReferenceListener {

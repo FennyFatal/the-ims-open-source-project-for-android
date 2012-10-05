@@ -43,6 +43,7 @@ package javax.microedition.ims.messages.builder;
 
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.refer.Refer;
 import javax.microedition.ims.messages.wrappers.common.Uri;
@@ -144,6 +145,9 @@ Content-Length: 0
         //Contact: sip:a@atlanta.example.com
         generateContactHeader(context.getConfig(), retValue);
         //Content-Length: 0
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         //???
         addAuthorizationHeader(retValue, MessageType.SIP_REFER);

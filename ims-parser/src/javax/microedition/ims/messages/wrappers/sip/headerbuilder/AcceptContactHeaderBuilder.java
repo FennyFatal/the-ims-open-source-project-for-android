@@ -46,6 +46,7 @@ import javax.microedition.ims.messages.wrappers.common.ParamList;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import javax.microedition.ims.messages.wrappers.sip.Header;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -63,13 +64,18 @@ public class AcceptContactHeaderBuilder extends AbstractHeaderBuilder {
     public StringBuilder build(final BaseSipMessage msg, final StringBuilder buffer, Collection<String> directlyHandledHeaders) {
 
         final ParamList paramList = msg.getAcceptContact();
+        Collection<String> ret;
 
         if (paramList != null && !paramList.getParams().isEmpty()) {
-            buffer
-                    .append(Header.AcceptContact.stringValue())
-                    .append(StringUtils.DOTS)
-                    .append(paramList.buildContent())
-                    .append(StringUtils.SIP_TERMINATOR);
+            ret = paramList.retrieveContent();
+            Iterator<String> it = ret.iterator();
+            while(it.hasNext()) {
+                buffer
+                        .append(Header.AcceptContact.stringValue())
+                        .append(StringUtils.DOTS)
+                        .append(it.next())
+                        .append(StringUtils.SIP_TERMINATOR);
+            }
         }
 
         return buffer;

@@ -48,6 +48,10 @@ import javax.microedition.ims.core.transaction.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TransactionState<T extends Transaction<Boolean, M>, M> implements Shutdownable {
+    protected enum RequestState {
+        PREACCEPTED, ACCEPTED, REJECTED, CANCELED, TIMEOUT, PRACKED, ACCEPTED_UPDATE, REJECTED_UPDATE
+    }
+
     protected final T transaction;
     private final TransactionListener<M> lifeCycleListener;
     private final AtomicBoolean firstInitComplete = new AtomicBoolean(false);

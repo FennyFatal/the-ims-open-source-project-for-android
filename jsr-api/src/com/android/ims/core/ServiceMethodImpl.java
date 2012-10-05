@@ -46,11 +46,15 @@ import android.os.RemoteException;
 import android.util.Log;
 import com.android.ims.ManagableConnection;
 import com.android.ims.ServiceCloseListener;
+import com.android.ims.util.CollectionsUtils;
+import com.android.ims.util.CollectionsUtils.Predicate;
 
 import javax.microedition.ims.android.core.IMessage;
 import javax.microedition.ims.android.core.IServiceMethod;
 import javax.microedition.ims.core.Message;
 import javax.microedition.ims.core.ServiceMethod;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -106,6 +110,11 @@ public abstract class ServiceMethodImpl implements ServiceMethod, ServiceCloseLi
 		}
 		return nextResponce;
 	}
+	
+    String getHeaderByValuePredicate(Message lastResponse, String headerName, Predicate<String> headerValuePredicate) {
+        final String[] headerValues = lastResponse.getHeaders(headerName);
+        return CollectionsUtils.find(Arrays.asList(headerValues), headerValuePredicate);
+    }
 
 	/**
 	 * @see ServiceMethod#getPreviousRequest(int)

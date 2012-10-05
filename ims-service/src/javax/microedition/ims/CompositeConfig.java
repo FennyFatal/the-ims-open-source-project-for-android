@@ -94,6 +94,14 @@ public class CompositeConfig implements Configuration, RegistryChangeListener {
         return conf.getRealm();
     }
 
+    public String getRealmSettings() {
+        return conf.getRealmSettings();
+    }
+
+    public ServerAddress getRegistrarServerSettings() {
+        return conf.getRegistrarServerSettings();
+    }
+
     public ServerAddress getRegistrarServer() {
         return conf.getRegistrarServer();
     }
@@ -116,6 +124,14 @@ public class CompositeConfig implements Configuration, RegistryChangeListener {
 
     public long getRegistrationExpirationSeconds() {
         return conf.getRegistrationExpirationSeconds();
+    }
+
+    public long getSubscriptionExpirationSeconds() {
+        return conf.getSubscriptionExpirationSeconds();
+    }
+
+    public long getPublicationExpirationSeconds() {
+        return conf.getPublicationExpirationSeconds();
     }
 
     /*
@@ -154,6 +170,10 @@ public class CompositeConfig implements Configuration, RegistryChangeListener {
         return conf.useResourceReservation();
     }
 
+    public boolean useFeatureTags() {
+        return conf.useFeatureTags();
+    }
+
     public XDMConfig getXDMConfig() {
         return doGetXdmConfig();
     }
@@ -187,8 +207,8 @@ public class CompositeConfig implements Configuration, RegistryChangeListener {
 
     public void commonRegistryChanged(RegistryChangeEvent<CommonRegistry> event) {
         Logger.log(TAG, "commonConfigChanged#");
-        final AuthenticationProperty oldAuth = event.getOldConfig().getAuthenticationProperty();
-        final AuthenticationProperty newAuth = event.getNewConfig().getAuthenticationProperty();
+        final AuthenticationProperty oldAuth = (event.getOldConfig() != null) ? event.getOldConfig().getAuthenticationProperty() : null;
+        final AuthenticationProperty newAuth = (event.getNewConfig() != null) ? event.getNewConfig().getAuthenticationProperty() : null;
         if (newAuth != null && !newAuth.equals(oldAuth)) {
             Logger.log(TAG, "commonConfigChanged#auth property changed");
 
@@ -208,8 +228,8 @@ public class CompositeConfig implements Configuration, RegistryChangeListener {
 */
         }
 
-        AuthenticationProperty oldXdmAuth = event.getOldConfig().getXdmAuthenticationProperty();
-        AuthenticationProperty newXdmAuth = event.getNewConfig().getXdmAuthenticationProperty();
+        AuthenticationProperty oldXdmAuth = (event.getOldConfig() != null) ? event.getOldConfig().getXdmAuthenticationProperty() : null;
+        AuthenticationProperty newXdmAuth = (event.getNewConfig() != null) ? event.getNewConfig().getXdmAuthenticationProperty() : null;
         if (newXdmAuth != null && !newXdmAuth.equals(oldXdmAuth)) {
             XDMConfig currentXdmConfig = doGetXdmConfig();
             XDMConfig updatedXdmConfig = new XDMConfigImpl(

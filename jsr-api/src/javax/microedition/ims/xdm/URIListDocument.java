@@ -60,11 +60,14 @@ import java.util.List;
 
 /**
  * The <code>URIListDocument</code> class represents the remotely stored XML
- * document that holds the user's URI lists. URI lists are defined by
- * [OMA_SHARED_LIST]. The document is retrieved with a call to the static
- * <code>retrieveDocument</code> method. The document can also be loaded from a
- * cached copy by using the static <code>loadDocument</code> method.
+ * document that holds the user's URI lists. 
  * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * See {@link XDMDocument} for more information and examples.
  * 
  * @author Andrei Khomushko

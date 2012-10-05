@@ -43,11 +43,11 @@ package javax.microedition.ims.xdm;
 
 /**
  * An <code>XCAPError</code> contains detailed information of an XCAP error that
- * is received from an XCAP server. The XCAPError can only be obtained from the
- * XCAPException class if the status code is 409.
+ * is received from an XCAP server. 
  * 
- * The XCAP error identifiers below are defined in [RFC4825], chapter 11.
- * 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

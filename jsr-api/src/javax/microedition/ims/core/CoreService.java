@@ -47,147 +47,12 @@ import javax.microedition.ims.ServiceClosedException;
 
 /**
  * The <code>CoreService</code> gives the application the possibility to call
- * remote peers over the IMS network. There is a set of basic call types in the
- * CoreService that can be created via factory methods, see
- * <code>ServiceMethod</code>
- * </p><p>
- * The application can react to server IMS calls by implementing the listener
- * interface <code>CoreServiceListener</code>.
- * </p><p>
- * </p><h3>Integration of CoreService to GCF</h3>
- * <p/>
- * <h4>Connector.open(String name)</h4>
- * A <code>CoreService</code> is created with <code>Connector.open</code>,
- * see <code>Service</code>, using an imscore connector string as <code>name</code>:
- * <ul>
- * <li><b><code>imscore:&lt;target&gt;[&lt;params&gt;]</code></b></li>
- * <p/>
- * </ul>
- * where <code>target</code> is the application id, and
- * <code>&lt;params&gt;</code> are the optional semi-colon separated
- * parameters:
- * <ul>
- * <li><b><code>userId=&lt;public user identity&gt;</code></b> is the local
- * user identity that the user prefers to be in effect for this rpc service.
- * The preference is used to override the default public user identity of the
- * device. The userId parameter accepts a display name together with the URI
- * using standard syntax.</li>
- * <p/>
- * <li><b><code>serviceId=&lt;service alias&gt;</code></b> is set if this
- * <code>CoreService</code> shall support the service alias specified in the
- * Registry. If this parameter is unspecified, the service alias defaults to the
- * empty string.</li>
- * </ul>
- * <p>
- * The <code>javax.microedition.io.Connector</code> class is defined in the
- * CLDC specifications (JSR30, JSR139) and is used here to create services. The
- * <code>Open</code> method allows some variation, and it is shown below how
- * this works for the <code>imscore:</code> connector string.
- * <p/>
- * </p><h4>Connector.open(String name, String mode)</h4>
- * <p/>
- * The optional second parameter 'mode' in <code>Connector.open</code>
- * specifies the access mode that can be <code>READ</code>,
- * <code>WRITE</code>, <code>READ_WRITE</code>. The mode is not relevant.
- * <p>
- * </p><h4>Connector.open(String name, String mode, boolean timeouts)</h4>
- * The optional third parameter is a boolean flag that indicates if the calling
- * code can handle timeout exceptions when creating the service.
- * <p>
- * <p/>
- * </p><h4>Exceptions when opening a CoreService</h4>
- * The following exceptions can be throws due to <code>CoreService</code>
- * specific errors, see <code>Service</code> for more exceptions.
- * <p>
- * </p><ul>
- * <li><code>CoreServiceException</code> - The <code>CoreService</code>
- * <p/>
- * could not be created, see <code>javax.microedition.ims.rpc</code> for more
- * information. The reason for not creating the <code>CoreService</code> could
- * be retrieved from the <code>ReasonInfo</code> interface. </li>
- * <p/>
- * <pre> ...
- * } catch (CoreServiceException cse) {
- * ReasonInfo info;
- * String reasonPhrase;
- * int reasonType;
- * int statusCode;
- * <p/>
- * info = cse.getReasonInfo();
- * reasonPhrase = info.getReasonPhrase();
- * reasonType = info.getReasonType();
- * statusCode = info.getStatusCode();
- * ...
- * }
- * </pre>
- * <p/>
- * </ul>
- * <p/>
- * <h3>CoreService creation rules</h3>
- * For a given application identity and no service identity, it is possible to
- * create at most one instance of a <code>CoreService</code>. For a given
- * application identity and a service identity, it is possible to have at most
- * one <code>CoreService</code>.
- * <p>
- * <p/>
- * <p/>
- * </p><h4>Examples</h4>
- * This code shows how to create a <code>CoreService</code> with the
- * application identity <code>com.myCompany.games.chess</code>. In the first
- * example the user identity will be the default user identity provisioned by
- * the IMS network. In the second example the application overrides the user
- * identity to use in this <code>CoreService</code>. The third example shows
- * a call used to create a <code>CoreService</code> with a service identity
- * specified.
- * <p/>
- * <pre> service = (CoreService) Connector.open("imscore://com.myCompany.games.chess");
- * <p/>
- * service = (CoreService) Connector.open("imscore://com.myCompany.games.chess;
- * userId=Alice &lt;sip:alice@home.net&gt;");
- * service = (CoreService) Connector.open("imscore://com.myCompany.games.chess;
- * userId=Alice &lt;sip:alice@home.net&gt;
- * <p/>
- * serviceId=game");
- * </pre>
- * <p/>
- * <h4>Closing a CoreService</h4>
- * The application SHOULD invoke <code>close</code> on the
- * <code>CoreService</code> when it is finished using the
- * <code>CoreService</code>. The IMS core may also close the
- * <code>CoreService</code> due to external events. This will trigger a call
- * to <code>serviceClosed</code> on the <code>CoreServiceListener</code>
- * <p/>
- * interface.
- * <p/>
- * <h3>Creating a service method, example</h3>
- * Alice invites Bob using their public user identities as addresses: <br>
- * <p/>
- * <pre> coreService.createSession("sip:alice@home.net", "sip:bob@home.net");
- * </pre>
- * <p/>
- * <p>
- * The sender requests anonymity in this request by using "Anonymous" as display
- * name in the <code>from</code> argument: <br>
- * <p/>
- * <p/>
- * </p><pre> coreService.createSession("Anonymous &lt;sip:anonymous@anonymous.invalid&gt;",
- * "sip:bob@home.net");
- * </pre>
- * <p/>
- * <p>
- * Alice uses her display name when inviting Bob:
- * <p/>
- * </p><pre> coreService.createSession("Alice &lt;sip:alice@home.net&gt;", "sip:bob@home.net");
- * </pre>
- * <p/>
- * For more information on the contents of the <code>from</code> and
- * <code>to</code> arguments in service methods, please see section on User
- * and Service Addressing in the overview.
- * <p>
- * <p/>
- * </p><p>
- * <p/>
- * </p>
+ * remote peers over the IMS network. 
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  *
  * @see CoreServiceListener
  */
@@ -225,8 +90,6 @@ public interface CoreService extends Service {
     /**
      * Creates a Publication for an event package with from as sender and to as the user identity to publish event state on.
      * <p/>
-     * The event package must be defined as a JAD file property or set with the setRegistry method in the Configuration class. 
-     * 
      * @param from - the sender SIP or TEL URI with an optional display name. 
      * If null, from is assumed to be the local user identity of the Service
      * @param to - the recipient SIP or TEL URI with an optional display name to publish event state information on. 

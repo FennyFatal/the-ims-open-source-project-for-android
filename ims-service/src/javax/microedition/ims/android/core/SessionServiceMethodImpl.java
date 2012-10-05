@@ -85,10 +85,10 @@ public class SessionServiceMethodImpl extends ServiceMethodImpl {
                 break;
             case MessageImpl.MethodId.SESSION_UPDATE:
                 if (state.get() == StateCode.STATE_RENEGOTIATING) {
-                    method = MessageType.SIP_UPDATE;
+                    method = MessageType.SIP_INVITE;
                 }
                 else {
-                    method = MessageType.SIP_INVITE;
+                    method = MessageType.SIP_UPDATE;
                 }
                 break;
             case MessageImpl.MethodId.SESSION_TERMINATE:

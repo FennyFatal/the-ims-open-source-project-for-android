@@ -59,9 +59,10 @@ import javax.microedition.ims.core.CapabilitiesListener;
  */
 public class CapabilitiesImpl extends ServiceMethodImpl implements Capabilities {
     private static final String TAG = "CapabilitiesImpl";
-    private final ICapabilities capabilitiesPeer;
+    private ICapabilities capabilitiesPeer = null;
 
-    private RemoteCapabilitiesListener remoteCapabilitiesListener;
+    private CapabilitiesListener mCurrentCapabilitiesListener = null;
+    private RemoteCapabilitiesListener remoteCapabilitiesListener = null;
 
     public CapabilitiesImpl(IServiceMethod serviceMethod,
             ICapabilities capabilitiesPeer) {
@@ -154,15 +155,28 @@ public class CapabilitiesImpl extends ServiceMethodImpl implements Capabilities 
     /**
      * @see Capabilities#setListener(CapabilitiesListener)
      */
-    
     public void setListener(CapabilitiesListener listener) {
-        if (remoteCapabilitiesListener != null) {
-            removeRemoteListener(remoteCapabilitiesListener);
+        try {
+            if (remoteCapabilitiesListener != null) {
+                capabilitiesPeer.removeListener(remoteCapabilitiesListener);
+                remoteCapabilitiesListener = null;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, e.getMessage(), e);
+            remoteCapabilitiesListener = null;
         }
 
         if (listener != null) {
-            addRemoteListener(new RemoteCapabilitiesListener(this, listener));
+            try {
+                remoteCapabilitiesListener = new RemoteCapabilitiesListener(this, listener);
+                capabilitiesPeer.addListener(remoteCapabilitiesListener);
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+                remoteCapabilitiesListener = null;
+            }
         }
+
+        mCurrentCapabilitiesListener = listener;
     }
 
     private void addRemoteListener(RemoteCapabilitiesListener listener) {

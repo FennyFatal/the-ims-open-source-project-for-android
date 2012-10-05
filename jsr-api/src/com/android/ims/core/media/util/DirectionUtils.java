@@ -43,12 +43,17 @@ package com.android.ims.core.media.util;
 
 import javax.microedition.ims.core.media.Media;
 
+import android.util.Log;
+
+
 /**
  * Utility class for direction media attribute.
  *
  * @author ext-akhomush
  */
 public final class DirectionUtils {
+    private static final String TAG = "DirectionUtils";
+
     private static final String DIRECTION_INACTIVE = "inactive";
     private static final String DIRECTION_SEND = "sendonly";
     private static final String DIRECTION_RECEIVE = "recvonly";
@@ -115,4 +120,25 @@ public final class DirectionUtils {
         }
         return ret;
     }
+
+    public static int parseDirection(int selfDir, int remoteDir) {
+        int response = selfDir;
+        switch(remoteDir) {
+            case Media.DIRECTION_SEND_RECEIVE:  //remote -> active
+                if (selfDir == Media.DIRECTION_INACTIVE)            //local: keep hold
+                    response = Media.DIRECTION_SEND;
+                else if (selfDir == Media.DIRECTION_RECEIVE)        //local: keep active
+                    response = Media.DIRECTION_SEND_RECEIVE;
+                break;
+            case Media.DIRECTION_SEND:          //remote -> hold
+                if (selfDir == Media.DIRECTION_SEND)                //local: keep hold
+                    response = Media.DIRECTION_INACTIVE;
+                else if (selfDir == Media.DIRECTION_SEND_RECEIVE)   //local: keep active
+                    response = Media.DIRECTION_RECEIVE;
+                break;
+        }
+        Log.d(TAG, "parseDirection. Self-OLD: "+selfDir+", Self-NEW: "+response+", Remote-Request: "+remoteDir);
+        return response;
+    }
+
 }

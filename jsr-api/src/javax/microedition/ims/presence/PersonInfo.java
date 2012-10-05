@@ -51,14 +51,12 @@ import java.util.List;
 
 /**
  * The PersonInfo component models the personal information about the presentity
- * that the presence data is trying to describe. Examples of presence
- * information that can be represented by the PersonInfo component are the
- * activities that the presentity is involved in, his/her overall willingness
- * for any kind of communication, his/her physical appearance, and his/her mood.
- * The PresenceSource supports only one PersonInfo component per
- * PresenceDocument. The PersonInfo component is mapped to the <person> element
- * defined in [RFC4479].
- * 
+ * that the presence data is trying to describe.
+ *
+ *
+ * </p><p></p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

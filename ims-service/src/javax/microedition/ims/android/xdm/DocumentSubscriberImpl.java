@@ -53,6 +53,7 @@ import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.ListenerHolder;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.EventPackage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.dialog.IncomingNotifyListener;
 import javax.microedition.ims.core.sipservice.subscribe.SubscribeService;
@@ -138,58 +139,61 @@ public class DocumentSubscriberImpl extends IDocumentSubscriber.Stub implements
             subscription.removeSubscriptionNotifyListener(this);
         }
         else {
-            Log.i(TAG, "The subscription isn't set");
+            Logger.log(TAG, "The subscription isn't set");
         }
     }
 
     
     public void onSubscriptionRefreshFailed(SubscriptionFailedEvent event) {
-        Log.i(TAG, "onSubscriptionRefreshFailed#event = " + event);
+        Logger.log(TAG, "onSubscriptionRefreshFailed#event = " + event);
     }
 
     
     public void onSubscriptionRefreshed(SubscriptionStateEvent event) {
-        Log.i(TAG, "onSubscriptionRefreshed#event = " + event);
+        Logger.log(TAG, "onSubscriptionRefreshed#event = " + event);
     }
 
     
     public void onSubscriptionStartFailed(SubscriptionFailedEvent event) {
-        Log.i(TAG, "onSubscriptionStartFailed#event = " + event);
+        Logger.log(TAG, "onSubscriptionStartFailed#event = " + event);
 
         IReasonInfo reason = new IReasonInfo(event.getReasonPhrase(), -1, event.getStatusCode());
         try {
             listenerHolder.getNotifier().subscriptionFailed(reason);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     
     public void onSubscriptionStarted(SubscriptionStateEvent event) {
-        Log.i(TAG, "onSubscriptionStarted#event = " + event);
+        Logger.log(TAG, "onSubscriptionStarted#event = " + event);
         try {
             listenerHolder.getNotifier().subscriptionStarted();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     
     public void onSubscriptionTerminated(SubscriptionTerminatedEvent event) {
-        Log.i(TAG, "onSubscriptionTerminated#event = " + event);
+        Logger.log(TAG, "onSubscriptionTerminated#event = " + event);
         try {
             listenerHolder.getNotifier().subscriptionTerminated();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     
     public void notificationReceived(NotifyEvent event) {
-        Log.i(TAG, "notificationReceived#event = " + event);
+        Logger.log(TAG, "notificationReceived#event = " + event);
 
         String[] xcapDiffs = event.getNotifyInfo().getNotifyBodyMessages();
         String xcapDiff = (xcapDiffs != null && xcapDiffs.length > 0 ? xcapDiffs[0] : null);
@@ -204,7 +208,8 @@ public class DocumentSubscriberImpl extends IDocumentSubscriber.Stub implements
             }
         }
         catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
 
 
@@ -255,11 +260,13 @@ public class DocumentSubscriberImpl extends IDocumentSubscriber.Stub implements
             retValue = new XCAPDifDocDescriptor(selector, newETag);
         }
         catch (ParserConfigurationException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             throw new IOException(e.getMessage());
         }
         catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             throw new IOException(e.getMessage());
         }
 
@@ -267,22 +274,24 @@ public class DocumentSubscriberImpl extends IDocumentSubscriber.Stub implements
     }
 
     private void documentDeleted(String documentSelector, String xcapDiff) {
-        Log.i(TAG, "documentDeleted#documentSelector = " + documentSelector);
+        Logger.log(TAG, "documentDeleted#documentSelector = " + documentSelector);
         try {
             listenerHolder.getNotifier().documentDeleted(documentSelector, xcapDiff);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private void documentUpdateReceived(String documentSelector, String xcapDiff) {
-        Log.i(TAG, "documentUpdateReceived#documentSelector = " + documentSelector);
+        Logger.log(TAG, "documentUpdateReceived#documentSelector = " + documentSelector);
         try {
             listenerHolder.getNotifier().documentUpdateReceived(documentSelector, xcapDiff);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 

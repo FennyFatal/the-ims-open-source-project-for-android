@@ -52,19 +52,12 @@ import java.util.Map;
 /**
  * Represents an XCAP request.
  * 
- * An XCAP request is an HTTP request to create, fetch, modify, or delete an XML
- * document or part of an XML document on the server. XCAP as implemented by
- * this class is defined in [RFC4825] and [OMA_XDM_SPEC]. A thorough
- * understanding of XCAP is needed to make full use of this class.
- * 
- * Making an XCAP request consists of the following three steps: 1. Create an
- * XCAP request object using one of the static factory methods in this class.
- * Optionally modify it. 2. Make the request using the sendXCAPRequest method in
- * XDMService. 3. Analyze the results of the request.
- * 
- * An XCAP request is a special form of an HTTP request, which means that it has
- * the following properties: 1. HTTP method: PUT, GET, and DELETE 2. HTTP URI 3.
- * HTTP headers 4. body
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
  * @author Andrei Khomushko
  * 

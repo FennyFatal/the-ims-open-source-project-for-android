@@ -45,40 +45,11 @@ import javax.microedition.ims.ServiceClosedException;
 
 /**
  * A Subscription is used for subscribing to events of the event package sent 
- * from the remote server endpoint. The application receives event 
- * notifications via callbacks to SubscriptionListener.subscriptionNotify 
- * method while being subscribed. There are two types of a subscription: 
- * A durative subscription start with a call to subscribe and ends with 
- * a call to unsubscribe. An instant subscription starts with a call 
- * to poll and ends when the first notification is received.
- * <p/>
- * The Subscription life cycle consist of three states, STATE_INACTIVE, 
- * STATE_PENDING and STATE_ACTIVE. A durative subscription can be updated 
- * with a call to subscribe while in STATE_ACTIVE.
- * <p/>
- * To establish a subscription, a Subscription has to be created. 
- * The event package to subscribe to must be set, and the subscription 
- * is started by calling subscribe. If the remote endpoint accepts the 
- * request, a notification will immediately be sent with the current 
- * event state that corresponds to the subscribed event package.
- * <p/>
- * <pre>
- *   try {
- *     sub = service.createSubscription(null, "sip:bob@home.net", "presence");
- *     sub.setListener(this); 
- *     sub.subscribe();
- *   } catch(Exception e){
- *     // handle Exceptions
- *   }
- *     
- *   public void subscriptionStarted(Subscription sub){
- *     // if the subscription was successfull
- *   }
- *   
- *   public void subscriptionNotify(Subscription sub, Message notify){
- *     // check the subscribed event state
- *   }
- * </pre>
+ * from the remote server endpoint.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  */
 public interface Subscription extends ServiceMethod {
     

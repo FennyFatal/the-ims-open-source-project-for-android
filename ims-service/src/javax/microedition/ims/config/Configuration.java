@@ -66,6 +66,10 @@ public interface Configuration {
 
     String getRealm();
 
+    String getRealmSettings();
+
+    ServerAddress getRegistrarServerSettings();
+
     ServerAddress getRegistrarServer();
 
     ServerAddress getProxyServer();
@@ -76,13 +80,17 @@ public interface Configuration {
 
     boolean useRPort();
 
-    long getRegistrationExpirationSeconds();
-
     Collection<ChallengeType> getAuthForceTypes();
 
     boolean useSimultaneousAuth();
 
     //boolean isPrackSupported();
+
+    long getRegistrationExpirationSeconds();
+
+    long getSubscriptionExpirationSeconds();
+
+    long getPublicationExpirationSeconds();
 
     /**
      * Early media negotiation
@@ -90,6 +98,8 @@ public interface Configuration {
     boolean useResourceReservation();
 
     //String[] getRequiredFeatures();
+
+    boolean useFeatureTags();
 
     OptionFeature[] getSupportedFeatures();
 

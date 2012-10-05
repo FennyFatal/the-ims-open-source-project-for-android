@@ -86,20 +86,19 @@ public class RegisterServerSettings extends PreferenceActivity implements Config
         initHostControl();
         initPortControl();
         initConnectionTypeControl();
-        initExpireTimeControl();
         initDNSLookup();
         initGlobalIpDiscovery();
     }
 
     private void initHostControl() {
         Preference preference = findPreference(AndroidConfiguration.SIP_REGISTER_HOST);
-        preference.setSummary(configuration.getRegistrarServer().getAddress());
+        preference.setSummary(configuration.getRegistrarServerSettings().getAddress());
     }
 
 
     private void initPortControl() {
         Preference preference = findPreference(AndroidConfiguration.SIP_REGISTER_PORT);
-        preference.setSummary(String.valueOf(configuration.getRegistrarServer().getPort()));
+        preference.setSummary(String.valueOf(configuration.getRegistrarServerSettings().getPort()));
     }
 
     private void initUserNameControl() {
@@ -129,11 +128,6 @@ public class RegisterServerSettings extends PreferenceActivity implements Config
         preference.setSummary(configuration.getConnectionType().toString());
     }
 
-    private void initExpireTimeControl() {
-        Preference preference = findPreference(AndroidConfiguration.SIP_REGISTER_EXPIRE_TIME);
-        preference.setSummary(String.valueOf(configuration.getRegistrationExpirationSeconds()));
-    }
-
     private void initDNSLookup() {
         Preference preference = findPreference(SIP_DNS_LOOKUP);
         preference.setSummary(Boolean.toString(configuration.useDNSLookup()));
@@ -151,8 +145,6 @@ public class RegisterServerSettings extends PreferenceActivity implements Config
             initPortControl();
         } else if (AndroidConfiguration.SIP_REGISTER_PROTOCOL_TYPE.equals(key)) {
             initConnectionTypeControl();
-        } else if (AndroidConfiguration.SIP_REGISTER_EXPIRE_TIME.equals(key)) {
-            initExpireTimeControl();
         } else if (AndroidConfiguration.SIP_REGISTER_USERNAME.equals(key)) {
             initUserNameControl();
         } else if (AndroidConfiguration.SIP_REGISTER_USERNAME_DOMAIN.equals(key)) {

@@ -72,52 +72,8 @@ applications.
 
 </p>
 
-<h2>Using the IMSAPI</h2>
-A JSR 281 IMS application goes through three generic steps:
-<ol>
-    <li>Access the IMS functionality of the device.</li>
-
-    <li>Go online to the IMS network using a selected identity.</li>
-    <li>Connect a call including media flows with a remote IMS device.</li>
-</ol>
-
-<h3>Access the IMS functionality</h3>
-To access the IMS functionality of the device, the IMS application needs to be
-installed. This can be done in two different ways, static and dynamic
-installation. Static installation is done by adding properties in the jad file.
-Dynamic installation is performed in runtime by invoking
-<code>Configuration.setRegistry</code>. Both installation methods are mentioned
-below.
-
-<h3>Go online</h3>
-The application creates a <code>Service</code> when it is prepared to handle
-calls. A <code>Service</code> is created by calling <code>Connector.open</code>.
-In order to receive incoming calls, it is recommended that the
-
-<code>CoreServiceListener</code> is set as soon as the <code>Service</code> is
-opened.
-
-<h3>Connect a call</h3>
-The final step that needs to be done is to create a <code>Session</code> that
-will manage the call. The call can be configured by adding various media and is
-then initiated by calling <code>Session.start</code>.
-
-<h3>Example code</h3>
-This example code only show the IMS specific java code that needs to be done
-in order to initiate a call including a streaming media.
-
-
-<pre>myCoreService = (CoreService) Connector.open("imscore://com.myCompany.CallApp");
-myCoreService.setListener(this);
-
-mySession = myCoreService.createSession(null, sip:bob@home.net);
-mySession.setListener(this);
-
-myMedia = (StreamMedia) mySession.createMedia("StreamMedia", Media.DIRECTION_SEND_RECEIVE);
-myMedia.setSource("capture://audio");
-
-mySession.start();
-</pre>
+Please refer to original JSR-281 documentation for detailed
+instructions and examples.
 
 </body>
 </html>

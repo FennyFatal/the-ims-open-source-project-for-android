@@ -152,7 +152,7 @@ public final class NetUtils {
 
                 if (!displayName.matches(".*[Ll]oop[Bb]ack.*")) {
                     final List<String> ipList = getNetInterfaceAddresses(interfaceName);
-                    if (ipList.size() > 0) {
+                    if (ipList != null && ipList.size() > 0) {
 
                         boolean haveFound = false;
                         for (String ipItem : ipList) {

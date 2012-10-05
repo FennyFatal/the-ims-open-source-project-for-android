@@ -46,6 +46,11 @@ import java.io.IOException;
 
 /**
  * A CoreServiceException indicates that a CoreService  could not be created.
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  */
 public class CoreServiceException extends IOException {
     /**

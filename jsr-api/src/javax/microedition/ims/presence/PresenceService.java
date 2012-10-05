@@ -48,37 +48,12 @@ import javax.microedition.ims.ServiceClosedException;
 /**
  * 
  * The PresenceService is the entry point for handling presence functionality
- * according to the OMA Presence 1.1 release. This includes functionality to
- * publish presence information, subscribe to presence and watcher information
- * and to manage the presence document.
- * 
- * Creating a PresenceService
- * 
- * Connector.open(String name)
- * 
- * A PresenceService is created with Connector.open(), according to the Generic
- * Connection Framework (GCF), using a name string of the format
- * 
- * {scheme}:{target}[{params}]
- * 
- * where:
- * 
- * <ul>
- * <li>{scheme} is the protocol for presence "imspresence"</li>
- * <li>{target} is always a double slash "//" followed by the application id</li>
- * <li>{params} is an optional parameter that can be used to set the local user
- * identity on the format ;userId=<sip user identity>. This can be used to
- * override the default user identity provisioned by the IMS network and the sip
- * user identity must be on the format described in UserIdentity.</li>
- * </ul>
- * 
- * Closing a PresenceService
- * 
- * The application SHOULD invoke close on PresenceService when it is finished
- * using it. The IMS engine may also close the PresenceService due to external
- * events. This will trigger a call to serviceClosed on the
- * PresenceServiceListener interface.
- * 
+ * according to the OMA Presence 1.1 release. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

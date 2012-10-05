@@ -107,6 +107,14 @@ final class TransactionTypeData {
                 }
             };
 
+    static final Map<MessageType, Class<? extends IMSMessage>> UPDATE_SERVER_APPLICABLE_MESSAGES =
+        new HashMap<MessageType, Class<? extends IMSMessage>>() {
+            {
+                    put(MessageType.SIP_PRACK, Request.class);
+                    put(MessageType.SIP_ACK, Request.class);
+                    put(MessageType.SIP_CANCEL, Request.class);
+            }
+        };
 
     /**
      * TransactionType.SIP_LOGIN data

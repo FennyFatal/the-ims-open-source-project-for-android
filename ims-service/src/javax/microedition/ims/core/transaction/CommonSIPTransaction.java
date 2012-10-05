@@ -76,6 +76,7 @@ public abstract class CommonSIPTransaction extends CommonTransaction<BaseSipMess
         return dialog;
     }
 
+    @Override
     public TransactionDescription getDescription() {
         return description;
     }

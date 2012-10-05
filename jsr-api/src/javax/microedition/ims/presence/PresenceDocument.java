@@ -45,10 +45,10 @@ import org.w3c.dom.Document;
 
 /**
  * The PresenceDocument can be used to publish the user's own presence
- * information or to inspect presence information the user subscribed to. The
- * presence information data format (PIDF) is defined in [RFC3863] and extended
- * in [RFC4480] and [OMA_PRES_DDS].
+ * information or to access presence information from others.
  * 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  * @author Andre Khomushko
  * 
  */

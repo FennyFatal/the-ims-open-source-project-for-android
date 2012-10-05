@@ -45,6 +45,12 @@ package javax.microedition.ims.core;
  * This listener type is used to notify the application about responses to
  * capability queries.
  * 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ *
  * @author Andrei Khomushko
  * 
  */

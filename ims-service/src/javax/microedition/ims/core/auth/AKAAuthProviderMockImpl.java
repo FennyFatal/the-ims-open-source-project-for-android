@@ -74,6 +74,10 @@ public class AKAAuthProviderMockImpl implements AKAAuthProvider {
         return new UserInfo("sip", "12345678", "dummy.com");
         //return null;
     }
+
+    public String getHomeNetworkDomain() {
+        return "msg.pc.t-mobile.com";
+    }
     
     @Override
     public boolean isGbaUSupported() {

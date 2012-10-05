@@ -81,9 +81,12 @@
    	
     <string name="sip_registrar_username_domain">User domain</string>
     <string name="sip_registrar_username_domain_summary">User domain is not set</string>
-   	
-   	<string name="sip_registrar_expire_time_type">Expire time</string>
-   	<string name="sip_registrar_expire_time_summary">Registration expire type</string>
+
+    <string name="sip_expire_time">Expires Time</string>
+    <string name="sip_expire_time_title">Expires Time Settings</string>
+    <string name="sip_registrar_expire_time_type">Registrar</string>
+    <string name="sip_subscription_expire_time_type">Subscription</string>
+    <string name="sip_publication_expire_time_type">Publication</string>
 
     <string name="sip_preferred_identity">Preferred User identity</string>
    	<string name="sip_preferred_identity_summary">Preferred User identity</string>
@@ -187,6 +190,12 @@
    	<string name="username_schema_validator_message">Wrong value for user schema</string>
    	
 
+<!--    	
+    <string name="def_xdm_xcap_root">http://siptest.dummy.com:8080/services</string>
+    <string name="def_xdm_xui_name">sip:movial11@dummy.com</string>
+    <string name="def_xdm_xui_password">movial11</string>
+ -->
+ 
  	<string name="msrp_title">Msrp settings</string> 
  
  	<string name="msrp_local_port_title">Msrp local port</string>
@@ -213,4 +222,6 @@
    	<string name="dtmf_payload_type">Payload Type</string>
    	<string name="dtmf_payload_type_summary">Payload Type</string>
     	
+    <string name="sip_use_feature_tags">Feature Tags in INVITE-Accept-Contact and REGISTER-Contact</string>
+    <string name="sip_use_feature_tags_summary">Use feature tags in INVITE and REGISTER</string>
 </resources>

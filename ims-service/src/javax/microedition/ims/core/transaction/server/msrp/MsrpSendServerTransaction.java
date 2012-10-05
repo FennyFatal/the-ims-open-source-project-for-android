@@ -83,4 +83,8 @@ public class MsrpSendServerTransaction extends MsrpServerTransaction {
         transitToState(new TryingState(this), event);
     }
 
+    @Override
+    public boolean isAutoAcceptable() {
+        return true;
+    }
 }

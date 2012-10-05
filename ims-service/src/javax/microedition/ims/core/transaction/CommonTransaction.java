@@ -44,8 +44,11 @@ package javax.microedition.ims.core.transaction;
 import javax.microedition.ims.common.*;
 import javax.microedition.ims.common.RepetitiousTaskManager.RepetitiousTimeStrategy;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.sipservice.State;
+import javax.microedition.ims.core.sipservice.StateChangeReason;
 import javax.microedition.ims.core.sipservice.TransactionState;
 import javax.microedition.ims.core.sipservice.TransactionStateChangeEvent;
+import javax.microedition.ims.core.sipservice.DefaultTransactionStateChangeEvent;
 import javax.microedition.ims.messages.wrappers.sip.Request;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -100,8 +103,9 @@ public abstract class CommonTransaction<M extends IMSMessage> implements Transac
                         //onTransactionCreate new message
                         //final BaseSipMessage message = createInitialMessage(messageBuilder, parameters);
                         boolean needSendInitialMessage = false;
-                        if (needBuildInitialMessage()) {
 
+                        boolean needBuildInitialMessage = needBuildInitialMessage();
+                        if (needBuildInitialMessage) {
                             beforeInitMessageCreated();
                             M message = buildInitialMessage();
 
@@ -111,7 +115,8 @@ public abstract class CommonTransaction<M extends IMSMessage> implements Transac
                             needSendInitialMessage = true;
                         }
                         else {
-                            initialMessage.compareAndSet(null, getFirstIncomingMessage());
+                            M firstIncomingMessage = getFirstIncomingMessage();
+                            initialMessage.compareAndSet(null, firstIncomingMessage);
                         }
 
                         if (needSendInitialMessage) {
@@ -387,8 +392,22 @@ public abstract class CommonTransaction<M extends IMSMessage> implements Transac
 
                 //TODO temporary solution
                 IMSMessage message = lastOutMessage.get();
-                if(message != null) {
+                if(message != null && transactionResult.getReason() == TransactionResult.Reason.TIMEOUT) {
                     message.expire();
+                }
+
+                if(transactionResult.getReason() == TransactionResult.Reason.TIMEOUT &&
+                    currentState != null && currentState.shortName().contains("TryingState") &&
+                    message != null && message.toString().contains("OPTIONS")) {
+                    TransactionStateChangeEvent<M> event =
+                        new DefaultTransactionStateChangeEvent<M>(
+                            this, //transaction,
+                            State.TRYING,
+                            StateChangeReason.TIMER_TIMEOUT,
+                            null
+                        );
+
+                    notifyTU(event);
                 }
 
                 //let the outer code the chance to reInvite transaction maps and so on

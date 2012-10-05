@@ -58,20 +58,14 @@ import java.util.List;
 
 /**
  * The PresenceAuthorizationDocument class represents the remotely stored XML
- * document that holds the user's presence authorization rules. Presence
- * authorization rules are defined by [OMA_PRES_XDM].
- * <p/>
- * The document is retrieved with a call to the static retrieveDocument method.
- * The document can also be loaded from a cached copy by using the static
- * loadDocument method.
- * <p/>
- * Presence authorization rules enables the application to set authorization
- * rules for a predefined group of user URIs or for users that are defined in
- * standard lists such as oma_grantedcontacts and oma_blockedcontacts.
- * <p/>
- * A rule can be added to a PresenceAuthorizationDocument by creating a new
- * PresenceAuthorizationRule and then calling the addRule method in this class.
+ * document that holds the user's presence authorization rules. 
  *
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ * 
  * @author Andrei Khomushko
  * @see XDMDocument, PresenceAuthorizationRule
  */

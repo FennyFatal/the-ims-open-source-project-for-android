@@ -58,4 +58,6 @@ public interface SrvTransaction<M extends IMSMessage> {
     public void sendResponse(M triggeringMessage, int code, boolean toLastRequest);
 
     void sendResponseNonInvite(State state);
+
+    boolean isAutoAcceptable();
 }

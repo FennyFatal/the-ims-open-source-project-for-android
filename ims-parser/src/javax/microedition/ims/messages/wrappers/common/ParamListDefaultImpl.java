@@ -41,6 +41,7 @@
 
 package javax.microedition.ims.messages.wrappers.common;
 
+import android.text.TextUtils;
 import java.util.*;
 
 public class ParamListDefaultImpl implements ParamList {
@@ -118,18 +119,48 @@ public class ParamListDefaultImpl implements ParamList {
         return getContent(";");
     }
 
+    public String buildContent(boolean first) {
+        return getContent(";", first);
+    }
+
     public String getContent(String separator) {
+        return getContent(separator, false);
+    }
+
+    String getContent(String separator, boolean first) {
         Iterator<String> it = params.keySet().iterator();
         StringBuilder sb = new StringBuilder();
+        StringBuilder sbplus = new StringBuilder();
         String key = null;
+
         while (it.hasNext()) {
             key = it.next();
-            sb.append(separator).append(key);
+            StringBuilder builder = key.startsWith("+") ? sbplus : sb;
+            builder.append(separator).append(key);
             if (params.get(key) != null && params.get(key).getValue() != null) {
-                sb.append("=").append(params.get(key).getValue());
+                builder.append("=").append(params.get(key).getValue());
             }
         }
-        return sb.toString();
+
+        if (TextUtils.isEmpty(sb))
+            return sbplus.toString().substring(first ? 1 : 0);
+        else if (TextUtils.isEmpty(sbplus))
+            return sb.toString().substring(first ? 1 : 0);
+        else
+            return sb.toString().substring(first ? 1 : 0)+sbplus.toString();
+    }
+
+    public Collection<String> retrieveContent() {
+        Iterator<String> it = params.keySet().iterator();
+        ArrayList<String> ret = new ArrayList<String>();
+        String key = null;
+        while(it.hasNext()) {
+            key = it.next();
+            if (params.get(key) != null && params.get(key).getKey() != null) {
+                ret.add(params.get(key).getKey());
+            }
+        }
+        return ret;
     }
 
     @Override

@@ -47,44 +47,11 @@ import java.io.IOException;
 /**
  * The FilePullRequest is used to handle incoming file pull requests, 
  * meaning that files will be pulled from the request recipient to 
- * the IM user that requested the files. The application has the possibility to accept 
- * or reject an incoming file pull request. The metadata of the files 
- * can be inspected by calling the getFileSelectors method before 
- * deciding whether to accept or reject the request. The fileSent event 
- * will be invoked for each file for the IM user that received the file 
- * pull request.  Both users may receive transferProgress events for individual files.
- * <p/>
- * Before a FilePullRequest can be accepted, all file selectors in 
- * the request must be mapped to a physical file by calling the setFilePath method for each selector.
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice accepts an incoming file pull request with one file.
- * <p/>
- * <pre>
- * 
- *  void incomingFilePullRequest(FilePullRequest filePullRequest) {
- *      // this call to the FileTransferManagerListener indicates that a 
- *      // file pull request has been received 
- *      FileSelector selector = filePullRequest.getFileSelectors()[0];
- *      ...
- *      //investigate the file selector
- *      ...
- *      filePullRequest.setFilePath(selector, "file:///CFCard/img/bob.png");
- *      filePullRequest.accept();
- *  }
- *  
- *  void transferProgress(String requestId, String fileId, int bytesTransferred,
- *      int bytesTotal) {
- *      // this call to the FileTransferManagerListener indicates the 
- *      // transfer progress of the outgoing file
- *  }
- *  
- *  void fileSent(String requestId, String fileId) {
- *      // this call to the FileTransferManagerListener indicates that 
- *      // the file has been sent
- *  }
- * </pre>
+ * the IM user that requested the files.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface FilePullRequest {
     

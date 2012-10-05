@@ -65,14 +65,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javax.microedition.ims.core.dialog.Dialog.DialogState.STATED;
 
-public class PageMessageServiceImpl extends AbstractService implements PageMessageService, IncomingRequestHandler4PageMessageService<Request> {
+public class PageMessageServiceImpl extends AbstractService implements PageMessageService,
+        IncomingRequestHandler4PageMessageService<Request> {
+
     private final AtomicBoolean done = new AtomicBoolean(false);
-    private final ListenerHolder<DialogStateListener> dialogStateListenerHolder = new ListenerHolder<DialogStateListener>(DialogStateListener.class);
-    private final ListenerHolder<IncomingOperationListener> incomingPageMessageListenerHolder = new ListenerHolder<IncomingOperationListener>(IncomingOperationListener.class);
+
+    private final ListenerHolder<DialogStateListener> dialogStateListenerHolder = new ListenerHolder<DialogStateListener>(
+            DialogStateListener.class);
+
+    private final ListenerHolder<IncomingOperationListener> incomingPageMessageListenerHolder = new ListenerHolder<IncomingOperationListener>(
+            IncomingOperationListener.class);
+
     private final PageMessageService transactionSafeView;
 
-    public PageMessageServiceImpl(StackContext stackContext,
-                                  TransactionManager transactionManager) {
+    public PageMessageServiceImpl(StackContext stackContext, TransactionManager transactionManager) {
         super(stackContext, transactionManager);
 
         transactionSafeView = TransactionUtils.wrap(this, PageMessageService.class);
@@ -84,104 +90,113 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
         return transactionSafeView;
     }
 
-    private final TransactionBuildUpListener<BaseSipMessage> clientMessageListener =
-            new TransactionBuildUpListener<BaseSipMessage>() {
-                
-                public void onTransactionCreate(final TransactionBuildUpEvent<BaseSipMessage> event) {
-                    assert TransactionType.SIP_MESSAGE_CLIENT == event.getTransaction().getTransactionType();
+    private final TransactionBuildUpListener<BaseSipMessage> clientMessageListener = new TransactionBuildUpListener<BaseSipMessage>() {
 
-                    Dialog dialog = (Dialog) event.getEntity();
-                    final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
+        public void onTransactionCreate(final TransactionBuildUpEvent<BaseSipMessage> event) {
+            assert TransactionType.SIP_MESSAGE_CLIENT == event.getTransaction()
+                    .getTransactionType();
 
-                    transaction.addListener(new AuthChallengeListener<BaseSipMessage>(transaction, dialog));
-                    transaction.addListener(
-                            new DialogStateMiddleMan<BaseSipMessage>(transaction, dialog, dialogStateListenerHolder)
-                    );
-                    transaction.addListener(
-                            new DialogCleanUpListener<BaseSipMessage>(transaction, dialog, false) {
-                                
-                                protected void onDialogCleanUp(final Dialog dialog) {
-                                    Logger.log("PageMessageServiceImpl$clientMessageListener", "onDialogCleanUp");
-                                    getStackContext().getDialogStorage().cleanUpDialog(dialog);
-                                }
-                            }
-                    );
+            Dialog dialog = (Dialog)event.getEntity();
+            final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
+
+            transaction.addListener(new AuthChallengeListener<BaseSipMessage>(transaction, dialog));
+            transaction.addListener(new DialogStateMiddleMan<BaseSipMessage>(transaction, dialog,
+                    dialogStateListenerHolder));
+            transaction.addListener(new DialogCleanUpListener<BaseSipMessage>(transaction, dialog,
+                    false) {
+
+                protected void onDialogCleanUp(final Dialog dialog) {
+                    Logger.log("PageMessageServiceImpl$clientMessageListener", "onDialogCleanUp");
+                    getStackContext().getDialogStorage().cleanUpDialog(dialog);
                 }
-            };
+            });
+        }
+    };
 
-    private final TransactionBuildUpListener<BaseSipMessage> serverMessageListener =
-            new TransactionBuildUpListener<BaseSipMessage>() {
-                
-                public void onTransactionCreate(final TransactionBuildUpEvent<BaseSipMessage> event) {
-                    assert TransactionType.SIP_MESSAGE_SERVER == event.getTransaction().getTransactionType();
+    private final TransactionBuildUpListener<BaseSipMessage> serverMessageListener = new TransactionBuildUpListener<BaseSipMessage>() {
 
-                    Dialog dialog = (Dialog) event.getEntity();
-                    final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
+        public void onTransactionCreate(final TransactionBuildUpEvent<BaseSipMessage> event) {
+            assert TransactionType.SIP_MESSAGE_SERVER == event.getTransaction()
+                    .getTransactionType();
 
-                    //listener will un-subscribe automatically on transaction complete
-                    transaction.addListener(
-                            new IncomingPageMessageListener<BaseSipMessage>(
-                                    dialog,
-                                    transaction,
-                                    incomingPageMessageListenerHolder
-                            )
-                    );
+            Dialog dialog = (Dialog)event.getEntity();
+            final Transaction<Boolean, BaseSipMessage> transaction = event.getTransaction();
 
-                    transaction.addListener(
-                            new DialogStateMiddleMan<BaseSipMessage>(transaction, dialog, dialogStateListenerHolder)
-                    );
+            // listener will un-subscribe automatically on transaction complete
+            transaction.addListener(new IncomingPageMessageListener<BaseSipMessage>(dialog,
+                    transaction, incomingPageMessageListenerHolder));
 
-                    transaction.addListener(
-                            new DialogCleanUpListener<BaseSipMessage>(transaction, dialog, false) {
-                                
-                                protected void onDialogCleanUp(final Dialog dialog) {
-                                    Logger.log("PageMessageServiceImpl$serverMessageListener", "onDialogCleanUp");
-                                    getStackContext().getDialogStorage().cleanUpDialog(dialog);
-                                }
-                            }
-                    );
-                }
-            };
+            transaction.addListener(new DialogStateMiddleMan<BaseSipMessage>(transaction, dialog,
+                    dialogStateListenerHolder));
+
+            PageMessageTransactionDescription transactionDescription = (PageMessageTransactionDescription)transaction.getDescription();
+            
+            if(transactionDescription.isOwnDialog()) {
+                transaction.addListener(new DialogCleanUpListener<BaseSipMessage>(transaction, dialog,
+                        false) {
+
+                    protected void onDialogCleanUp(final Dialog dialog) {
+                        Logger.log("PageMessageServiceImpl$serverMessageListener", "onDialogCleanUp");
+                        getStackContext().getDialogStorage().cleanUpDialog(dialog);
+                    }
+                });
+            }
+        }
+    };
 
     public void handleIncomingPageMessage(Request msg) throws DialogStateException {
-        assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
+        assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in "
+                + Thread.currentThread();
         assert !done.get();
         assert msg != null && MessageType.SIP_MESSAGE == MessageType.parse(msg.getMethod());
         if (!done.get()) {
             Logger.log("Remote party has sent message");
-            //ClientIdentity localParty = getStackContext().getStackClientRegistry().findAddressee(msg.getTo().getUriBuilder().getShortURI());
+            // ClientIdentity localParty =
+            // getStackContext().getStackClientRegistry().findAddressee(msg.getTo().getUriBuilder().getShortURI());
             ClientIdentity localParty = getStackContext().getClientRouter().findAddressee(msg);
 
             if (localParty != null) {
-                assert getStackContext().getDialogStorage().findDialogForMessage(msg) == null;
-                final Dialog dialog = getStackContext().getDialogStorage().getDialogForIncomingMessage(localParty, msg);
+                // assert
+                // getStackContext().getDialogStorage().findDialogForMessage(msg)
+                // == null;
+                // AK: there cases when message is sent within dialog, for
+                // example ussd calling
+                boolean isDialogAlreadyExists = getStackContext().getDialogStorage()
+                        .findDialogForMessage(msg) != null;
+                final Dialog dialog = getStackContext().getDialogStorage()
+                        .getDialogForIncomingMessage(localParty, msg);
                 TransactionType<ServerTransaction, ? extends PageMessageServerTransaction> transactionType = TransactionType.SIP_MESSAGE_SERVER;
 
-                doHandleIncomingPageMessage(msg, dialog, transactionType);
-            }
-            else {
+                doHandleIncomingPageMessage(msg, dialog, transactionType, !isDialogAlreadyExists);
+            } else {
                 Logger.log("Can't find client for page message");
-                throw new DialogStateException(null, DialogStateException.Error.REQUEST_CANNOT_BE_HANDLED, msg);
+                throw new DialogStateException(null,
+                        DialogStateException.Error.REQUEST_CANNOT_BE_HANDLED, msg);
             }
         }
     }
 
-    private void doHandleIncomingPageMessage(final Request msg, final Dialog dialog, final TransactionType<ServerTransaction, ? extends PageMessageServerTransaction> transactionType) {
+    private void doHandleIncomingPageMessage(
+            final Request msg,
+            final Dialog dialog,
+            final TransactionType<ServerTransaction, ? extends PageMessageServerTransaction> transactionType,
+            boolean isOwnDialog) {
         dialog.getMessageHistory().addMessage(msg, true);
 
         Logger.log("doHandleIncomingPageMessage", "");
-        /*if (ContentType.SDP.stringValue().equals(msg.getContentType().getValue())) {
-                  DIALOG.setIncomingSdpMessage(SdpParser.parse(new String(msg.getBody())));
-              }*/
+        /*
+         * if
+         * (ContentType.SDP.stringValue().equals(msg.getContentType().getValue
+         * ())) { DIALOG.setIncomingSdpMessage(SdpParser.parse(new
+         * String(msg.getBody()))); }
+         */
 
         final TransactionManager transactionManager = getTransactionManager();
-        transactionManager.addListener(new FirstMessageResolver(transactionType.getName(), dialog, msg, transactionManager));
+        transactionManager.addListener(new FirstMessageResolver(transactionType.getName(), dialog,
+                msg, transactionManager));
 
-        final PageMessageServerTransaction transaction = (PageMessageServerTransaction) transactionManager.lookUpTransaction(
-                dialog,
-                null,
-                transactionType
-        );
+        final PageMessageServerTransaction transaction = (PageMessageServerTransaction)transactionManager
+                .lookUpTransaction(dialog, new DegaultPageMessageTransactionDescription(isOwnDialog), transactionType);
         runAsynchronously(transaction, TRANSACTION_TIMEOUT);
     }
 
@@ -191,7 +206,9 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
 
         if (!done.get()) {
             if (STATED == dialog.getState()) {
-                throw new DialogStateException(dialog, DialogStateException.Error.SEND_MESSAGE_FOR_STATED_DIALOG, null, "Can not send message. Dialog is already stated.");
+                throw new DialogStateException(dialog,
+                        DialogStateException.Error.SEND_MESSAGE_FOR_STATED_DIALOG, null,
+                        "Can not send message. Dialog is already stated.");
             }
 
             doSendPageMessage(dialog, TRANSACTION_TIMEOUT);
@@ -199,17 +216,14 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
     }
 
     private void doSendPageMessage(final Dialog dialog, final TimeoutUnit timeoutUnit) {
-        assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
+        assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in "
+                + Thread.currentThread();
         assert !done.get();
 
-        final Transaction transaction =
-                getTransactionManager().lookUpTransaction(
-                        dialog,
-                        null,
-                        TransactionType.SIP_MESSAGE_CLIENT
-                );
+        final Transaction transaction = getTransactionManager().lookUpTransaction(dialog, null,
+                TransactionType.SIP_MESSAGE_CLIENT);
 
-        runAsynchronously((Transaction<Boolean, BaseSipMessage>) transaction, timeoutUnit);
+        runAsynchronously((Transaction<Boolean, BaseSipMessage>)transaction, timeoutUnit);
     }
 
 
@@ -222,7 +236,8 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
         Logger.log(getClass(), Logger.Tag.SHUTDOWN, "InviteService shutdown successfully");
     }
 
-    public void addIncomingOperationListener(ClientIdentity identity, IncomingOperationListener listener) {
+    public void addIncomingOperationListener(ClientIdentity identity,
+            IncomingOperationListener listener) {
         incomingPageMessageListenerHolder.addListener(listener, identity);
     }
 
@@ -231,9 +246,7 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
         incomingPageMessageListenerHolder.removeListener(listener);
     }
 
-    
-    public void addDialogStateListener(Dialog dialog,
-                                       DialogStateListener listener) {
+    public void addDialogStateListener(Dialog dialog, DialogStateListener listener) {
         dialogStateListenerHolder.addListener(listener, dialog);
     }
 
@@ -243,8 +256,10 @@ public class PageMessageServiceImpl extends AbstractService implements PageMessa
     }
 
     private void subscribeToTransactionManager() {
-        getTransactionManager().addListener(clientMessageListener, TransactionType.Name.SIP_MESSAGE_CLIENT);
-        getTransactionManager().addListener(serverMessageListener, TransactionType.Name.SIP_MESSAGE_SERVER);
+        getTransactionManager().addListener(clientMessageListener,
+                TransactionType.Name.SIP_MESSAGE_CLIENT);
+        getTransactionManager().addListener(serverMessageListener,
+                TransactionType.Name.SIP_MESSAGE_SERVER);
     }
 
     private void unSubscribeFromTransactionManager() {

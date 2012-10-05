@@ -45,67 +45,11 @@ import javax.microedition.ims.ServiceClosedException;
 
 /**
  * The Publication is used for publishing event state to a remote endpoint. 
- * When a publication is created, an event package must be specified which 
- * identifies the type of content that is about to be published. A typical 
- * event package is 'presence' that can be used to publish online information. 
- * Other endpoints can then subscribe to that event package and get callbacks 
- * when the subscribed user identity changes online status.
- * <p/>
- * The published event state will be refreshed periodically until unpublish is called. 
- * Updates of the published event state may be achieved by calling the publish method again with modified event state.
- * <p/>
- * The life cycle consist of three states, STATE_INACTIVE, STATE_PENDING and STATE_ACTIVE.
- * <p/>
- * A new Publication starts in STATE_INACTIVE and when publish is called 
- * the state transits to STATE_PENDING and remains there until a response arrives from the remote endpoint.
- * <p/>
- * In STATE_ACTIVE, unpublish can be called to cancel the publication and 
- * the state will then transit to STATE_PENDING and remain there until a response arrives from the remote endpoint.
- * <p/>
- * Example of a simple Publication
- * <p/>
- * <pre>
- * 
- *   try {
- *     pub = service.createPublication(null, "sip:alice@home.net", "presence");
- *     pub.setListener(this); 
- *     pub.publish(onlineStatus, "application/pidf+xml");
- *   } catch(Exception e){
- *     //handle Exceptions
- *   }
- *     
- *   public void publicationDelivered(Publication pub){
- *     //if the publish was successfull
- *   }
- * </pre>
- * <p/>
- * Example of a multipart Publication
- * <p/>
- * <pre>
- * 
- *   try {
- *     pub = service.createPublication(null, "sip:alice@home.net", "presence");
- *     pub.setListener(this);
- *     Message message = pub.getNextRequest();
- *     // add first body part
- *     MessageBodyPart part1 = message.createBodyPart();
- *     part1.setHeader("Content-Type", "application/pidf+xml");
- *     OutputStream os = part1.openContentOutputStream();
- *     os.write(...);
- *     os.close();
- *     // add following body parts
- *     MessageBodyPart part2 = message.createBodyPart();
- *     ... 
- *     // when all body parts have been added
- *     pub.publish(null, null);
- *   } catch(Exception e){
- *     //handle Exceptions
- *   }
- *     
- *   public void publicationDelivered(Publication pub){
- *     // if the publish was successful
- *   }
- * </pre>
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface Publication extends ServiceMethod {
     /**

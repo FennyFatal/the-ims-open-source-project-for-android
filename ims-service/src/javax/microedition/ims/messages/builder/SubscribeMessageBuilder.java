@@ -47,6 +47,7 @@ import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.config.UserInfo;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.Privacy;
 import javax.microedition.ims.core.sipservice.PrivacyInfo;
@@ -199,8 +200,12 @@ public class SubscribeMessageBuilder extends RequestMessageBuilder {
         }
 
         //Contact: sip:a@atlanta.example.com
-        generateContactHeader(context.getConfig(), retValue, "+g.3gpp.icsi-ref=\"urn%3Aurn-7%3gpp-service.ims.icsi.mmtel\"");
+//        generateContactHeader(context.getConfig(), retValue, "+g.3gpp.icsi-ref=\"urn%3Aurn-7%3gpp-service.ims.icsi.mmtel\"");
+        generateContactHeader(dialog.getContactHeaders(), context.getConfig(), context.getStackRegistry(), retValue);
         //Content-Length: 0
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         //???
         addAuthorizationHeader(retValue, MessageType.SIP_REFER);
@@ -262,12 +267,16 @@ public class SubscribeMessageBuilder extends RequestMessageBuilder {
     }
 
     public void buildTo(final BaseSipMessage.Builder retValue, final BaseSipMessage source) {
-
+        //TODO: why it's needed to check the RemoteParty from dialog
         if (source.getTo().buildContent().contains(dialog.getRemoteParty())) {
             addToHeader(source.getTo(), retValue);
         }
         else {
-            addToHeader(source.getFrom(), retValue);
+            //TODO: temporarily add this condition for presence SUBSCRIBE
+            if (dialog.getRemoteParty()!=null && dialog.getRemoteParty().contains("list=phbk"))
+                addToHeader(source.getTo(), retValue);
+            else
+                addToHeader(source.getFrom(), retValue);
         }
     }
 }

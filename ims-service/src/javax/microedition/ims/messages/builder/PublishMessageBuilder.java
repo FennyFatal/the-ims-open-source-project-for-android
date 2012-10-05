@@ -43,11 +43,13 @@ package javax.microedition.ims.messages.builder;
 
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.dialog.Dialog.ParamKey;
 import javax.microedition.ims.core.sipservice.publish.PublishInfo;
 import javax.microedition.ims.messages.wrappers.common.Uri;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
+import javax.microedition.ims.messages.wrappers.sip.Header;
 
 public class PublishMessageBuilder extends RequestMessageBuilder {
 
@@ -71,6 +73,8 @@ public class PublishMessageBuilder extends RequestMessageBuilder {
         addFromHeader(dialog, retValue);
         addCallIdHeader(dialog, retValue);
         addCSeqHeader(dialog, retValue);
+        //Max-Forwards: 70
+        addMaxForwardsHeader(context.getConfig(), retValue);
 
         // Supported: 100rel, eventlist
         //addSupported(retValue);
@@ -80,7 +84,8 @@ public class PublishMessageBuilder extends RequestMessageBuilder {
                 .getCustomParameter(ParamKey.PUBLISH_INFO);
         assert publishInfo != null : "Dialog does not contain publish information";
 
-        retValue.event(publishInfo.getEventType().stringValue());
+        retValue.customHeader(Header.Event, publishInfo.getEventType().stringValue());
+        //retValue.event(publishInfo.getEventType().stringValue());
 
         /**
          * Operation | Body? | SIP-If-Match? | Expires Value |
@@ -114,6 +119,9 @@ public class PublishMessageBuilder extends RequestMessageBuilder {
             default:
                 assert false : "Unknown publish type";
         }
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         addAuthorizationHeader(retValue, MessageType.SIP_PUBLISH);
         addUserAgentHeader(context.getConfig(), retValue);

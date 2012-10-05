@@ -43,55 +43,14 @@ package javax.microedition.ims.xdm;
 
 /**
  * The PresenceAuthorizationRule class represents a rule that is used to
- * authorize access for a watcher (see [OMA_PRES_SPEC]) to the information in a
- * PresenceAuthorizationDocument. A presence authorization rule is defined by
- * three different components:
- * <ul>
- * <li>
- * <h4>Condition</h4></li>
- * <li>
- * <h4>Action</h4></li>
- * <li>
- * <h4>Presence content filter</h4></li>
- * </ul>
- * 
- * <h4>Condition</h4>:The condition component of a PresenceAuthorizationRule
- * defines to whom this rule applies. The conditions are mutually exclusive and
- * only one condition at a time can apply to a rule. This class contains four
- * mutually exclusive conditions. The Identity condition, the URI list
- * condition, and the Other Identity condition are defined in the class Rule.
- * The fourth one is:
- * 
- * <li>
- * <h4>Anonymous Request condition</h4>: If this condition is set to true, the
- * rule will apply to requests made by authenticated anonymous users. <li>
- * 
- * <h4>Action</h4>: The action component of a PresenceAuthorizationRule defines
- * what action is to be taken when a rule is triggered. The action component can
- * be defined as one of the following:
- * <ul>
- * <li>
- * <h4>Allow</h4> - This action means that the watcher is authorized to
- * subscribe to presence information.</li>
- * <li>
- * <h4>Block</h4> - This action means that the watcher is not authorized to
- * subscribe to presence information.</li>
- * <li>
- * <h4>Confirm</h4> - This action means that the presentity is notified about
- * the watchers subscription request and that the presentity must decide
- * whether to allow or block the watcher. The watchers subscription is put in a
- * pending state.</li>
- * <li>
- * <h4>Polite Block</h4> - This action means that the subscription is accepted
- * but the watcher will receive fake presence information indicating that the
- * presentity is "offline".</li>
- * </ul>
- * 
- * <h4>Presence content filter</h4>: The PresenceContentFilter component of a
- * PresenceAuthorizationRule defines what information a watcher has access to in
- * a specific presence document, given that the watcher has been allowed to
- * access the presence document.
- * 
+ * authorize access for a watchers.
+ *
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

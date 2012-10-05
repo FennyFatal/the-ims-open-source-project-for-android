@@ -48,39 +48,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The Message class is used when sending and receiving messages. A message 
- * is created with one of the constructors of this class, and content is then 
- * added by using the ContentPart class. The message can then be sent through 
- * the MessageManager interface or the Conference and Chat interfaces. 
- * Messages can be received through the MessageManagerListener interface, 
- * which must be set on the MessageManager. Messages exchanged during a 
- * conference or chat are received through the ConferenceListener or 
- * ChatListener  interfaces.
- * <p/>
- * There are two constructors for the Message class. When using the first 
- * constructor, sender, recipients, and subject can be specified. The second 
- * constructor does not take any parameters. The first constructor must be 
- * used for sending a message with the MessageManager outside of a conference, 
- * or for sending a private message to selected participants in a conference. 
- * In both these cases, the recipients of the message must be specified. The 
- * second constructor is used for sending a message to all participants in a 
- * conference or chat. In this case, the recipients of the message should 
- * not be specified.
- * <p/>
- * Examples
- * <p/>
- * This example shows how to create a Message from a stream.
- * <p/>
- * <pre>
- *  Message message = new Message(null, new String[] {
- *      "sip:bob@example.org"
- *  }, "My Avatar");
- *  ContentPart contentPart = new ContentPart(null, "image/png");
- *  OutputStream os = contentPart.openOutputStream();
- *  // Write content to the stream
- *  os.close();
- *  message.addContentPart(contentPart);
- * </pre>
+ * The Message class is used when sending and receiving messages.
+ * Notice that there is also Message interface in ims.core-package, 
+ * which is not equal to this.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
+ *
  */
 public class Message {
     

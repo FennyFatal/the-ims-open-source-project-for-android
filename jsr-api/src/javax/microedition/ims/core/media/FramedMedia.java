@@ -41,6 +41,16 @@
 
 package javax.microedition.ims.core.media;
 
+/**
+ * FramedMedia offers interface to handle FramedMedia (MSRP), to
+ * access received content and send out content in preset
+ * MSPR-session.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ */
 public interface FramedMedia extends Media {
     /**
      * Cancels the ongoing transfer.

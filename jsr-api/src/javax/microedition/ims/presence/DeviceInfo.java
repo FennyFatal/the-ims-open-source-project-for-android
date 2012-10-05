@@ -51,16 +51,11 @@ import java.util.Map;
 
 /**
  * The DeviceInfo component is used to describe the physical piece of equipment
- * in which services execute. Examples of presence information that can be
- * represented by a DeviceInfo include mobile phones, PCs, and PDAs. As a
- * service may be running on multiple devices at once (for example an IM Service
- * running both on the PC and the mobile phone) the mapping of services to
- * devices are many to many.
- * 
- * A device is uniquely identified by a device identifier. This identifier can
- * be used to indicate which of the presentity's devices a particular service is
- * running on. The DeviceInfo component is mapped to the <device> element
- * specified in [RFC4479].
+ * in which services execute.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  * 
  * @author Andrei Khomushko
  * 

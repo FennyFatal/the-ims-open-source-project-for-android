@@ -71,4 +71,6 @@ public interface Transaction<T, V> extends Consumer<V>, ListenerSupport<Transact
     V getInitialMessage();
 
     StackContext getStackContext();
+    
+    TransactionDescription getDescription();
 }

@@ -46,7 +46,8 @@ import java.util.Date;
 /**
  * The DocumentEntry interface describes an XML document stored on the XDM
  * server.
- * 
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation. 
  * @author Andrei Khomushko
  * 
  */

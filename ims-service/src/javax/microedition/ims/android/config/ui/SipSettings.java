@@ -44,11 +44,11 @@ package javax.microedition.ims.android.config.ui;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.util.Log;
 
 import javax.microedition.ims.engine.test.R;
 import javax.microedition.ims.android.config.AndroidConfiguration;
 import javax.microedition.ims.android.config.ConfigurationChangeListener;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.OptionFeature;
 import javax.microedition.ims.common.ServerAddress;
 import javax.microedition.ims.config.UserInfo;
@@ -109,6 +109,7 @@ public class SipSettings extends PreferenceActivity implements ConfigurationChan
         initUserAgentControl();
         //initPrackSupported();
         initSupportedFeatures();
+        initExpireTime();
         //initRequiredFeatures();
         initInviteRefreshControl();
         initUseSimulConnectionControl();
@@ -138,7 +139,7 @@ public class SipSettings extends PreferenceActivity implements ConfigurationChan
     }
 
     private void initRegistrarControl() {
-        ServerAddress regServer = configuration.getRegistrarServer();
+        ServerAddress regServer = configuration.getRegistrarServerSettings();
         UserInfo regName = configuration.getRegistrationName();
         Preference preference = findPreference(SIP_REGISTRAR_SERVER);
         preference.setSummary(String.format("%s:%s, %s:%s", regServer.getAddress(), regServer.getPort(), regName.getSchema(), regName.getName()));
@@ -192,12 +193,24 @@ public class SipSettings extends PreferenceActivity implements ConfigurationChan
         preference.setSummary(supportedFeatures);
     }
 
+    private void initExpireTime() {
+        Preference preference = findPreference(SIP_EXPIRE_TIME);
+        preference.setSummary(String.format("%s:%s:%s", configuration.getRegistrationExpirationSeconds(),
+                configuration.getSubscriptionExpirationSeconds(), configuration.getPublicationExpirationSeconds()));
+    }
+
     /*    private void initRequiredFeatures() {
          Preference preference = findPreference(SIP_REQUIRED_FEATURES);
          String requiredFeatures = concatenate(configuration.getRequiredFeatures());
          preference.setSummary(requiredFeatures);
      }
       */
+
+    private void initUseFeatureTags() {
+        Preference preference = findPreference(SIP_USE_FEATURE_TAGS);
+        preference.setSummary(String.valueOf(configuration.useFeatureTags()));
+    }
+
     //TODO need to move in util class
 
     private static <S> String concatenate(OptionFeature[] values) {
@@ -272,11 +285,17 @@ public class SipSettings extends PreferenceActivity implements ConfigurationChan
         else if (SIP_SUPPORTED_FEATURES.equals(key)) {
             initSupportedFeatures();
         }
+        else if (SIP_EXPIRE_TIME.equals(key)) {
+            initExpireTime();
+        }
         else if (SIP_REQUIRED_FEATURES.equals(key)) {
             //initRequiredFeatures();
         }
+        else if (SIP_USE_FEATURE_TAGS.equals(key)) {
+            initUseFeatureTags();
+        }
         else {
-            Log.i(TAG, "Undefined key: " + key);
+            Logger.log(TAG, "Undefined key: " + key);
         }
     }
 }

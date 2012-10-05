@@ -46,6 +46,7 @@ import android.util.Log;
 
 import javax.microedition.ims.android.util.ListenerHolder;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.invite.DialogStateException;
@@ -141,7 +142,11 @@ public class CapabilitiesImpl extends ICapabilities.Stub implements OptionsState
         boolean retValue = false;
         OptionsInfo optionsInfo = atomicReference.get();
         if (optionsInfo != null) {
-            retValue = optionsInfo.getSupportedEntities().contains(connection);
+            for (String str : optionsInfo.getSupportedEntities()) {
+                retValue = str.contains(connection);
+                if (retValue == true)
+                    break;
+            }
         }
 
         return retValue;
@@ -156,7 +161,8 @@ public class CapabilitiesImpl extends ICapabilities.Stub implements OptionsState
             optionsService.sendOptionsMessage(dialog, sdpInRequest);
         }
         catch (DialogStateException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
             onCapabilityQueryDeliveryFailed();
         }
     }
@@ -167,7 +173,8 @@ public class CapabilitiesImpl extends ICapabilities.Stub implements OptionsState
             listenerHolder.getNotifier().capabilityQueryDelivered();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 
@@ -177,7 +184,8 @@ public class CapabilitiesImpl extends ICapabilities.Stub implements OptionsState
             listenerHolder.getNotifier().capabilityQueryDeliveryFailed();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
     }
 

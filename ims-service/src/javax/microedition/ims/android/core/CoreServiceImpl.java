@@ -45,6 +45,10 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.microedition.ims.android.IError;
 import javax.microedition.ims.android.IExceptionHolder;
 import javax.microedition.ims.android.util.ListenerHolder;
@@ -89,6 +93,9 @@ public class CoreServiceImpl extends ICoreService.Stub implements
 
     private final List<CoreServiceStateListener> coreServiceStateListeners = new ArrayList<CoreServiceStateListener>();
 
+    private List<ISubscription> mSubList = new ArrayList<ISubscription>();
+    private List<IPublication> mPubList = new ArrayList<IPublication>();
+
     public interface SessionOnCloseListener {
         void onClose(String dialogCallId);
     }
@@ -109,7 +116,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
 
         // DialogStateMediator.INSTANCE.registerCoreServiceListener(callingParty,
         // this);
-        imsStack.getInviteService().addIncomingCallListener(callingParty, SDPType.VOIP,
+        imsStack.getInviteService().addIncomingCallListener(/*callingParty, */SDPType.VOIP,
                 voipIncomimgCallListener);
         imsStack.getReferService().addIncomingReferListener(this);
         imsStack.getReferService().addIncomingNotifyListener(this);
@@ -122,7 +129,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
     private IncomingCallListener voipIncomimgCallListener = new IncomingCallListener() {
 
         public void onIncomingCall(IncomingOperationEvent event) {
-            Log.i(TAG, "IncomingCallListener.onIncomingCall#started");
+            Logger.log(TAG, "IncomingCallListener.onIncomingCall#started");
             SessionImpl session = new SessionImpl(event.getDialog(),
                     imsStack.getInviteService(),
                     imsStack.getOptionsService(),
@@ -131,10 +138,16 @@ public class CoreServiceImpl extends ICoreService.Stub implements
                     getSessionOnCloseListener(),
                     imsStack.getContext().getConfig().useResourceReservation());
 
-            sessionsMap.put(event.getDialog().getCallId(), session);
-            session.startByRemoteParty();
-            notifySessionInvitationReceived(session);
-            Log.i(TAG, "IncomingCallListener.onIncomingCall#finished");
+            //TODO conditional subscription was removed, so check was added here
+            if(callingParty.equals(event.getDialog().getLocalParty())) {
+                sessionsMap.put(event.getDialog().getCallId(), session);
+                session.startByRemoteParty();
+                notifySessionInvitationReceived(session);
+            } else {
+                Log.d(TAG, String.format("onIncomingCall#foreign call, core service party = %s, dialog party = %s", callingParty, event.getDialog().getLocalParty()));
+            }
+            
+            Logger.log(TAG, "IncomingCallListener.onIncomingCall#finished");
         }
 
         private void notifySessionInvitationReceived(final ISession session) {
@@ -142,17 +155,26 @@ public class CoreServiceImpl extends ICoreService.Stub implements
                 listenerHolder.getNotifier().sessionInvitationReceived(
                         CoreServiceImpl.this, session);
             } catch (RemoteException e) {
-                Log.e(TAG, e.getMessage(), e);
+                e.printStackTrace();
+                Logger.log(TAG, e.getMessage());
+
             }
             // notifyInvitationReceived(SESSION);
         }
 
 
         public void onIncomingMediaUpdate(IncomingOperationEvent event) {
-            Log.i(TAG, "IncomingCallListener.onIncomingMediaUpdate#started");
+            Logger.log(TAG, "IncomingCallListener.onIncomingMediaUpdate#started");
             SessionImpl session = sessionsMap.get(event.getDialog().getCallId());
-            session.setAcceptable(event.getAcceptable());
-            Log.i(TAG, "IncomingCallListener.onIncomingMediaUpdate#finished");
+            
+            //TODO conditional subscription was removed, so check was added here
+            if(session != null) {
+                session.setAcceptable(event.getAcceptable());
+            } else{
+                Log.d(TAG, String.format("onIncomingMediaUpdate#foreign update, core service party = %s, dialog party = %s", callingParty, event.getDialog().getLocalParty()));
+            }
+            
+            Logger.log(TAG, "IncomingCallListener.onIncomingMediaUpdate#finished");
         }
     };
 
@@ -195,7 +217,8 @@ public class CoreServiceImpl extends ICoreService.Stub implements
         } catch (IllegalArgumentException e) {
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage() == null ? "Wring input parameters" : e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
 
         return session;
@@ -258,6 +281,19 @@ public class CoreServiceImpl extends ICoreService.Stub implements
 
     @Override
     public void close() throws RemoteException {
+        Collections.reverse(mPubList);
+        for (IPublication item : mPubList) {
+            if (item.getState() == 3 /*PublicationState.STATE_ACTIVE*/) {
+                item.unpublish();
+            }
+        }
+        Collections.reverse(mSubList);
+        for (ISubscription item : mSubList) {
+            if (item.getState() == 3 /*SubscriptionState.STATE_ACTIVE*/) {
+                item.unsubscribe();
+            }
+        }
+
         ((Shutdownable) listenerHolder).shutdown();
         // DialogStateMediator.INSTANCE.untegisterCoreServiceListener(callingParty);
         imsStack.getInviteService().removeIncomingCallListener(
@@ -318,7 +354,8 @@ public class CoreServiceImpl extends ICoreService.Stub implements
         try {
             listenerHolder.getNotifier().referenceReceived(this, reference);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
         // notifyReferenceReceived(reference);
     }
@@ -330,7 +367,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
 
     @Override
     public void pageMessageRecieved(final IncomingPageEvent event) {
-        Log.i(TAG, "pageMessageRecieved#");
+        Logger.log(TAG, "pageMessageRecieved#");
 
         final Dialog dialog = event.getDialog();
         PageMessageImpl pageMessage = new PageMessageImpl(dialog, imsStack
@@ -358,50 +395,51 @@ public class CoreServiceImpl extends ICoreService.Stub implements
 
     private void pageMessageRecieved(final IPageMessage pageMessage,
                                      final byte[] content, final String contentType) {
-        Log.d(TAG, String.format(
+        Logger.log(TAG, String.format(
                 "pageMessageRecieved#contentType = %s, content = %s",
                 contentType, new String(content)));
         try {
             listenerHolder.getNotifier().pageMessageReceived(this, pageMessage,
                     content, contentType);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
         // notifyPageMessageReceived(pageMessage, content, contentType);
     }
 
     /*
     * private void notifyPageMessageReceived(final IPageMessage iPageMessage,
-    * final byte[] content, final String contentType) { Log.d(TAG,
+    * final byte[] content, final String contentType) { Logger.log(TAG,
     * "notifyPageMessageReceived#starting"); final int N =
     * listeners.beginBroadcast(); for (int i = 0; i < N; i++) {
     * ICoreServiceListener coreServiceListener = listeners.getBroadcastItem(i);
-    * try { Log.i(TAG,coreServiceListener.toString());
+    * try { Logger.log(TAG,coreServiceListener.toString());
     * coreServiceListener.pageMessageReceived(this, iPageMessage, content,
-    * contentType); } catch (RemoteException e) { Log.e(TAG, e.getMessage(),
-    * e); } } listeners.finishBroadcast(); Log.d(TAG,
+    * contentType); } catch (RemoteException e) { Logger.log(TAG, e.getMessage(),
+    * e); } } listeners.finishBroadcast(); Logger.log(TAG,
     * "notifyPageMessageReceived#finished"); }
     */
 
     /*
-     * private void notifyInvitationReceived(ISession SESSION) { Log.d(TAG,
+     * private void notifyInvitationReceived(ISession SESSION) { Logger.log(TAG,
      * "notifyListeners#starting"); final int N = listeners.beginBroadcast();
      * for (int i = 0; i < N; i++) { ICoreServiceListener coreServiceListener =
      * listeners.getBroadcastItem(i); try {
-     * Log.i(TAG,coreServiceListener.toString());
+     * Logger.log(TAG,coreServiceListener.toString());
      * coreServiceListener.sessionInvitationReceived(this, SESSION); } catch
-     * (RemoteException e) { Log.e(TAG, e.getMessage(), e); } }
-     * listeners.finishBroadcast(); Log.d(TAG, "notifyListeners#finished"); }
+     * (RemoteException e) { Logger.log(TAG, e.getMessage(), e); } }
+     * listeners.finishBroadcast(); Logger.log(TAG, "notifyListeners#finished"); }
      */
     /*
-     * private void notifyReferenceReceived(IReference reference) { Log.d(TAG,
+     * private void notifyReferenceReceived(IReference reference) { Logger.log(TAG,
      * "notifyListeners#starting"); final int N = listeners.beginBroadcast();
      * for (int i = 0; i < N; i++) { ICoreServiceListener coreServiceListener =
      * listeners.getBroadcastItem(i); try {
-     * Log.i(TAG,coreServiceListener.toString());
+     * Logger.log(TAG,coreServiceListener.toString());
      * coreServiceListener.referenceReceived(this, reference); } catch
-     * (RemoteException e) { Log.e(TAG, e.getMessage(), e); } }
-     * listeners.finishBroadcast(); Log.d(TAG, "notifyListeners#finished"); }
+     * (RemoteException e) { Logger.log(TAG, e.getMessage(), e); } }
+     * listeners.finishBroadcast(); Logger.log(TAG, "notifyListeners#finished"); }
      */
 
     @Override
@@ -441,9 +479,10 @@ public class CoreServiceImpl extends ICoreService.Stub implements
                     method, new DefaultTimeoutUnit(60, TimeUnit.SECONDS)));
 
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
         }
 
         return reference;
@@ -494,10 +533,12 @@ public class CoreServiceImpl extends ICoreService.Stub implements
                     imsStack.getSubscribeService()
             );
 
+            mSubList.add(subscription);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
         }
 
         return subscription;
@@ -534,10 +575,12 @@ public class CoreServiceImpl extends ICoreService.Stub implements
             publication = new PublicationImpl(dialog, packageEvent, imsStack
                     .getPublishService());
 
+            mPubList.add(publication);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
         }
 
         return publication;
@@ -555,7 +598,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
     @Override
     public IPageMessage createPageMessage(final String from, final String to,
                                           final IExceptionHolder exceptionHolder) throws RemoteException {
-        Log.i(TAG, String.format("createPageMessage#from = '%s', to = '%s'",
+        Logger.log(TAG, String.format("createPageMessage#from = '%s', to = '%s'",
                 from, to));
 
         IPageMessage pageMessage = null;
@@ -564,7 +607,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
         } catch (IllegalArgumentException e) {
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, String.format(
+            Logger.log(TAG, String.format(
                     "createPageMessage#from = '%s', to = '%s'", from, to));
         }
 
@@ -595,7 +638,7 @@ public class CoreServiceImpl extends ICoreService.Stub implements
     @Override
     public ICapabilities createCapabilities(String from, String to,
                                             IExceptionHolder exceptionHolder) throws RemoteException {
-        Log.i(TAG, String.format("createCapabilities#from = '%s', to = '%s'",
+        Logger.log(TAG, String.format("createCapabilities#from = '%s', to = '%s'",
                 from, to));
 
         ICapabilities capabilities = null;
@@ -604,7 +647,8 @@ public class CoreServiceImpl extends ICoreService.Stub implements
         } catch (IllegalArgumentException e) {
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
 
         return capabilities;

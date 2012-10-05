@@ -10,4 +10,5 @@ interface IConfiguration
         boolean removeRegistry(String appId);
         void setRegistry(in IRegistry registry);
         void updateLocation(in IGsmLocationInfo locationInfo);
+        void removeLocation();
 }

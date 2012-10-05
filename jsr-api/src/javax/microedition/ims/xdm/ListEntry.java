@@ -47,6 +47,8 @@ package javax.microedition.ims.xdm;
  * 
  * A list entry consists of either a single user URI or a reference to an
  * already existing URI list. Each entry can provide an optional display name.
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
  * @see URIList, URIListDocument, GroupDocument, SessionActivityPolicy
  * 

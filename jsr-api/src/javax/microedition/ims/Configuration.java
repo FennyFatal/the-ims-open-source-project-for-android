@@ -44,6 +44,7 @@ package javax.microedition.ims;
 import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import com.android.ims.ServiceConnectionException;
 import com.android.ims.util.ServiceInterfaceHolder;
@@ -311,6 +312,9 @@ public class Configuration {
 
         if (isDone.compareAndSet(false, true)) {
             try {
+                removeLocation();
+                removeAllRegistry();
+
                 localAppIds.clear();
                 interfaceHolder.unbindFromService(context, false);
             }
@@ -319,6 +323,27 @@ public class Configuration {
             }
             context = null;
             INSTANCE = null;
+        }
+    }
+
+    private void removeAllRegistry() {
+        String[] ids = getLocalAppIds();
+        for (int i=0;i<ids.length;i++) {
+            try {
+                if (!TextUtils.isEmpty(ids[i]))
+                    configurationPeer.removeRegistry(ids[i]);
+            } catch (Exception e) {
+                Log.e(TAG, "removeRegistry FAILED. "+e.toString());
+            }
+        }
+    }
+
+    private void removeLocation() {
+        Log.d(TAG, "removeLocation");
+        try {
+            configurationPeer.removeLocation();
+        } catch (RemoteException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 }

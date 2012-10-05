@@ -46,7 +46,11 @@ import javax.microedition.ims.ReasonInfo;
 /**
  * A listener type for receiving notifications on remotely initiated rpc service methods.
  *
- * @see CoreService.setListener(CoreServiceListener)
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ * @see CoreService#setListener(CoreServiceListener)
  */
 
 public interface CoreServiceListener {

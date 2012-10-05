@@ -46,5 +46,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 public interface SocketFactory {
+    public static final int CONNECT_TIMEOUT = 10 * 1000;
     Socket createSocket(Route route) throws IOException;
 }

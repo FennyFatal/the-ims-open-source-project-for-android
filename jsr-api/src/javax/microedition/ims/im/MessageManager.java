@@ -46,49 +46,12 @@ import javax.microedition.ims.ServiceClosedException;
 
 /**
  * The MessageManager can be used to send messages to or receive instant 
- * messages from an IM user or a list of IM users. The MessageManagerListener 
- * must be set in order to receive incoming messages and progress reports for 
- * the transfer of large messages.
- * <p/>
- * Messages can be sent in two different ways:
- * <p/>
- *     sendMessage - this method should be used for short messages.
- * <p/>
- *     sendLargeMessage - this method must be used for large messages. 
- *     The recipient will have the possibility to accept or reject the message.
- * <p/>
- * Each message has its own message identifier, which enables tracking 
- * of progress and delivery reports for individual messages, as well as 
- * the possibility to cancel the transfer of individual large messages. 
- * Delivery reports are received through the deliveryReportsReceived 
- * event in the IMServiceListener interface.
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice can send a message to another IM user called Bob.
- * <p/>
- * <pre>
+ * messages from an IM user or a list of IM users.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
- *  IMService service = (IMService) Connector
- *      .open("imsim://com.myCompany.apps.myApp");
- *      
- *  MessageManager messageManager = service.getMessageManager();
- *  messageManager.setListener(messageManagerListener);
- *  
- *  Message message = new Message(null,
- *                               new String[]{"sip:bob@example.org"},
- *                               "Greetings!");
- *  ContentPart contentPart = new ContentPart("Hi, I'm Alice!".getBytes(),
- *                               "text/plain");
- *  message.addContentPart(contentPart);                             
- *  messageManager.sendMessage(message, false);
- *  ...
- *  
- *  void messageSent(String messageId) {
- *      // this call to the MessageManagerListener indicates that 
- *      // the message was successfully sent
- *  }
- * </pre>
  */
 public interface MessageManager {
     
@@ -104,8 +67,7 @@ public interface MessageManager {
     /**
      * Sends a message to the recipients specified in the Message as a large 
      * message. The recipients will have the possibility to accept or reject 
-     * the message request. A delivery report can be requested if the sender 
-     * wants to be notified when the Message is delivered to the recipients' devices.
+     * the message request. 
      * 
      * @param message - the Message to send
      * @param deliveryReport - true if a delivery report should be requested, false otherwise
@@ -119,16 +81,7 @@ public interface MessageManager {
     void sendLargeMessage(Message message, boolean deliveryReport) throws ServiceClosedException, ImsException;
     
     /**
-     * Sends a message to the recipients specified in the Message. A delivery 
-     * report can be requested if the sender wants to be notified when the 
-     * Message is delivered to the recipients' devices.
-     * <p/>
-     * Note: Large messages must be sent using the sendLargeMessage method. 
-     * Otherwise they may be rejected by the server. A recommended value for 
-     * maximum content size to be sent with sendMessage is 1000 bytes. However, 
-     * the actual limit is calculated from the total message request. 
-     * See [OMA_IM_SPEC] for more information about messages sent in 
-     * Pager Mode and Large Message Mode. 
+     * Sends a message to the recipients specified in the Message.
      * 
      * @param message - the Message to send
      * @param deliveryReport - true if a delivery report should be requested,  false otherwise

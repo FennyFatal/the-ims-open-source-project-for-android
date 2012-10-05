@@ -45,12 +45,14 @@ import java.util.Arrays;
 
 /**
  * A <code>UniquenessError</code> contains detailed information about XCAP
- * errors of the type XCAP_ERROR_UNIQUENESS_FAILURE. A uniqueness error
- * indicates that the requested operation would result in a document that did
- * not meet a uniqueness constraint defined by the application usage.
+ * errors of the type XCAP_ERROR_UNIQUENESS_FAILURE.
  * 
- * For more information see [RFC4825], chapter 11.
- * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

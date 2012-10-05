@@ -43,12 +43,11 @@ package javax.microedition.ims.im;
 
 /**
  * The ChatInvitation interface represents an invitation to set up a chat 
- * with another IM user. A chat always consists of only two participants 
- * (One-to-One session) with no conference server involved. However, 
- * if additional participants are invited, the chat is replaced by a conference.
- * <p/>
- * Chat invitations are sent using the ConferenceManager interface. 
- * Incoming chat invitations are received through the ConferenceManagerListener interface. 
+ * with another IM user.
+ *
+ * </p><p></p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface ChatInvitation {
     

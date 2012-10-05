@@ -46,6 +46,8 @@ import javax.microedition.ims.ReasonInfo;
 /**
  * This listener type is used to notify the application about watcher
  * information subscription status.
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
  * @author Andrei Khomushko
  * 

@@ -45,6 +45,7 @@ import javax.microedition.ims.common.Shutdownable;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.sipservice.subscribe.listener.SubscriptionStateAdapter;
 import javax.microedition.ims.core.sipservice.subscribe.listener.SubscriptionTerminatedEvent;
+import javax.microedition.ims.core.sipservice.subscribe.listener.SubscriptionFailedEvent;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class SubscriptionStorageImpl implements SubscriptionStorage, Shutdownabl
             throw new IllegalStateException("lookup is forbidden after Subscription storage is shutdown");
         }
 
-        final SubscriptionKey subscriptionKey = new SubscriptionKeyDefaultImpl(remoteParty, info.getEvent());
+        final SubscriptionKey subscriptionKey = new SubscriptionKeyDefaultImpl(localParty.getAppID(),/*remoteParty,*/ info.getEvent());
 
         Subscription subscription;
 
@@ -100,6 +101,10 @@ public class SubscriptionStorageImpl implements SubscriptionStorage, Shutdownabl
                 subscriptionToBeObserved.addSubscriptionStateListener(new SubscriptionStateAdapter() {
 
                     public void onSubscriptionTerminated(SubscriptionTerminatedEvent event) {
+                        subscriptionToBeObserved.removeSubscriptionStateListener(this);
+                        doUnbind(subscriptionToBeObserved);
+                    }
+                    public void onSubscriptionStartFailed(SubscriptionFailedEvent event) {
                         subscriptionToBeObserved.removeSubscriptionStateListener(this);
                         doUnbind(subscriptionToBeObserved);
                     }
@@ -125,7 +130,8 @@ public class SubscriptionStorageImpl implements SubscriptionStorage, Shutdownabl
     }
 
     private void doUnbind(Subscription subscription) {
-        subscriptionMap.remove(subscription.getDialog().getCallId());
+        final SubscriptionKey subscriptionKey = new SubscriptionKeyDefaultImpl(subscription.getDialog().getLocalParty().getAppID(), subscription.getDescription().getEvent());
+        subscriptionMap.remove(subscriptionKey);
     }
 
 

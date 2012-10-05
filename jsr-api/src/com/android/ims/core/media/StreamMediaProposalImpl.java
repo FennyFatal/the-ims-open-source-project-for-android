@@ -62,11 +62,19 @@ public class StreamMediaProposalImpl extends MediaProposalImpl
 
     
     public Player getReceivingPlayer() {
+        return getReceivingPlayer(true);
+    }
+
+    public Player getReceivingPlayer(boolean realize) {
         throw new UnsupportedOperationException("Operation not allowed for media proposals");
     }
 
     
     public Player getSendingPlayer() {
+        return getSendingPlayer(true);
+    }
+
+    public Player getSendingPlayer(boolean realize) {
         throw new UnsupportedOperationException("Operation not allowed for media proposals");
     }
 

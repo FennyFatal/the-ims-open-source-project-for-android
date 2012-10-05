@@ -44,8 +44,13 @@ package javax.microedition.ims.core;
 import javax.microedition.ims.ServiceClosedException;
 
 /**
- * The PageMessage interface is used for simple instant messages or exchange
- * of small amounts of content outside of a session.
+ * The PageMessage interface is used for simple instant messages or exchange of
+ * small amounts of content outside of a session.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  */
 public interface PageMessage extends ServiceMethod {
 

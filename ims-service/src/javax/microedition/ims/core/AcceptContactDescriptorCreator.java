@@ -52,7 +52,7 @@ import java.util.StringTokenizer;
 
 public class AcceptContactDescriptorCreator {
 
-    public static AcceptContactDescriptor[] create(ClientRegistry clientRegistry) {
+    public static AcceptContactDescriptor[] create(ClientRegistry clientRegistry, boolean containFT) {
         List<AcceptContactDescriptor> headers = new ArrayList<AcceptContactDescriptor>();
 
         //StreamMedia
@@ -112,7 +112,7 @@ public class AcceptContactDescriptorCreator {
             if (coreServiceProperty.getIARIs() != null) {
                 for (String iari : coreServiceProperty.getIARIs()) {
                     if (iari != null && iari.length() > 0) {
-                        appendOperation(headers, new AcceptContactDescriptor.Pair("+g.3gpp.iari_ref", iari), false, true);
+                        appendOperation(headers, new AcceptContactDescriptor.Pair("+g.3gpp.iari-ref", iari), false, true);
                     }
                 }
             }
@@ -121,19 +121,29 @@ public class AcceptContactDescriptorCreator {
                     if (icsi != null && icsi.length() > 0) {
                         boolean explicit = hasSubValue(icsi, "explicit");
                         boolean require = hasSubValue(icsi, "require");
-                        appendOperation(headers, new AcceptContactDescriptor.Pair("+g.3gpp.icsi_ref", icsi), explicit, require);
+                        if (explicit)   icsi = icsi.replace(";explicit", "");
+                        if (require)    icsi = icsi.replace(";require", "");
+                        appendOperation(headers, new AcceptContactDescriptor.Pair("+g.3gpp.icsi-ref", icsi), explicit, require);
                     }
                 }
             }
-            if (coreServiceProperty.getFeatureTags() != null) {
+            if (coreServiceProperty.getFeatureTags() != null && containFT) {
                 for (String ft : coreServiceProperty.getFeatureTags()) {
                     if (ft != null && ft.length() > 0) {
                         boolean explicit = hasSubValue(ft, "explicit");
                         boolean require = hasSubValue(ft, "require");
+                        if (explicit)   ft = ft.replace(";explicit", "");
+                        if (require)    ft = ft.replace(";require", "");
                         appendOperation(headers, new AcceptContactDescriptor.Pair(ft, null), explicit, require);
                     }
                 }
             }
+        }
+        for (AcceptContactDescriptor h : headers) {
+            if (h.isExplicit())
+                h.addRecord(new AcceptContactDescriptor.Pair("explicit", null));
+            if (h.isRequire())
+                h.addRecord(new AcceptContactDescriptor.Pair("require", null));
         }
         return headers.toArray(new AcceptContactDescriptor[headers.size()]);
     }
@@ -196,10 +206,10 @@ public class AcceptContactDescriptorCreator {
             newHeader.addRecord(new Pair("*", null));
             newHeader.addRecord(T);
             if (explicit) {
-                newHeader.addRecord(new AcceptContactDescriptor.Pair("explicit", null));
+                newHeader.setExplicit();
             }
             if (require) {
-                newHeader.addRecord(new AcceptContactDescriptor.Pair("require", null));
+                newHeader.setRequire();
             }
             headers.add(newHeader);
         }

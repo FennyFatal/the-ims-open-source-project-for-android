@@ -43,39 +43,11 @@ package javax.microedition.ims.im;
 
 /**
  * The FilePushRequest is used to handle incoming file push requests, 
- * meaning that the files will be pushed to the recipient. The application has 
- * the possibility to accept or reject an incoming file push request. 
- * The metadata of the files can be inspected by calling the getFileInfos method 
- * before deciding whether to accept or reject the request. The FilePushRequest 
- * is received through the FileTransferManagerListener interface, or through 
- * the IMSessionListener  interface if the files are sent during a conference 
- * or chat. Each file will then be delivered through the fileReceived event in 
- * the FileTransferManagerListener or the IMSessionListener. Both users may receive 
- * transferProgress  events for individual files (or fileTransferProgress events 
- * if the the files are sent during a conference or chat).
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice accepts an incoming file push request with one file.
- * <p/>
- * <pre>
- *  void incomingFilePushRequest(FilePushRequest filePushRequest) {
- *      // this call to the FileTransferManagerListener indicates that a 
- *      // file push request has been received 
- *      filePushRequest.accept();
- *  }
- *  
- *  void transferProgress(String requestId, String fileId, int bytesTransferred,
- *      int bytesTotal) {
- *      // this call to the FileTransferManagerListener indicates the 
- *      // transfer progress of the incoming file
- *  }
- *  
- *  void fileReceived(String requestId, String fileId, String filePath) {
- *      // this call to the FileTransferManagerListener indicates that 
- *      // the file has been received
- *  }
- * </pre>
+ * meaning that the files will be pushed to the recipient.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface FilePushRequest {
    

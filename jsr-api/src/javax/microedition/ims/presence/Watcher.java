@@ -46,26 +46,12 @@ import java.io.IOException;
 
 /**
  * A Watcher is an entity that subscribes to presence information about a single
- * presentity or a presence list containing a number of presentities. Presence
- * information can be obtained in two ways:
+ * presentity or a presence list containing a number of presentities. 
  * 
- * <ul>
- * <li><br>
- * subscribe</br> - sends a subscription request that will be refreshed until
- * unsubscribe is called. Presence information is sent when the subscription is
- * started and whenever the presence information is changed.</li>
- * <li><br>
- * poll</br> - sends a subscription request that will expire immediately. The
- * presence information will be sent once and the subscription will then
- * immediately be terminated.</li>
- * </ul>
- * 
- * The Watcher life cycle consist of four states: STATE_INACTIVE,
- * STATE_PENDING_SUBSCRIBE, STATE_PENDING_UNSUBSCRIBE, and STATE_ACTIVE. A new
- * Watcher starts in STATE_INACTIVE and when subscribe or poll is called the
- * state transits to STATE_PENDING_SUBSCRIBE and remains there until a response
- * arrives.
- * 
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

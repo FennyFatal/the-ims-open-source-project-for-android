@@ -611,7 +611,11 @@ public class BaseSipMessage implements IMSMessage {
             final String secondBranch = getMessageBranch(msg);
             boolean sameBranch = firstBranch != null ? firstBranch.equals(secondBranch) : secondBranch == null;
 
-            if (sameMethod && sameCallId && sameCSeq && sameFromTag && sameToTag && sameBranch) {
+            final String firstRSeq = getCustomHeaderValue(Header.RSeq);
+            final String secondRSeq = msg.getCustomHeaderValue(Header.RSeq);
+            boolean sameRSeq = firstRSeq != null ? firstRSeq.equals(secondRSeq) : secondRSeq == null;
+
+            if (sameMethod && sameCallId && sameCSeq && sameFromTag && sameToTag && sameBranch && sameRSeq) {
                 retValue = true;
             }
         }
@@ -1138,6 +1142,15 @@ public class BaseSipMessage implements IMSMessage {
                 this.rejectContact = new ParamListDefaultImpl();
             }
             this.rejectContact.merge(paramsList);
+
+            return this;
+        }
+
+        public Builder acceptContact(final String key, final String value) {
+            if (this.acceptContact == null) {
+                this.acceptContact = new ParamListDefaultImpl();
+            }
+            this.acceptContact.set(new Param(key, value));
 
             return this;
         }

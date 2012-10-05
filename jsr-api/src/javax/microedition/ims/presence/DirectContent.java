@@ -48,13 +48,12 @@ import java.util.Arrays;
 
 /**
  * The DirectContent class can be used to handle the adding and retrieving of
- * direct content that may be published along with a presence document. A
- * DirectContent entity can be added to the PresenceDocument and may then be
- * linked to any element in the presence document by setting the content
- * identifier through the DOM API (see example below). The content identifier is
- * a unique identifier for a specific DirectContent that is set when the object
- * is created.
- * 
+ * direct content that may be published along with a presence document. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

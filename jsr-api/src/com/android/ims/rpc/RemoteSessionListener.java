@@ -44,6 +44,8 @@ package com.android.ims.rpc;
 import android.os.RemoteException;
 import android.util.Log;
 import com.android.ims.ServiceImpl;
+import com.android.ims.common.DefaultListenerHolder;
+import com.android.ims.common.ListenerHolder;
 import com.android.ims.core.ReferenceImpl;
 import com.android.ims.core.SessionImpl;
 
@@ -51,19 +53,21 @@ import javax.microedition.ims.android.core.IReference;
 import javax.microedition.ims.android.core.ISession;
 import javax.microedition.ims.android.core.ISessionListener;
 import javax.microedition.ims.core.SessionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * This class responsible for wrapping and forwarding events to specified @SessionListener object.
- *
+ * This class responsible for wrapping and forwarding events to specified @SessionListener
+ * object.
+ * 
  * @author ext-akhomush
  */
 public class RemoteSessionListener extends ISessionListener.Stub {
     private static final String TAG = "RemoteSessionListener";
 
-    private final List<SessionListener> listeners = new ArrayList<SessionListener>();
+    private final ListenerHolder<SessionListener> listenersHolder = new DefaultListenerHolder<SessionListener>(
+            SessionListener.class);
+
     private final SessionImpl mSession;
+
     private final ServiceImpl mServiceImpl;
 
     public RemoteSessionListener(final SessionImpl session, final ServiceImpl serviceImpl) {
@@ -73,83 +77,61 @@ public class RemoteSessionListener extends ISessionListener.Stub {
     }
 
     public void addListener(SessionListener listener) {
-        if (listener != null) {
-            listeners.add(listener);
-        }
+        listenersHolder.addListener(listener);
     }
 
     public void removeListener(SessionListener listener) {
-        Log.i(TAG, "removeListener#");
-        if (listener != null) {
-            listeners.remove(listener);
-        }
+        listenersHolder.removeListener(listener);
     }
 
-    
     public void sessionAlerting(ISession session) throws RemoteException {
         Log.i(TAG, "sessionAlerting#");
-        for (SessionListener listener : listeners) {
-            listener.sessionAlerting(mSession);
-        }
+        listenersHolder.getNotifier().sessionAlerting(mSession);
     }
 
-    
     public void sessionStartFailed(ISession session) throws RemoteException {
         Log.i(TAG, "sessionStartFailed#");
-        for (SessionListener listener : listeners) {
-            listener.sessionStartFailed(mSession);
-        }
+        listenersHolder.getNotifier().sessionStartFailed(mSession);
     }
 
-    
     public void sessionStarted(ISession session) throws RemoteException {
         Log.i(TAG, "sessionStarted#");
-        for (SessionListener listener : listeners) {
-            listener.sessionStarted(mSession);
-        }
+        listenersHolder.getNotifier().sessionStarted(mSession);
     }
 
-    
     public void sessionTerminated(ISession session) throws RemoteException {
         Log.i(TAG, "sessionTerminated#");
-        for (SessionListener listener : listeners) {
-            listener.sessionTerminated(mSession);
-        }
+        listenersHolder.getNotifier().sessionTerminated(mSession);
     }
 
-    
     public void sessionUpdateFailed(ISession session) throws RemoteException {
         Log.i(TAG, "sessionUpdateFailed#");
-        for (SessionListener listener : listeners) {
-            listener.sessionUpdateFailed(mSession);
-        }
+        listenersHolder.getNotifier().sessionUpdateFailed(mSession);
     }
 
-    
     public void sessionUpdateReceived(ISession session) throws RemoteException {
         Log.i(TAG, "sessionUpdateReceived#");
-        for (SessionListener listener : listeners) {
-            listener.sessionUpdateReceived(mSession);
-        }
+        listenersHolder.getNotifier().sessionUpdateReceived(mSession);
     }
 
-    
     public void sessionUpdated(ISession session) throws RemoteException {
-        Log.d(TAG, "sessionUpdated#start");
-        for (SessionListener listener : listeners) {
-            listener.sessionUpdated(mSession);
-        }
-        Log.d(TAG, "sessionUpdated#end");
+        Log.d(TAG, "sessionUpdated#");
+        listenersHolder.getNotifier().sessionUpdated(mSession);
     }
 
-    
     public void sessionReferenceReceived(ISession iSession, IReference iReference)
             throws RemoteException {
         Log.i(TAG, "sessionReferenceReceived#");
-        for (SessionListener listener : listeners) {
-            ReferenceImpl reference = new ReferenceImpl(iReference.getServiceMethod(), iReference);
-            mServiceImpl.addServiceCloseListener(reference);
-            listener.sessionReferenceReceived(mSession, reference);
-        }
-    }
+
+        ReferenceImpl reference = new ReferenceImpl(iReference.getServiceMethod(), iReference);
+        mServiceImpl.addServiceCloseListener(reference);
+
+        listenersHolder.getNotifier().sessionReferenceReceived(mSession, reference);
+
+        /*
+         * for (SessionListener listener : listeners) { ReferenceImpl reference
+         * = new ReferenceImpl(iReference.getServiceMethod(), iReference);
+         * mServiceImpl.addServiceCloseListener(reference);
+         * listener.sessionReferenceReceived(mSession, reference); }
+         */}
 }

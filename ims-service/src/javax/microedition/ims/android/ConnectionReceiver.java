@@ -47,6 +47,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.connection.ConnectionManagerHandler;
 
 /**
@@ -66,7 +67,7 @@ public class ConnectionReceiver extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "onReceive#" + intent + ", intent.getExtras()" + intent.getExtras());
+        Logger.log(TAG, "onReceive#" + intent + ", intent.getExtras()" + intent.getExtras());
 
         if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
             connectionManagerHandler.onConnectivity();

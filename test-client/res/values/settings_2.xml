@@ -48,10 +48,13 @@
 
 	<string name="def_registrar_host">iptel.org</string>
 	<string name="def_registrar_port">5060</string>
-	<string name="def_registrar_expire_time">3600</string>
 	<string name="def_registrar_user_name_schema">sip</string>
 	<string name="def_registrar_user_name">dummy</string>
 	<string name="def_registrar_user_name_domain" >iptel.org</string>
+
+	<string name="def_registrar_expire_time">3600</string>
+	<string name="def_subscription_expire_time">3600</string>
+	<string name="def_publication_expire_time">3600</string>
 
     <string name="def_preferred_identity">sip:dummy@sip2sip.info</string>
 	
@@ -102,4 +105,5 @@
 
 	<string name="def_dtmf_payload_type">inband</string>
 
+    <string name="def_use_feature_tags">true</string>
 </resources>

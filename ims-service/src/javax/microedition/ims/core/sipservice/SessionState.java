@@ -195,9 +195,45 @@ public enum SessionState {
             }
             break;
 
+            case SIP_UPDATE_SERVER: {
+                if (State.TRYING == stateName) {
+                    if (reason == StateChangeReason.INITIALIZATION) {
+                        retValue = SESSION_UPDATE_RECEIVED;
+                    }
 
+                }
+/*                else if (State.COMPLETED == stateName) {
+
+                    if (reason == StateChangeReason.CLIENT_ACCEPT) {
+                        retValue = SESSION_UPDATED; //for server side
+                    }
+
+                    //waiting ack
+                }
+                else if (State.CONFIRMED == stateName) {
+                    if (StateChangeReason.CLIENT_ACCEPT == reason) {
+                        retValue = SESSION_UPDATED;
+                    }
+                    else if (StateChangeReason.CLIENT_REJECT == reason || StateChangeReason.TIMER_TIMEOUT == reason) {
+                        retValue = SESSION_UPDATE_FAILED;
+                    }
+                }
+                else if (State.TERMINATED == stateName &&
+                        StateChangeReason.TIMER_TIMEOUT == reason) {
+                    retValue = SESSION_UPDATE_FAILED;
+                }
+*/            }
+            break;
             case SIP_BYE_CLIENT: {
-                retValue = SESSION_TERMINATED;
+                if(State.COMPLETED == stateName) {
+                    if(reason == StateChangeReason.INCOMING_MESSAGE || reason == StateChangeReason.TIMER_TIMEOUT) {
+                        retValue = SESSION_TERMINATED;
+                    }
+                } else if (State.TRYING == stateName &&
+                        reason == StateChangeReason.TRANSACTION_SHUTDOWN) {
+                    retValue = SESSION_TERMINATED;
+                }
+                //07-23 11:58:14.670 I/SessionState.toSessionState()(  840): +++++ transactionName : SIP_BYE_CLIENT   stateName: TRYING   reason: TRANSACTION_SHUTDOWN
             }
             break;
 

@@ -48,6 +48,7 @@ import javax.microedition.ims.android.IError;
 import javax.microedition.ims.android.IExceptionHolder;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.EventPackage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.sipservice.publish.*;
@@ -97,7 +98,7 @@ public class PublicationImpl extends IPublication.Stub {
     private class PublishStateListenerImpl implements PublishStateListener {
         
         public void publicationDelivered(PublishStateEvent event) {
-            Log.i(TAG, "PublishStateListenerImpl.publicationDelivered#started");
+            Logger.log(TAG, "PublishStateListenerImpl.publicationDelivered#started");
 
             if (event.getEtag() != null) {
                 lastETag = event.getEtag();
@@ -107,12 +108,12 @@ public class PublicationImpl extends IPublication.Stub {
 
             notifyPublicationDelivered();
 
-            Log.i(TAG, "PublishStateListenerImpl.publicationDelivered#finished    lastETag=" + lastETag);
+            Logger.log(TAG, "PublishStateListenerImpl.publicationDelivered#finished    lastETag=" + lastETag);
         }
 
         
         public void publicationDeliveryFailed(PublishStateEvent event) {
-            Log.i(TAG, "PublishStateListenerImpl.publicationDeliveryFailed#started");
+            Logger.log(TAG, "PublishStateListenerImpl.publicationDeliveryFailed#started");
 
             setState(PublicationState.STATE_INACTIVE);
 
@@ -120,12 +121,12 @@ public class PublicationImpl extends IPublication.Stub {
 
             unSubscribe();
 
-            Log.i(TAG, "PublishStateListenerImpl.publicationDeliveryFailed#finished");
+            Logger.log(TAG, "PublishStateListenerImpl.publicationDeliveryFailed#finished");
         }
 
         
         public void publicationTerminated(PublishStateEvent event) {
-            Log.i(TAG, "PublishStateListenerImpl.publicationTerminated#started");
+            Logger.log(TAG, "PublishStateListenerImpl.publicationTerminated#started");
 
             if (event.getEtag() != null) {
                 lastETag = event.getEtag();
@@ -137,7 +138,7 @@ public class PublicationImpl extends IPublication.Stub {
 
             unSubscribe();
 
-            Log.i(TAG, "PublishStateListenerImpl.publicationTerminated#finished");
+            Logger.log(TAG, "PublishStateListenerImpl.publicationTerminated#finished");
         }
 
         private void unSubscribe() {
@@ -161,7 +162,7 @@ public class PublicationImpl extends IPublication.Stub {
     
     public void publish(byte[] body, String contentType,
                         IExceptionHolder exceptionHolder) throws RemoteException {
-        Log.i(TAG, "publish#started");
+        Logger.log(TAG, "publish#started");
 
         try {
             if (contentType == null) {
@@ -190,15 +191,16 @@ public class PublicationImpl extends IPublication.Stub {
         }
         catch (IllegalArgumentException e) {
             exceptionHolder.setParcelableException(new IError(IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
 
-        Log.i(TAG, "publish#finished");
+        Logger.log(TAG, "publish#finished");
     }
 
     
     public void unpublish() throws RemoteException {
-        Log.i(TAG, "unpublish#started    lastETag=" + lastETag);
+        Logger.log(TAG, "unpublish#started    lastETag=" + lastETag);
 
         setState(PublicationState.STATE_PENDING);
 
@@ -206,7 +208,7 @@ public class PublicationImpl extends IPublication.Stub {
 
         publishService.sendUnpublishMessage(dialog, publishInfo);
 
-        Log.i(TAG, "unpublish#finished");
+        Logger.log(TAG, "unpublish#finished");
     }
 
     
@@ -220,6 +222,8 @@ public class PublicationImpl extends IPublication.Stub {
     }
 
     public void addListener(IPublicationListener listener) throws RemoteException {
+        Logger.log(TAG, "addListener: listener: " + listener);
+
         if (listener != null) {
             listenerHolder.addListener(listener);
         }
@@ -227,6 +231,8 @@ public class PublicationImpl extends IPublication.Stub {
 
     
     public void removeListener(IPublicationListener listener) throws RemoteException {
+        Logger.log(TAG, "removeListener: listener: " + listener);
+
         if (listener != null) {
             listenerHolder.removeListener(listener);
         }
@@ -242,36 +248,39 @@ public class PublicationImpl extends IPublication.Stub {
     }
 
     private void notifyPublicationDelivered() {
-        Log.i(TAG, "notifyPublicationDelivered#started");
+        Logger.log(TAG, "notifyPublicationDelivered#started");
         try {
             listenerHolder.getNotifier().publicationDelivered();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifyPublicationDelivered#finished");
+        Logger.log(TAG, "notifyPublicationDelivered#finished");
     }
 
     private void notifyPublicationDeliveryFailed() {
-        Log.i(TAG, "notifyPublicationDeliveryFailed#started");
+        Logger.log(TAG, "notifyPublicationDeliveryFailed#started");
         try {
             listenerHolder.getNotifier().publicationDeliveryFailed();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifyPublicationDeliveryFailed#finished");
+        Logger.log(TAG, "notifyPublicationDeliveryFailed#finished");
     }
 
     private void notifyPublicationTerminated() {
-        Log.i(TAG, "notifyPublicationTerminated#started");
+        Logger.log(TAG, "notifyPublicationTerminated#started");
         try {
             listenerHolder.getNotifier().publicationTerminated();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            e.printStackTrace();
+            Logger.log(TAG, e.getMessage());
         }
-        Log.i(TAG, "notifyPublicationTerminated#finished");
+        Logger.log(TAG, "notifyPublicationTerminated#finished");
     }
 
 

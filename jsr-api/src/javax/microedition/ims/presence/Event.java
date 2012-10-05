@@ -45,6 +45,8 @@ package javax.microedition.ims.presence;
  * Helper interface to describe the type of event that caused the current state
  * of a specific subscription. For example, the application can be notified of
  * why a subscription was terminated.
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  * 
  * @author Andrei Khomushko
  * 

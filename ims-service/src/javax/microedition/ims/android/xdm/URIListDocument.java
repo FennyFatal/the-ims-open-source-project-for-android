@@ -49,6 +49,7 @@ import javax.microedition.ims.DefaultStackContext;
 import javax.microedition.ims.StackHelper;
 import javax.microedition.ims.android.IExceptionHolder;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.common.RepetitiousTaskManager;
 import javax.microedition.ims.config.Configuration;
@@ -119,10 +120,12 @@ public class URIListDocument extends IURIListDocument.Stub {
             etag = response.getEtag();
             //retrieve actual xml and update cache
         } catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         } catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown
@@ -146,7 +149,7 @@ public class URIListDocument extends IURIListDocument.Stub {
 
         ConnectionDataProvider connDataProvider = new ConnectionDataProviderConfigVsDnsImpl(
                 configuration,
-                new DNSResolverDNSJavaImpl()
+                new DNSResolverDNSJavaImpl(configuration)
         );
         connDataProvider.refresh();
 

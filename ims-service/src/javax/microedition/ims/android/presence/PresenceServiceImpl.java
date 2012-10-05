@@ -43,6 +43,10 @@ package javax.microedition.ims.android.presence;
 
 import android.os.RemoteException;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.microedition.ims.android.IError;
 import javax.microedition.ims.android.IExceptionHolder;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
@@ -72,6 +76,10 @@ public class PresenceServiceImpl extends IPresenceService.Stub {
     private final RemoteListenerHolder<IPresenceServiceListener> listenerHolder = new RemoteListenerHolder<IPresenceServiceListener>(
             IPresenceServiceListener.class);
     private final StackContext context;
+
+    private List<IPresenceSource> mPresenceSourceList = new ArrayList<IPresenceSource>();
+    private List<IWatcher> mWatcherList = new ArrayList<IWatcher>();
+    private List<IWatcherInfoSubscriber> mWatcherInfoList = new ArrayList<IWatcherInfoSubscriber>();
 
     /**
      * Create presenceServiceImpl
@@ -115,6 +123,25 @@ public class PresenceServiceImpl extends IPresenceService.Stub {
 
     @Override
     public void close() throws RemoteException {
+        Collections.reverse(mPresenceSourceList);
+        for (IPresenceSource item : mPresenceSourceList) {
+            if (item.getState() == 4 /*PresenceSourceImpl.StateCode.STATE_ACTIVE*/) {
+                item.unpublish();
+            }
+        }
+        Collections.reverse(mWatcherList);
+        for (IWatcher item : mWatcherList) {
+            if (item.getState() == 3 /*SubscriptionState.STATE_ACTIVE*/) {
+                item.unsubscribe();
+            }
+        }
+        Collections.reverse(mWatcherInfoList);
+        for (IWatcherInfoSubscriber item : mWatcherInfoList) {
+            if (item.getState() == 3 /*SubscriptionState.STATE_ACTIVE*/) {
+                item.unsubscribe();
+            }
+        }
+
         listenerHolder.shutdown();
     }
 
@@ -138,14 +165,16 @@ public class PresenceServiceImpl extends IPresenceService.Stub {
         Dialog dialog = dialogStorage.getDialog(localParty, localParty
                 .getUserInfo().toUri(), new DialogCallIDImpl(SIPUtil
                 .newCallId()));
-        return new PresenceSourceImpl(dialog, publishServicePeer);
+        IPresenceSource presenceSource = new PresenceSourceImpl(dialog, publishServicePeer);
+        mPresenceSourceList.add(presenceSource);
+        return presenceSource;
     }
 
 /*    private void notifyServiceClosed(IReasonInfo reasonInfo) {
         try {
             listenerHolder.getNotifier().serviceClosed(reasonInfo);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage(), e);
         }
     }
 */
@@ -168,6 +197,7 @@ public class PresenceServiceImpl extends IPresenceService.Stub {
 
         try {
             retValue = doCreateWatcher(targetURI);
+            mWatcherList.add(retValue);
         } catch (IllegalArgumentException e) {
             exceptionHolder.setParcelableException(new IError(
                     IError.ERROR_WRONG_PARAMETERS, e.getMessage()));
@@ -194,6 +224,7 @@ public class PresenceServiceImpl extends IPresenceService.Stub {
                 localParty.getUserInfo().toUri(),
                 subscribeServicePeer
         );
+        mWatcherInfoList.add(infoSubscriber);
 
         return infoSubscriber;
     }

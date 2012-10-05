@@ -49,9 +49,12 @@ import javax.microedition.ims.core.registry.property.CapabilityProperty;
 import javax.microedition.ims.core.registry.property.MprofProperty;
 import javax.microedition.ims.core.registry.property.RegisterProperty;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import android.text.TextUtils;
 /**
  * Default implementation {@link StackRegistry}
  *
@@ -63,6 +66,7 @@ public class DefaultStackRegistry implements StackRegistryEditor {
     private CommonRegistry commonRegistry;
 
     private final Set<ClientRegistry> clientRegistries = new HashSet<ClientRegistry>();
+    private final ArrayList<CommonRegistry> commonRegistries = new ArrayList<CommonRegistry>();
 
     private final ListenerHolder<RegistryChangeListener> changeRegistryHolder = new ListenerHolder<RegistryChangeListener>(
             RegistryChangeListener.class);
@@ -105,6 +109,14 @@ public class DefaultStackRegistry implements StackRegistryEditor {
         return commonRegistry;
     }
 
+    public CommonRegistry getCommonRegistry(final String appId) {
+        for (int i=0;i<commonRegistries.size();i++) {
+            CommonRegistry retValue = commonRegistries.get(i);
+            if (!TextUtils.isEmpty(appId) && appId.equals(retValue.getAppId()))
+                return retValue;
+        }
+        return null;
+    }
     
     public void applyChanges(ClientRegistry clientRegistry,
                              CommonRegistry commonRegistry) {
@@ -119,7 +131,19 @@ public class DefaultStackRegistry implements StackRegistryEditor {
         return removeClientRegistry(appId);
     }
 
+    public boolean dropCommonData(String appId) {
+        return removeCommonRegistry(appId);
+    }
+
     protected void updateCommonRegistry(CommonRegistry commonRegistryUpdate) {
+        final String appId = commonRegistryUpdate.getAppId();
+        CommonRegistry oldRegistry = getCommonRegistry(appId);
+
+        if (!commonRegistryUpdate.equals(oldRegistry)) {
+            commonRegistries.remove(oldRegistry);
+            commonRegistries.add(commonRegistryUpdate);
+        }
+
         if (isHasUpdate(commonRegistryUpdate)) {
             CommonRegistry oldCommonRegistry = commonRegistry;
 
@@ -134,9 +158,10 @@ public class DefaultStackRegistry implements StackRegistryEditor {
 
             this.commonRegistry = newCommonRegistry;
 
-            changeRegistryHolder.getNotifier().commonRegistryChanged(
-                    new RegistryChangeEventImpl<CommonRegistry>(null,
-                            newCommonRegistry, oldCommonRegistry));
+            if (changeRegistryHolder != null && changeRegistryHolder.getNotifier() != null)
+                changeRegistryHolder.getNotifier().commonRegistryChanged(
+                        new RegistryChangeEventImpl<CommonRegistry>(null,
+                                newCommonRegistry, oldCommonRegistry));
         }
     }
 
@@ -159,9 +184,10 @@ public class DefaultStackRegistry implements StackRegistryEditor {
         if (!newClientRegistry.equals(oldClientRegistry)) {
             clientRegistries.remove(oldClientRegistry);
             clientRegistries.add(newClientRegistry);
-            changeRegistryHolder.getNotifier().clientRegistryChanged(
-                    new RegistryChangeEventImpl<ClientRegistry>(appId,
-                            newClientRegistry, oldClientRegistry));
+            if (changeRegistryHolder != null && changeRegistryHolder.getNotifier() != null)
+                changeRegistryHolder.getNotifier().clientRegistryChanged(
+                        new RegistryChangeEventImpl<ClientRegistry>(appId,
+                                newClientRegistry, oldClientRegistry));
         }
         else {
             Logger.log(TAG, "New regestry is the same as old");
@@ -174,9 +200,10 @@ public class DefaultStackRegistry implements StackRegistryEditor {
         ClientRegistry oldClientRegistry = getClientRegistry(appId);
         if (oldClientRegistry != null) {
             clientRegistries.remove(oldClientRegistry);
-            changeRegistryHolder.getNotifier().clientRegistryChanged(
-                    new RegistryChangeEventImpl<ClientRegistry>(appId, null,
-                            oldClientRegistry));
+            if (changeRegistryHolder != null && changeRegistryHolder.getNotifier() != null)
+                changeRegistryHolder.getNotifier().clientRegistryChanged(
+                        new RegistryChangeEventImpl<ClientRegistry>(appId, null,
+                                oldClientRegistry));
         }
         retValue = oldClientRegistry != null;
 
@@ -225,6 +252,35 @@ public class DefaultStackRegistry implements StackRegistryEditor {
         return retValue;
     }
 
+    private boolean removeCommonRegistry(String appId) {
+        boolean retValue = false;
+
+        CommonRegistry oldCommonRegistry = getCommonRegistry(appId);
+        if (oldCommonRegistry != null)
+            commonRegistries.remove(oldCommonRegistry);
+
+        CommonRegistry newCommonRegistry = null, commonRegistryUpdate;
+
+        for(int i=0;i<commonRegistries.size();i++) {
+            commonRegistryUpdate = commonRegistries.get(i);
+            if (isHasUpdate(commonRegistryUpdate)) {
+                if (newCommonRegistry == null)
+                    newCommonRegistry = commonRegistryUpdate;
+                else
+                    newCommonRegistry = mergeAndCreateSnapshot(commonRegistryUpdate, newCommonRegistry);
+            }
+        }
+
+        if (!commonRegistry.equals(newCommonRegistry)) {
+            retValue = true;
+            if (changeRegistryHolder != null && changeRegistryHolder.getNotifier() != null)
+                changeRegistryHolder.getNotifier().commonRegistryChanged(
+                        new RegistryChangeEventImpl<CommonRegistry>(null,
+                                newCommonRegistry, commonRegistry));
+            this.commonRegistry = newCommonRegistry;
+        }
+        return retValue;
+    }
 
     public String toString() {
         return "StackRegistryImpl [changeRegistryHolder="

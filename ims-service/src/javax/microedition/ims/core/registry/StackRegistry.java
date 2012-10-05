@@ -53,6 +53,8 @@ public interface StackRegistry {
 
     CommonRegistry getCommonRegistry();
 
+    CommonRegistry getCommonRegistry(final String appId);
+
     ClientRegistry getClientRegistry(final String appId);
 
     ClientRegistry[] getClientRegistries();

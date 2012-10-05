@@ -48,10 +48,13 @@ import java.util.Map;
 
 /**
  * The PresenceContentFilter class holds the presence content filter for a
- * PresenceAuthorizationRule [OMA_PRES_XDM]. A presence content filter defines
- * what information a watcher has access to in a specific presence document,
- * given that the watcher has been allowed to access the presence document.
+ * PresenceAuthorizationRule.
  * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

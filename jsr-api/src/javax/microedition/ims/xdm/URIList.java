@@ -45,13 +45,12 @@ import javax.microedition.ims.ServiceClosedException;
 import java.io.IOException;
 
 /**
- * A <code>URIList</code> contains a number of <code>ListEntry</code> objects. A
- * <code>URIList</code> object is always connected to a specific
- * <code>URIListDocument</code> and any changes done to the <code>URIList</code>
- * will be submitted to the XDM server.
- * 
- * A ListEntry can define either a single URI or a reference to an already
- * existing URI list.
+ * A <code>URIList</code> contains a number of <code>ListEntry</code> objects.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * 
  * @see URIListDocument, ListEntry
  * 

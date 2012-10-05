@@ -58,22 +58,14 @@ public class PublicationImpl extends ServiceMethodImpl implements Publication {
 
     private IPublication mPublication;
 
-    private PublicationListener mCurrentPublicationListener;
-    private final RemotePublicationListener remotePublicationListener;
+    private PublicationListener mCurrentPublicationListener = null;
+    private RemotePublicationListener remotePublicationListener = null;
 
     
     public PublicationImpl(final IServiceMethod serviceMethod, final IPublication mPublication) {
         super(serviceMethod);
         
         this.mPublication = mPublication;
-        
-        this.remotePublicationListener = new RemotePublicationListener(this);
-        try {
-            mPublication.addListener(remotePublicationListener);
-        } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
     }
 
     
@@ -132,13 +124,38 @@ public class PublicationImpl extends ServiceMethodImpl implements Publication {
 
     
     public void setListener(PublicationListener listener) {
+        if (remotePublicationListener == null) {
+            remotePublicationListener = new RemotePublicationListener(this);
+
+            try {
+                mPublication.addListener(remotePublicationListener);
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+                remotePublicationListener = null;
+
+                return;
+            }
+        }
+
         if (mCurrentPublicationListener != null) {
             remotePublicationListener.removeListener(mCurrentPublicationListener);
         }
 
         if (listener != null) {
             remotePublicationListener.addListener(listener);
+        } else {
+            try {
+                mPublication.removeListener(remotePublicationListener);
+                remotePublicationListener = null;
+            } catch (RemoteException e) {
+                Log.e(TAG, e.getMessage(), e);
+                remotePublicationListener = null;
+                mCurrentPublicationListener = listener;
+
+                return;
+            }
         }
+
         mCurrentPublicationListener = listener;
     }
 

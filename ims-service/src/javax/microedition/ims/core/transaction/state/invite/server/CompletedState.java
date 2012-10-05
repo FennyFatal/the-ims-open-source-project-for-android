@@ -63,11 +63,6 @@ public class CompletedState extends TransactionState<ServerCommonInviteTransacti
 
     private StateChangeReason stateChangeReason;
 
-    //TODO review
-    protected enum RequestState {
-        PREACCEPTED, ACCEPTED, REJECTED, CANCELED, TIMEOUT, PRACKED, ACCEPTED_UPDATE, REJECTED_UPDATE
-    }
-
     public CompletedState(
             final ServerCommonInviteTransaction transaction,
             final RequestState requestState) {
@@ -164,6 +159,20 @@ public class CompletedState extends TransactionState<ServerCommonInviteTransacti
             case SIP_PRACK: {
                 //SIP_PRACK retransmission
                 transaction.sendResponse(msg, StatusCode.OK, true);
+                break;
+            }
+            case SIP_CANCEL: {
+                log("CompletedState", "handle late CANCEL");
+                transaction.sendResponse(msg, StatusCode.OK, true);
+                transaction.sendResponse(msg, StatusCode.REQUEST_TERMINATED, false);//respond to invite
+
+                final TransactionStateChangeEvent<BaseSipMessage> event =
+                    createStateChangeEvent(
+                            StateChangeReason.INCOMING_MESSAGE,
+                            msg
+                            );
+
+                transaction.transitToState(new CompletedState(transaction, requestState), event);
                 break;
             }
             default: {

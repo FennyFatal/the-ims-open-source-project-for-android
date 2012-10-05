@@ -50,7 +50,6 @@ import javax.microedition.ims.core.sipservice.invite.TUResponseEvent.OperationTy
 import javax.microedition.ims.core.sipservice.timer.TimeoutTimer;
 import javax.microedition.ims.core.sipservice.timer.TimeoutTimer.TimeoutListener;
 import javax.microedition.ims.core.transaction.server.ServerCommonInviteTransaction;
-import javax.microedition.ims.core.transaction.state.invite.server.CompletedState.RequestState;
 import javax.microedition.ims.messages.utils.StatusCode;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import java.util.concurrent.atomic.AtomicBoolean;

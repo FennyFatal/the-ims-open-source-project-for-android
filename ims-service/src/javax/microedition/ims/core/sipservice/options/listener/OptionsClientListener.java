@@ -57,6 +57,8 @@ import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import javax.microedition.ims.util.MessageUtilHolder;
 import javax.microedition.ims.util.SipMessageUtil;
 
+import java.util.ArrayList;
+import java.util.Collection;
 /**
  * Options listener for uac.
  *
@@ -113,7 +115,10 @@ public class OptionsClientListener<T> extends
             final TransactionStateChangeEvent<T> event) {
         // Allow, Accept, Accept-Encoding, Accept-Language, and
         BaseSipMessage message = (BaseSipMessage) event.getTriggeringMessage();
-        return new DefaultOptionsInfo(message.getSupported());
+        Collection<String> entities = new ArrayList<String>();
+        if (message != null)
+            entities.add(message.getContacts().toString());
+        return new DefaultOptionsInfo(entities);
     }
 
     private static <T> OptionsState toSessionState(
@@ -139,8 +144,10 @@ public class OptionsClientListener<T> extends
                     else {
                         retValue = OptionsState.OPTIONS_DELIVERY_FAILED;
                     }
-                }
-                else {
+                } else if (State.TRYING == stateName
+                    && StateChangeReason.TIMER_TIMEOUT == reason) {
+                    retValue = OptionsState.OPTIONS_DELIVERY_FAILED;
+                } else {
                     retValue = OptionsState.UNKNOWN;
                 }
             }

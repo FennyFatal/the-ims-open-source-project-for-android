@@ -1,5 +1,5 @@
 /*
- * This software code is � 2010 T-Mobile USA, Inc. All Rights Reserved.
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
  *
  * Unauthorized redistribution or further use of this material is
  * prohibited without the express permission of T-Mobile USA, Inc. and
@@ -17,7 +17,7 @@
  * used to endorse or promote products derived from this software without
  * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ON AN �AS IS� AND �WITH ALL FAULTS� BASIS
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
  * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
  * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
@@ -41,6 +41,7 @@
 
 package javax.microedition.ims.core.transaction.server;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.RepetitiousTaskManager.RepetitiousTimeStrategy;
 import javax.microedition.ims.core.StackContext;
@@ -93,7 +94,6 @@ public abstract class ServerTransaction extends CommonSIPTransaction implements 
         return null;
     }
 
-
     protected RepetitiousTimeStrategy getResendRequestInterval() {
         return null;
     }
@@ -104,20 +104,26 @@ public abstract class ServerTransaction extends CommonSIPTransaction implements 
         //currentState.onMessageReceived(msg);
     }
 */
+    @Override
     public void setFirstMessage(BaseSipMessage firstMessage) {
         assert TransactionUtils.isTransactionExecutionThread() : "Code run in wrong thread. Must be run in TransactionThread. Now in " + Thread.currentThread();
         this.firstMessage.compareAndSet(null, firstMessage);
     }
 
-
+    @Override
     public BaseSipMessage getFirstIncomingMessage() {
         return this.firstMessage.get();
     }
 
-
+    @Override
     public void sendResponse(BaseSipMessage triggeringMessage, int code, boolean toLastRequest) {
 
+        Logger.log("ServerTransaction", String.format("triggeringMessage = %s, toLastRequest = %s", triggeringMessage, toLastRequest));
+        //Logger.log("ServerTransaction", String.format("lastInRequest.get() = %s", lastInRequest.get()));
+        
         BaseSipMessage lastMessage = triggeringMessage == null ? lastInRequest.get() : triggeringMessage;
+        //Logger.log("ServerTransaction", "lastMessage = " + lastMessage);
+        
 
         //TODO remove fireOnSendResponse
         getListenerHolder().getNotifier().onSendResponse(
@@ -130,6 +136,7 @@ public abstract class ServerTransaction extends CommonSIPTransaction implements 
         doSendResponse(code, message);
     }
 
+    @Override
     public void sendResponseNonInvite(State state) {
 
         BaseSipMessage initialMessage = getInitialMessage();
@@ -164,5 +171,10 @@ public abstract class ServerTransaction extends CommonSIPTransaction implements 
 
     protected int getAcceptedCode() {
         return StatusCode.OK;
+    }
+
+    @Override
+    public boolean isAutoAcceptable() {
+        return true;
     }
 }

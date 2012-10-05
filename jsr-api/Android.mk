@@ -1,12 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE_TAGS := optional debug eng
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := libs/VideoEngine_android_java.jar libs/VoiceEngine_android_java.jar
-include $(BUILD_MULTI_PREBUILT)
-include $(CLEAR_VARS)
-
 # install the /system/etc/permissions file.
+include $(CLEAR_VARS)
 LOCAL_MODULE := jsr-api.xml
 LOCAL_MODULE_TAGS := optional debug eng
 LOCAL_MODULE_CLASS := ETC
@@ -21,7 +16,7 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 LOCAL_SRC_FILES := $(filter-out %/MainTestActivity.java,$(LOCAL_SRC_FILES))
 LOCAL_SRC_FILES := $(filter-out %/OrtpTestActivity.java,$(LOCAL_SRC_FILES))
 
-LOCAL_STATIC_JAVA_LIBRARIES:= ims-service VideoEngine_android_java VoiceEngine_android_java
+LOCAL_STATIC_JAVA_LIBRARIES:= ims-service
 
 LOCAL_MODULE := jsr-api
 

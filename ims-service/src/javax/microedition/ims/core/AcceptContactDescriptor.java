@@ -75,6 +75,14 @@ public class AcceptContactDescriptor {
         return pairs.toArray(new Pair[pairs.size()]);
     }
 
+    public void setExplicit() {
+        explicit = true;
+    }
+
+    public void setRequire() {
+        require = true;
+    }
+
     public boolean isExplicit() {
         return explicit;
     }

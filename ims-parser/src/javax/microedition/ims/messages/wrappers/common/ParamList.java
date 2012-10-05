@@ -42,6 +42,7 @@
 package javax.microedition.ims.messages.wrappers.common;
 
 import java.util.Map;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,5 +78,9 @@ public interface ParamList {
 
     String buildContent();
 
+    String buildContent(boolean first);
+
     String getContent(String separator);
+
+    Collection<String> retrieveContent();
 }

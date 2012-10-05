@@ -1,5 +1,5 @@
 /*
- * This software code is � 2010 T-Mobile USA, Inc. All Rights Reserved.
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
  *
  * Unauthorized redistribution or further use of this material is
  * prohibited without the express permission of T-Mobile USA, Inc. and
@@ -17,7 +17,7 @@
  * used to endorse or promote products derived from this software without
  * specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ON AN �AS IS� AND �WITH ALL FAULTS� BASIS
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
  * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
  * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
@@ -249,6 +249,12 @@ public class RegisterServiceImpl extends AbstractService implements
     private RegResult doRegister(final TimeoutUnit timeoutUnit) throws DnsLookupException, CertificateException {
         RegResult retValue = null;
         keepConnected.set(true);
+
+        if (registered.get()) {
+            //if already registered
+            refreshRegistration();
+        }
+
         registered.compareAndSet(
                 false,
                 !registered.get() && (retValue = doRegistration(timeoutUnit, TransactionType.SIP_LOGIN)).isSuccessful()
@@ -616,10 +622,12 @@ public class RegisterServiceImpl extends AbstractService implements
         else if (TransactionType.SIP_LOGIN == transactionType) {
             if (!registered.get() && regResult.isSuccessful()) {
                 registrationListenerHolder.getNotifier().onRegistered(registerEvent);
+                checkOnlineClient();
             }
             else if (registered.get() && regResult.isSuccessful()) {
                 log("Registration refresh completed successfully", "REGISTRATION REFRESH");
                 registrationListenerHolder.getNotifier().onRegistrationRefresh(registerEvent);
+                checkOnlineClient();
             }
             else if (registered.get() && !regResult.isSuccessful()) {
                 log("Registration failed. Client probably unregistered in SIP network", "REGISTRATION REFRESH");
@@ -814,7 +822,9 @@ public class RegisterServiceImpl extends AbstractService implements
             );
 
             dlg.putCustomParameter(Dialog.ParamKey.PREV_REG_ADDRESS, event.getPreviousAddress());
-            refreshRegistration(REGISTRATION_TIMEOUT);
+            // should be triggered in text refresh
+            //refreshRegistration(REGISTRATION_TIMEOUT);
+            Logger.log(LOG_TAG, "onIpChange#wait for next refresh");
         }
     }
 
@@ -881,5 +891,16 @@ public class RegisterServiceImpl extends AbstractService implements
     @Override
     public String[] getRegisterURIs() {
         return regResult != null ? regResult.get().getRegisterURIs() : null;
+    }
+
+    void checkOnlineClient() {
+        if (Arrays.asList(getStackContext().getStackRegistry().getClientRegistries()).size() > 0)
+            return;
+        else
+            notifyToDeregister();
+    }
+
+    public void notifyToDeregister() {
+        registrationListenerHolder.getNotifier().onUnregistered(null);
     }
 }

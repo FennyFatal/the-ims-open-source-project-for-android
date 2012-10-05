@@ -47,6 +47,11 @@ import javax.microedition.ims.ServiceClosedException;
  * The Capabilities is used to query a remote endpoint whether it has matching
  * capabilities matching the local ones.
  * 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

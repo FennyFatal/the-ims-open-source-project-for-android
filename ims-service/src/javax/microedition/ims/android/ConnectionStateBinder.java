@@ -71,6 +71,8 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
 
     private final RemoteCallbackList<IConnectionStateListener> connStateListeners = new RemoteCallbackList<IConnectionStateListener>();
 
+    private int callbackListSize = 0;
+
     private enum ConnectionStateType {
         IMS_CONNECTED, IMS_DISCONNECTED, CONNECTION_RESUMED, CONNECTION_SUSPENDED;
     }
@@ -88,6 +90,7 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
             throws RemoteException {
         if (listener != null) {
             connStateListeners.register(listener);
+            callbackListSize++;
         }
     }
 
@@ -95,6 +98,7 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
             throws RemoteException {
         if (listener != null) {
             connStateListeners.unregister(listener);
+            callbackListSize--;
         }
     }
 
@@ -137,7 +141,8 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
                 }
 
             } catch (RemoteException e) {
-                Log.e(TAG, e.getMessage(), e);
+                Logger.log(TAG, e.getMessage());
+                e.printStackTrace();
             }
         }
         connStateListeners.finishBroadcast();
@@ -186,7 +191,7 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
     }
 
     public void onUnregistered(RegisterEvent event) {
-        notifyConnStateListeners(ConnectionStateType.IMS_DISCONNECTED, buildConnectionInfo(event));
+        notifyConnStateListeners(ConnectionStateType.IMS_DISCONNECTED, (event != null) ? buildConnectionInfo(event) : null);
     }
 
     /**
@@ -224,4 +229,10 @@ public class ConnectionStateBinder extends IConnectionState.Stub implements Conn
     public String[] getRegisterURIs() throws RemoteException {
         return registerService.getRegisterURIs();
     }
+
+    public void close() {
+        if (isConnected() && (callbackListSize != 0))
+            registerService.refreshRegistration();
+    }
+
 }

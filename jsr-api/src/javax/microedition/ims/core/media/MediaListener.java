@@ -43,6 +43,11 @@ package javax.microedition.ims.core.media;
 
 /**
  * A listener type for receiving notification of when some mode property has changed on the media flow.
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  */
 
 public interface MediaListener {

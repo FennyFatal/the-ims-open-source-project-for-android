@@ -5,6 +5,7 @@ import javax.microedition.ims.common.ScheduledService;
 import javax.microedition.ims.core.connection.ConnState;
 import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.connection.GsmLocationServiceDefaultImpl;
+import javax.microedition.ims.core.IMSStackException;
 import java.io.File;
 
 /**
@@ -107,7 +108,7 @@ public class EnvironmentDefaultImpl implements Environment {
             return new EnvironmentDefaultImpl(this);
         }
 
-        public static Environment build(final ConnState connState) {
+        public static Environment build(final ConnState connState) throws IMSStackException {
             ConnectionManager connManager = StackHelper.newMockConnectionManager(connState);
             GsmLocationServiceDefaultImpl locationService = new GsmLocationServiceDefaultImpl();
             locationService.updateLocationInfo(new GsmLocationInfo(111, 22, "12345", connManager.getNetworkSubType()));

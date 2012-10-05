@@ -41,6 +41,15 @@
 
 package javax.microedition.ims.core.media;
 
+/**
+ * FramedMediaListener is interface to get callbacks about
+ * events in the FramedMedia (MSRP).
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ */
 public interface FramedMediaListener {
     /**
      * Notifies the application when an I/O error has occurred.

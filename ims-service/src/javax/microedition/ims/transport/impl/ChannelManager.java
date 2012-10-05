@@ -80,6 +80,7 @@ final class ChannelManager<T extends IMSMessage> implements Shutdownable {
                 Protocol.TCP,
                 entityType
         );
+        Logger.log("ChannelManager<IMSMessage>", "get: key = " + key);
 
         return doGet(key, creator);
     }

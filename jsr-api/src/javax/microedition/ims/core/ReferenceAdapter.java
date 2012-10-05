@@ -41,6 +41,13 @@
 
 package javax.microedition.ims.core;
 
+/**
+ * Adapter for ReferenceListener
+ * {@link ReferenceListener}
+ * 
+ * @author ext-akhomush
+ *
+ */
 public abstract class ReferenceAdapter implements ReferenceListener{
 
     

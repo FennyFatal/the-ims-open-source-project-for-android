@@ -45,113 +45,12 @@ import javax.microedition.ims.ServiceClosedException;
 
 /**
  * The <code>Reference</code> is used for referring a remote endpoint to a
- * third party user or service. The <code>Reference</code> can be created and
- * received both inside and outside of a session.
- * <p/>
- * A <code>Reference</code> has four states: <code>STATE_INITIATED</code>,
- * <code>STATE_PROCEEDING</code>, <code>STATE_REFERRING</code> and
- * <code>STATE_TERMINATED</code>.
- * <p/>
- * <h3>Example usage of Reference</h3>
- * The scenario below illustrates how <code>Reference</code> can be used to
- * make a reference to a third party user, in this case Charlotte. Figure 2
- * shows the interaction between Alice, Bob and Charlotte. Alice's application
- * is an IMS Application running on her device, for instance a mobile phone.
- * <p/>
- * <h4>Create a Reference</h4>
- * In this example code, Alice sends an INVITE refer method to Bob referring to
- * Charlotte, and requests that Bob sends reference notifications in return.
- * <p/>
- * <p/>
- * <pre>
- *  try {
- *    Reference ref = service.createReference(&quot;sip:alice@home.net&quot;,
- *                                            &quot;sip:bob@home.net&quot;,
- *                                            &quot;sip:charlotte@home.net&quot;,
- *                                            &quot;INVITE&quot;);
- *    ref.setListener(this)
- *    ref.refer(true);
- * <p/>
- *  } catch(Exception e){
- *    //handle Exceptions
- *  }
- * <p/>
- *  public void referenceDelivered(Reference reference) {
- *    // if the reference was delivered
- *  }
- * <p/>
- *  public void referenceDeliveryFailed(Reference reference) {
- *    // if the reference was not delivered
- *  }
- * <p/>
- *  public void referenceNotify(Reference reference, Message notify){
- *    // check progress of the reference
- *  }
- * <p/>
- *  public void referenceTerminated(Reference reference) {
- *    // the reference is terminated
- *  }
- * </pre>
- * <p/>
- * <h4>Accept a Reference</h4>
- * Bob receives a reference request and decides to accept it.
- * <p/>
- * <pre>
- *  public void referenceReceived(CoreService service, Reference reference) {
- *    String referToUserId = reference.getReferToUserId();
- *    String referMethod = reference.getReferMethod();
- *    // notify the application of the reference
- *    ...
- *    reference.accept();
- *    // assume referMethod == &quot;INVITE&quot;
- *    mySession = service.createSession(null, referToUserId);
- *    // Interpret the INVITE refer method as a request to initiate
- *    // a session with the third party
- *    reference.connectReferMethod((ServiceMethod)mySession);
- *    // start the reference with the third party
- *    mySession.start();
- *  }
- * </pre>
- * <p/>
- * In the call below, the referTo URI is a local TEL URI:
- * <p/>
- * <pre>
- *  try {
- *    Reference ref =
- *      service.createReference(&quot;Alice &lt;sip:alice@home.net&gt;&quot;,
- *                              &quot;Bob &lt;sip:bob@home.net&gt;&quot;,
- *                              &quot;Carol &lt;tel:1234;phone-context=example.com&gt;&quot;,
- *                              &quot;INVITE&quot;);
- *      ref.refer(true);
- * </pre>
- * <p/>
- * The referTo URI is a http URI:
- * <p/>
- * <pre>
- *  try {
- *    Reference ref =
- *      service.createReference(&quot;Alice &lt;sip:alice@home.net&gt;&quot;,
- *                              &quot;Bob &lt;sip:bob@home.net&gt;&quot;,
- *                              &quot;http://example.com&quot;,
- *                              null);
- *      ref.refer(true);
- * </pre>
- * <p/>
- * The referTo URI is a cid:. This is for example used in multiple-refer
- * [RFC5368] to conference servers.
- * <p/>
- * <pre>
- *  try {
- *    Reference ref =
- *      service.createReference(&quot;Alice &lt;sip:alice@home.net&gt;&quot;,
- *                              &quot;Bob &lt;sip:bob@home.net&gt;&quot;,
- *                              &quot;&lt;cid:cn35t8jf02@example.com&gt;&quot;,
- *                              null);
- *    // Make sure that the remote can process multiple refer
- *    ref.getNextRequest().addHeader(&quot;require&quot;, &quot;multiple-refer&quot;);
- *    // No notifications wanted
- *    ref.refer(false);
- * </pre>
+ * third party user or service.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  *
  * @see CoreService#createReference(String, String, String, String)
  * @see Session#createReference(String, String)

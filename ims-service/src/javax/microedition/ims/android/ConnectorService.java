@@ -57,15 +57,18 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.PowerManager.WakeLock;
+import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CountDownLatch;
 
 import javax.microedition.ims.DefaultStackContext;
 import javax.microedition.ims.StackHelper;
@@ -75,6 +78,7 @@ import javax.microedition.ims.android.env.AlarmScheduledService;
 import javax.microedition.ims.android.env.HardwareInfoAndroidImpl;
 import javax.microedition.ims.common.DefaultTimeoutUnit;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.RepetitiousTaskManager;
 import javax.microedition.ims.common.ScheduledService;
 import javax.microedition.ims.config.BaseConfiguration;
@@ -109,7 +113,7 @@ import javax.microedition.ims.transport.messagerouter.Router;
  *
  * @author Andrei Khomushko
  */
-public class ConnectorService extends Service {
+public class ConnectorService extends Service implements UncaughtExceptionHandler{
     //private static final int FINALIZATION_TIMEOUT = 32;
     //private static final int FINALIZATION_TIMEOUT = 20;
     private static final int FINALIZATION_TIMEOUT = 10;
@@ -131,14 +135,18 @@ public class ConnectorService extends Service {
     private final AtomicReference<WifiLock> wifiLockHolder = new AtomicReference<WifiManager.WifiLock>();
     //private final AtomicReference<WakeLock> wakeLockHolder = new AtomicReference<WakeLock>();
 
+    private CountDownLatch releaseLatch = new CountDownLatch(1);
+
     private boolean isFileOutput;
 
     //private StackFinalizationHandler stackFinalizationHandler;
 
     public void onCreate() {
-        Log.i(TAG, "Service created, pid: " + Process.myPid());
+        Logger.log(TAG, "Service created, pid: " + Process.myPid());
 
         enableLogging();
+
+		  Thread.setDefaultUncaughtExceptionHandler(this);
 
         {
             WifiLock wifiLock = retrieveWifiLock();
@@ -170,9 +178,10 @@ public class ConnectorService extends Service {
         IMSStack<IMSMessage> imsStack;
         try {
             final Configuration configuration = new AndroidConfiguration(ConnectorService.this);
+            final ConnectionManager connectionManager = StackHelper.newAndroidConnectionManager(this);
             final ConnectionDataProviderConfigVsDnsImpl connDataProvider = new ConnectionDataProviderConfigVsDnsImpl(
                     configuration,
-                    new DNSResolverDNSJavaImpl()
+                    new DNSResolverDNSJavaImpl(configuration, connectionManager)
             );
                         
             final ScheduledService scheduledService;
@@ -192,7 +201,7 @@ public class ConnectorService extends Service {
 
             //final ScheduledService scheduledService = new DefaultScheduledService();
 
-            imsStack = createImsStack(configuration, connDataProvider, scheduledService);
+            imsStack = createImsStack(configuration, connectionManager, connDataProvider, scheduledService);
 
             imsStackHolder.compareAndSet(null, imsStack);
 
@@ -200,7 +209,7 @@ public class ConnectorService extends Service {
             connectionReceiverHolder.compareAndSet(null, connectionReceiver);
 
             //TODO review
-            final ConnectorBinder connector = new ConnectorBinder(imsStack, connDataProvider);
+            final ConnectorBinder connector = new ConnectorBinder(imsStack, connDataProvider, releaseLatch);
             connectorHolder.compareAndSet(null, connector);
 
             final ConnectionStateBinder connectionState = instantiateConnectionStateBinder(imsStack);
@@ -211,9 +220,14 @@ public class ConnectorService extends Service {
             ConfigurationBinder configurationBinder = createConfigurationBinder(imsStack);
             configurationHolder.compareAndSet(null, configurationBinder);
 
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .permitNetwork()
+                    .build());
+
         } catch (AkaException e) {
             ReasonCode reason = e.getReason();
-            Log.e(TAG, reason.toString(), e);
+            Logger.log(TAG, reason.toString());
+            e.printStackTrace();
 
             int errorCode = ErrorsUtils.toIErrorCode(reason);
             String reasonData = reason.getErrCodeString();
@@ -222,7 +236,8 @@ public class ConnectorService extends Service {
             publishError(new IError(errorCode, message, reasonData));
 
         } catch (IMSStackException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             publishError(new IError(IError.ERROR_UNKNOWN, e.getMessage()));
         }
@@ -265,14 +280,12 @@ public class ConnectorService extends Service {
         return connectionReceiver;
     }
 
-    private IMSStack<IMSMessage> createImsStack(Configuration configuration, 
+    private IMSStack<IMSMessage> createImsStack(Configuration configuration, ConnectionManager connectionManager,
             ConnectionDataProvider connDataProvider, ScheduledService scheduledService)
             throws IMSStackException, AkaException {
         final IMSStack<IMSMessage> imsStackInstance;
 
         final Configuration configSnapshot = new BaseConfiguration.ConfigurationBuilder(configuration).build();
-
-        final ConnectionManager connectionManager = StackHelper.newAndroidConnectionManager(this);
 
         final DefaultStackRegistry stackRegistry = new DefaultStackRegistry(new DefaultCommonRegistry.CommonRegistryBuilder().build());
 
@@ -291,7 +304,7 @@ public class ConnectorService extends Service {
             try {
                 enableFileLogging(LOG_FILE_PATH);
             } catch (IOException e) {
-                Log.e(TAG, "Error in enabling file logging, message = " + e.getMessage());
+                Logger.log(TAG, "Error in enabling file logging, message = " + e.getMessage());
             }
         }
     }
@@ -305,7 +318,7 @@ public class ConnectorService extends Service {
         logFile.deleteOnExit();
         logFile.createNewFile();
         System.setOut(new PrintStream(logFile));
-        Log.i(TAG, "Sys.out redirected to" + path);
+        Logger.log(TAG, "Sys.out redirected to" + path);
     }
 
     private IMSStack<IMSMessage> instantiateStack(
@@ -333,7 +346,7 @@ public class ConnectorService extends Service {
                     .hardwareInfo(new HardwareInfoAndroidImpl(androidContext))
                     .externalStorageDirectory(android.os.Environment.getExternalStorageDirectory())
                     .build();
-            Log.i(TAG, "instantiateStack#env = " + env);
+            Logger.log(TAG, "instantiateStack#env = " + env);
 
             retValue = StackHelper.newIMSSipStack(
                     new DefaultStackContext.Builder().
@@ -353,7 +366,7 @@ public class ConnectorService extends Service {
                             build()
             );
 
-            Log.i(TAG, "IMS stack initialized");
+            Logger.log(TAG, "IMS stack initialized");
 
         return retValue;
     }
@@ -413,18 +426,18 @@ public class ConnectorService extends Service {
     }
 
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind#intent = " + intent);
+        Logger.log(TAG, "onBind#intent = " + intent);
 
         final BinderType binderType = BinderType.parse(intent.getAction());
 
         if(binderType == null) {
-            Log.i(TAG, "Unknow binder type: intent = " + intent);
+            Logger.log(TAG, "Unknow binder type: intent = " + intent);
             return null;
         }
 
         StackErrorBinder stackErrorBinder = stackCreationErrorHolder.get();
         if(stackErrorBinder != null) {
-            Log.i(TAG, "onBind#error: " + stackErrorBinder.toString());
+            Logger.log(TAG, "onBind#error: " + stackErrorBinder.toString());
             return stackErrorBinder;
         }
 
@@ -452,7 +465,17 @@ public class ConnectorService extends Service {
 
     public boolean onUnbind(Intent intent) {
         boolean res = super.onUnbind(intent);
-        Log.i(TAG, "Service unbinded");
+        Logger.log(TAG, "Service unbinded#intent = " + intent);
+        BinderType binderType = BinderType.parse(intent.getAction());
+        try {
+            // wait ConnectorBinder to finish presenceService and coreService closed
+            if (binderType==BinderType.CONNECTOR) {
+                releaseLatch.await(10, TimeUnit.SECONDS);
+                Logger.log(TAG, "CONNECTOR CountDownLatch await finish");
+            }
+        } catch (InterruptedException e) {
+            Logger.log(TAG, "CONNECTOR CountDownLatch Exception: "+e);
+        }
         return res;
     }
 
@@ -460,7 +483,7 @@ public class ConnectorService extends Service {
      * The IConnector is defined through IDL
      */
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
+        Logger.log(TAG, "onDestroy");
         
         if (connectionReceiverHolder.get() != null) unregisterReceiver(connectionReceiverHolder.get());
 
@@ -470,7 +493,10 @@ public class ConnectorService extends Service {
         if (alarmReceiverHolder.get() != null) unregisterReceiver(alarmReceiverHolder.get());
         
 
-        Log.i(TAG, "finalization request is sent");
+        Logger.log(TAG, "finalization request is sent");
+        //Debug.stopMethodTracing();
+        
+        Thread.setDefaultUncaughtExceptionHandler(null);
     }
     
     private final class StackFinalizationHandler extends Handler {
@@ -485,7 +511,7 @@ public class ConnectorService extends Service {
     }
 
     private void doFinalize() {
-        Log.i(TAG, "stack finalization start");
+        Logger.log(TAG, "stack finalization start");
         
         try {
             final IMSStack<IMSMessage> imsStack = imsStackHolder.get();
@@ -501,7 +527,7 @@ public class ConnectorService extends Service {
                 //unregisterReceiver(connectionReceiverHolder.get());
                 connectionReceiverHolder.set(null);
 
-                Log.i(TAG, "Service destroyed");
+                Logger.log(TAG, "Service destroyed");
             }
 
             {
@@ -520,7 +546,7 @@ public class ConnectorService extends Service {
                 wakeLockHolder.set(null);
             }
 */        } finally {
-            Log.i(TAG, "stack finalization end");
+            Logger.log(TAG, "stack finalization end");
         }
     }
 
@@ -540,5 +566,11 @@ public class ConnectorService extends Service {
             StackHelper.shutdownStack(imsStack);
             TransactionUtils.reset();
         }
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        Logger.log("UncaughtExceptionHolder", "thread = " + thread.getName());
+        ex.printStackTrace();
     }
 }

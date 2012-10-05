@@ -43,36 +43,15 @@ package javax.microedition.ims.xdm;
 
 /**
  * The Rule class is an abstract class that all current and future rules must
- * extend. This top-level class covers the common conditions on which a rule
- * will apply. The implementation of this abstract rule supplies three
- * conditions:
+ * extend.
+ *
+ *
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
  * 
- * <ul>
- * <li>
- * <h4>Identity condition</h4>: If this condition is set to true, the rule will
- * apply to requests from all identities matching the defined Identity, as
- * described in [RFC4745].</li>
- * <li>
- * <h4>URI list condition</h4>:If this condition is set to true, the rule will
- * apply to requests from all identities declared in the defined URI list.</li>
- * <li>
- * <h4>Other Identity condition</h4>:If this condition is set to true, the rule
- * will apply to requests from all identities that are not referenced by any
- * other rule in the document where the rule resides. This can be used to define
- * a default condition.</li>
- * </ul>
- * 
- * These conditions are all mutually exclusive. Only one condition at a time can
- * apply to a rule. All conditions will be set to false by default.
- * 
- * All rules must have a rule identifier. If no rule identifier is set, the
- * implementation of this class will assign one when the rule is added to a
- * document. If the document already contains a rule with the same rule
- * identifier, that rule will be updated.
- * 
- * One common usage of rule is the presence authorization rule which is used for
- * watcher authorization in a Presence service.
- * 
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

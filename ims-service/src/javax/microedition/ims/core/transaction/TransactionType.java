@@ -69,6 +69,7 @@ public class TransactionType<T, V extends T> {
         SIP_REINVITE_CLIENT,
         SIP_INVITE_SERVER,
         SIP_REINVITE_SERVER,
+        SIP_UPDATE_SERVER,
         SIP_LOGIN,
         SIP_LOGOUT,
         SIP_SUBSCRIBE,
@@ -141,6 +142,17 @@ public class TransactionType<T, V extends T> {
                     TransactionTypeData.REINVITE_SERVER_APPLICABLE_MESSAGES
             );
 
+    public static final TransactionType<UpdateSrvTransaction, UpdateServerTransaction> SIP_UPDATE_SERVER =
+        new TransactionType<UpdateSrvTransaction, UpdateServerTransaction>(
+                Name.SIP_UPDATE_SERVER,
+                Type.SERVER,
+                IMSEntityType.SIP,
+                UpdateSrvTransaction.class,
+                UpdateServerTransaction.class,
+                TransactionTypeData.UPDATE_SERVER_APPLICABLE_MESSAGES
+        );
+
+    
     public static final TransactionType<ClientTransaction, LoginTransaction> SIP_LOGIN =
             new TransactionType<ClientTransaction, LoginTransaction>(
                     Name.SIP_LOGIN,

@@ -43,12 +43,16 @@ package javax.microedition.ims.core.dialog;
 
 import javax.microedition.ims.common.*;
 import javax.microedition.ims.common.util.SIPUtil;
+import javax.microedition.ims.core.AcceptContactDescriptor;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.IMSEntity;
 import javax.microedition.ims.core.InitiateParty;
 import javax.microedition.ims.core.StackContext;
 import javax.microedition.ims.core.auth.AuthorizationData;
 import javax.microedition.ims.core.sipservice.invite.SessionRefreshData;
+import javax.microedition.ims.core.registry.ClientRegistry;
+import javax.microedition.ims.core.registry.StackRegistry;
+import javax.microedition.ims.core.registry.property.CoreServiceProperty;
 import javax.microedition.ims.core.sipservice.refer.Refer;
 import javax.microedition.ims.messages.MessageBuilderFactory;
 import javax.microedition.ims.messages.history.MessageAddedListener;
@@ -66,7 +70,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class Dialog implements IMSEntity, Shutdownable {
     private static final String LOG_TAG = "Dialog";
-
+    
     public static enum ParamKey {
         REGISTRATION_EXPIRES,
         SUBSCRIPTION_EXPIRES,
@@ -96,6 +100,9 @@ public class Dialog implements IMSEntity, Shutdownable {
     private final AtomicReference<String> remoteTag = new AtomicReference<String>(null);
     private final ClientIdentity localParty;
     private final AtomicReference<DialogState> state = new AtomicReference<DialogState>(DialogState.EARLY);
+    private StackContext stackContext;
+    private Set<String> contactHeaders;
+    private AcceptContactDescriptor[] acceptContacts;
 
     /*
     The CSeq header field contains a decimal number that increases for
@@ -114,6 +121,8 @@ public class Dialog implements IMSEntity, Shutdownable {
     private final InitiateParty dialogType;
     private final AtomicReference<InitiateParty> reInviteInProgress = new AtomicReference<InitiateParty>(null);
     private final AtomicReference<InitiateParty> updateInProgress = new AtomicReference<InitiateParty>(null);
+
+    private final AtomicReference<Boolean> sdpStatus = new AtomicReference<Boolean>(false);
 
     //TODO
     private MessageBuilderFactory messageBuilderFactory;
@@ -222,6 +231,8 @@ public class Dialog implements IMSEntity, Shutdownable {
 
         //putCustomParameter(ParamKey.CHALLENGE_TYPE, ChallengeType.PROXY);
         //putCustomParameter(ParamKey.CHALLENGE_TYPE, Arrays.asList(ChallengeType.UAS));
+
+        this.stackContext = stackContext;
 
         Logger.log(LOG_TAG, "DIALOG CREATED: " + this);
     }
@@ -335,10 +346,12 @@ public class Dialog implements IMSEntity, Shutdownable {
     }
 
     public void markUpdateInProgress(InitiateParty party) {
+        Logger.log(LOG_TAG, "mark dialog as update in progress, party = " + party);
         updateInProgress.set(party);
     }
 
     public void unmarkUpdateInProgress() {
+        Logger.log(LOG_TAG, "unmarkUpdateInProgress");
         updateInProgress.set(null);
     }
 
@@ -392,5 +405,68 @@ public class Dialog implements IMSEntity, Shutdownable {
 
     public void setRemotePartyDisplayName(String remotePartyDisplayName) {
         this.remotePartyDisplayName.set(remotePartyDisplayName);
+    }
+
+    public boolean getSdpStatus() {
+        return sdpStatus.get();
+    }
+
+    public void setSdpStatus(boolean status) {
+        this.sdpStatus.set(status);
+    }
+
+    public Set<String> getContactHeaders() {
+        try {
+            if (contactHeaders == null)
+                this.contactHeaders = extractClientData(localParty.getAppID(), stackContext.getStackRegistry());
+        } catch (Exception e) {
+            Logger.log(LOG_TAG, "getContactHeaders FAILED: " + e.toString());
+            contactHeaders = null;
+        }
+        return contactHeaders;
+    }
+
+    public AcceptContactDescriptor[] getAcceptContactHeaders(boolean containFT) {
+        try {
+            if (acceptContacts == null)
+                this.acceptContacts = stackContext.getClientRouter().buildClientPreferences(localParty, containFT);
+        } catch (Exception e) {
+            Logger.log(LOG_TAG, "getAcceptContactHeaders FAILED. "+e.toString());
+            acceptContacts = null;
+        }
+        return acceptContacts;
+    }
+
+    /**
+     * Extract client IARI, ICSIs, and Feature Tags from CoreService property.
+     */
+    private Set<String> extractClientData(String id, StackRegistry stackRegistry) {
+        final Set<String> clientData = new HashSet<String>();
+
+        ClientRegistry registry = stackRegistry.getClientRegistry(id);
+        CoreServiceProperty coreProperty = registry.getCoreServiceProperty();
+
+        //add iARIs
+        Collection<String> iARIs = CollectionsUtils.transform(Arrays.asList(coreProperty.getIARIs()),
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.iari-ref=\"%s\"", source);
+                    }
+                });
+        clientData.addAll(iARIs);
+
+        //add iCSIs
+        Collection<String> iCSIs = CollectionsUtils.transform(Arrays.asList(coreProperty.getICSIs()),
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.icsi-ref=\"%s\"", source);
+                    }
+                });
+        clientData.addAll(iCSIs);
+
+        //add FeatureTags
+//        clientData.addAll(Arrays.asList(coreProperty.getFeatureTags()));
+
+        return clientData;
     }
 }

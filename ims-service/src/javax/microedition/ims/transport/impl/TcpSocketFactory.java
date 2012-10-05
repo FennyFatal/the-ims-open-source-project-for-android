@@ -41,16 +41,14 @@
 
 package javax.microedition.ims.transport.impl;
 
-import javax.microedition.ims.common.Logger;
-import javax.microedition.ims.common.Logger.Tag;
-import javax.microedition.ims.transport.messagerouter.Route;
 import java.io.IOException;
 import java.net.Socket;
+
+import javax.microedition.ims.transport.messagerouter.Route;
 
 public class TcpSocketFactory implements SocketFactory {
     public Socket createSocket(Route route) throws IOException {
         //new Exception().printStackTrace();
-        Logger.log(Tag.COMMON, "createSocket#route = " + route);
         return new Socket(route.getDstHost(), route.getDstPort());
     }
 }

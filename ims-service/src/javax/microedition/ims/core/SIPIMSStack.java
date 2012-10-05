@@ -152,7 +152,13 @@ public class SIPIMSStack extends AbstractIMSStack<IMSMessage> {
             assert msg != null && MessageType.SIP_INVITE == MessageType.parse(msg.getMethod());
 
             if (!done.get()) {
-                inviteService.get().handleIncomingInvite(msg);
+                try {
+                    inviteService.get().handleIncomingInvite(msg);
+                } catch (DialogStateException e) {
+                    if (e.getError() == DialogStateException.Error.ADDRESSEE_NOT_FOUND)
+                        registerServiceImpl.get().notifyToDeregister();
+                    throw e;
+                }
             }
         }
 
@@ -293,7 +299,7 @@ public class SIPIMSStack extends AbstractIMSStack<IMSMessage> {
 
     public SIPIMSStack(final StackContextExt context) throws IMSStackException {
         assert context != null;
-        //Log.i(TAG, "Start creating entry point");
+        //Logger.log(TAG, "Start creating entry point");
 
         this.context = context;
 
@@ -317,7 +323,7 @@ public class SIPIMSStack extends AbstractIMSStack<IMSMessage> {
         msrpService.compareAndSet(null, new MSRPServiceImpl(context, transactionManager.get(), getInviteService()));
         optionsService.compareAndSet(null, new DefaultOptionsService(context, transactionManager.get()));
         //TODO is it ok to take the same time as for registration?
-        publishService.compareAndSet(null, new PublishServiceImpl(context, transactionManager.get(), context.getConfig().getRegistrationExpirationSeconds()));
+        publishService.compareAndSet(null, new PublishServiceImpl(context, transactionManager.get(), context.getConfig().getPublicationExpirationSeconds()));
 
         addStackListener(registerServiceImpl.get());
         

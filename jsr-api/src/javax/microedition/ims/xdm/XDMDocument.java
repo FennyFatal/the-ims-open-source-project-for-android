@@ -48,66 +48,12 @@ import java.io.OutputStream;
 
 /**
  * The <code>XDMDocument</code> interface is a representation of an XML document
- * that is stored on an XDM server. The XDMDocument has an ETag associated with
- * the content to indicate the version of the document. The XML document on the
- * server might be changed from several devices and each application is
- * responsible for making sure that the local copy is up-to-date. The
- * application can subscribe to changes through the XDMService interface and
- * receive notifications of document changes through the
- * DocumentSubscriberListener interface.
+ * that is stored on an XDM server. 
  * 
- * <p>
- * <h4>Retrieving a document</h4>
- * </p>
- * An XDMDocument can be obtained in two ways. The application can retrieve a
- * document from the server by using the static <code>retrieveDocument</code>
- * method on the corresponding subclass for the specific document. When using
- * this method the complete document will be fetched and the implementation will
- * store an internal representation of the document that is passed to the
- * application. </br> The other way is to load the document from a copy cached
- * by the application with the static <code>loadDocument</code> method. This
- * method is useful if the document has not been changed on the server and the
- * application wants to obtain the document without fetching it from the server.
- * See example below. </br> XML that is not supported will be discarded, meaning
- * that extensions or unsupported XML might be lost when modifying the document
- * on the server.
- * 
- * <p>
- * <h4>Modifying a document</h4>
- * </p>
- * When the XDMDocument has been obtained the application can do partial changes
- * to the document. All changes done to the document will be sent to the server
- * as XCAP requests. The ETag on the XDMDocument will be updated if the request
- * is successful.
- * 
- * <p>
- * <h4>Saving a document</h4>
- * </p>
- * The XDMDocument can be saved locally by using the saveDocument method. The
- * saved copy might differ from the document on the XDM server, since XML that
- * is not supported will be discarded when the document is retrieved.
- * 
- * <p>
- * <h4>Conditional operations</h4>
- * </p>
- * It is possible to make conditional operations towards an XDM server. This is
- * because it is anticipated that an application using this API might want to
- * cache a retrieved document and still ensure that the version of the document
- * residing on the server is the same as the cached copy. </br> For example,
- * when calling retrieveDocument an optional ETag can be supplied by using the
- * ETag parameter. If this is done, the ETag will be compared to the ETag that
- * the server holds for that document. If the server's and the client's ETags
- * match, the requested operation will not be performed. In the case of
- * <code>retrieveDocument</code>, an <code>XCAPException</code> will be thrown
- * with the status code 412 Precondition Failed, thus giving the user the
- * opportunity to load its cached copy with <code>loadDocument</code> instead.
- * </br> The ETag will be automatically updated when any a call to
- * <code>createDocument</code> is made, usage of ETag is not optional. The ETag
- * for the document will always be set based on server response and therefore
- * all operations from then on will be conditional. To make unconditional
- * operations on the newly created document a call to retrieveDocument without
- * supplying the ETag must be made.
- * 
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  */
 public interface XDMDocument {

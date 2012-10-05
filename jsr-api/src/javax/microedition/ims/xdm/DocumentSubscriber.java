@@ -49,15 +49,11 @@ import java.io.IOException;
  * documents. This is used to keep local copies of documents up-to-date if
  * multiple devices are expected to modify the documents on the XDM server.
  * 
- * On the XDM server, a document can be deleted, created, or changed. The
- * DocumentSubscriberListener receives information about the modifications. If a
- * document is changed on the XDM server and the XCAP diff document which
- * describes the changes contains enough information, the changes can be applied
- * to the corresponding local document cache by using the
- * XDMDocument.applyChanges method. In other cases the document has to be
- * retrieved from the XDM server to keep it up-to-date. To know which action is
- * needed the DocumentUpdateAction class is used.
  * 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
+ *
  * @author Andrei Khomushko
  * 
  */

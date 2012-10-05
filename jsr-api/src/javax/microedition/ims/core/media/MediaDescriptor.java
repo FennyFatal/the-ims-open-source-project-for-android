@@ -43,52 +43,12 @@ package javax.microedition.ims.core.media;
 
 /**
  * <code>MediaDescriptor</code> is an interface towards the media parts of the
- * SDP. The interface is most useful for applications that, within the realm
- * of a composed capability (ICSI, IARI and/or other service level feature
- * tags), need to manipulate media-related fields of the session SDP in
- * general, and add new application-specific attributes in particular.
- * </p><p>
- * <p/>
- * The example SDP below shows the media-related parts accessible from
- * the interface in bold.
- * </p><pre>    v=0
- * o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com
- * s=
- * c=IN IP4 host.atlanta.example.com
- * t=0 0
- * <b>m=audio 49170 RTP/AVP 0 8 97
- * a=rtpmap:0 PCMU/8000
- * a=rtpmap:8 PCMA/8000
- * a=rtpmap:97 iLBC/8000
- * m=video 51372 RTP/AVP 31 32
- * a=rtpmap:31 H261/90000
- * a=rtpmap:32 MPV/90000</b>
- * </pre>
- * <p>
- * The getters of the interface read fields from the last received SDP.
- * The setters modify all remaining SDPs to be sent during the
- * lifetime of the media in the session, or until superseded by other
- * modifications.
- * </p><p>
- * The application can get, set, and remove SDP lines that are not reserved
- * for the IMS core. Attributes can
- * be get, set and removed freely except reserved. The following attributes are
- * classified as unconditionally reserved and can not be modified
- * using the <code>MediaDescriptor</code> interface: des, curr, conf, mid,
- * ice-pwd, ice-ufrag, candidate, remote-candidates, sendonly, recvonly,
- * sendrecv, inactive, csup, creq, acap, tcap, pcfg, acfg, 3gpp_sync_info.
- * </p><p>
- * <p/>
- * Depending on the contents of the protocol field in the m-line
- * (in the example SDP the field is set to RTP/AVP) other
- * attributes are reserved according to the following:</p><p>
- * RTP/AVP (set for StreamMedia): rtpmap, fmtp, dccp-service-code, rtcp-mux,
- * rpc-fb, ptime, maxptime, framesize, framerate, quality
- * <br>
- * TCP (set for BasicReliableMedia): setup, connection<br>
- * TCP/MSRP (set for FramedMedia): setup, connection, accept-types,
- * accept-wrapped-types, max-size, path
- * </p><p>
+ * SDP.
+ *
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  *
  * @see javax.microedition.ims.core.SessionDescriptor
  */

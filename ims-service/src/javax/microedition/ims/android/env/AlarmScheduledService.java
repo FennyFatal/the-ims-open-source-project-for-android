@@ -58,6 +58,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.ManagableScheduledFuture;
 import javax.microedition.ims.common.ScheduledService;
 
@@ -88,7 +89,7 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
         
         @Override
         public void handleMessage(Message msg) {
-            Log.d(LOG_TAG, "handleMessage#msg = " + msg);
+            Logger.log(LOG_TAG, "handleMessage#msg = " + msg);
             
             if(msg.what == ALARM_MESSAGE) {
                 doHandleAlarmMessage((Long)msg.obj);
@@ -98,9 +99,9 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
         private void doHandleAlarmMessage(Long taskNumber) {
             ScheduledFutureTask<?> futureTask = futuresMap.get(taskNumber);
             if(futureTask != null) {
-                Log.d(LOG_TAG, "doHandleAlarmMessage#futureTask[" + futureTask + "]");
+                Logger.log(LOG_TAG, "doHandleAlarmMessage#futureTask[" + futureTask + "]");
                 
-                futuresMap.remove(futureTask);
+                futuresMap.remove(taskNumber);
                 futureTask.removeTaskListener(AlarmScheduledService.this);
                 
                 futureTask.run();
@@ -129,7 +130,7 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
     
     @Override
     public ManagableScheduledFuture<?> schedule(Runnable command, Object transactionId, long delay, TimeUnit unit) {
-        Log.d(LOG_TAG, "schedule#delay = " + delay + ", unit = " + unit);
+        Logger.log(LOG_TAG, "schedule#delay = " + delay + ", unit = " + unit);
         if (command == null) {
             throw new IllegalArgumentException("The command argument is null");
         }
@@ -150,7 +151,7 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
         
         futuresMap.put(future.getTaskId(), future);
 
-        Log.d(LOG_TAG, "doSchedule#task = " + future + " ,(delay =  " + (future.getTriggerTime() - System.currentTimeMillis())/1000 + " secs )");        
+        Logger.log(LOG_TAG, "doSchedule#task = " + future + " ,(delay =  " + (future.getTriggerTime() - System.currentTimeMillis())/1000 + " secs )");        
         
         return future;
     }
@@ -169,7 +170,7 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
         if (ACTION_IMS_ALARM_SCHEDULE_SERVICE.equals(intent.getAction())) {
             
             long taskId = intent.getLongExtra(EXTRA_TASK_ID, -1l);
-            Log.d(LOG_TAG, "onReceive#task number[" + taskId + "]");
+            Logger.log(LOG_TAG, "onReceive#task number[" + taskId + "]");
             
             Message message = serviceHandler.obtainMessage(ALARM_MESSAGE);
             message.obj = taskId;
@@ -177,13 +178,13 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
             wakeLock.acquire();
             
             serviceHandler.sendMessage(message);
-            Log.d(LOG_TAG, "onReceive#finished");
+            Logger.log(LOG_TAG, "onReceive#finished");
         }
     }
 
     @Override
     public void shutdown() {
-        Log.d(LOG_TAG, "shutdown#");
+        Logger.log(LOG_TAG, "shutdown#");
         
         for(Entry<Long, ScheduledFutureTask<?>> taskEntry: futuresMap.entrySet()) {
             unsheduleTask(taskEntry.getKey());
@@ -199,8 +200,9 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
     
     @Override
     public void onCanceled(ScheduledFutureTask<?> futureTask) {
-        Log.d(LOG_TAG, "onCanceled#" + futureTask);
-        
+        Logger.log(LOG_TAG, "onCanceled#" + futureTask);
+
+        futuresMap.remove(futureTask.getTaskId());
         futureTask.removeTaskListener(this);
         
         unsheduleTask(futureTask.getTaskId());
@@ -208,7 +210,7 @@ public class AlarmScheduledService extends BroadcastReceiver implements Schedule
 
     
     private void unsheduleTask(long taskId) {
-        Log.d(LOG_TAG, "unsheduleTask#taskId = " + taskId);
+        Logger.log(LOG_TAG, "unsheduleTask#taskId = " + taskId);
         
         Intent intent = new Intent(ACTION_IMS_ALARM_SCHEDULE_SERVICE);
         intent.putExtra(EXTRA_TASK_ID, taskId);

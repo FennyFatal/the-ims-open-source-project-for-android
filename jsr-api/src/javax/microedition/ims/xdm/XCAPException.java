@@ -43,17 +43,14 @@ package javax.microedition.ims.xdm;
 
 /**
  * An <code>XCAPException</code> contains information about an error received
- * from an XCAP server. This exception is thrown when a request that is sent to
- * an XCAP server fails. All methods that makes an HTTP request to an XCAP
- * Server must throw this exception.
+ * from an XCAP server. 
  * 
- * The <code>XCAPException</code> contains the HTTP status code and the reason
- * phrase with information about the failed request.
- * 
- * If the status code is 409 - Conflict Error, an <code>XCAPError</code> with
- * detailed information about that specific conflict can be obtained by calling
- * <code>getXCAPError</code>.
- * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs, 
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  * @author Andrei Khomushko
  * 
  */

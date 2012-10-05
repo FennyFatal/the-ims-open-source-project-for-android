@@ -46,6 +46,7 @@ import android.util.Log;
 import org.xml.sax.SAXException;
 
 import javax.microedition.ims.android.IExceptionHolder;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.xdm.XCAPException;
 import javax.microedition.ims.core.xdm.XDMRequest;
 import javax.microedition.ims.core.xdm.XDMResponse;
@@ -94,11 +95,13 @@ public class PresenceAuthorizationDocument extends IPresenceAuthorizationDocumen
             //retrieve actual xml and update cache
         }
         catch (XCAPException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
             exceptionHolder.setParcelableException(Utils.createIXCAPException(e));
         }
         catch (SAXException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
 
             //suppress warning here bacause we just create wrapper around exception and pass it to upper level
             //noinspection ThrowableInstanceNeverThrown

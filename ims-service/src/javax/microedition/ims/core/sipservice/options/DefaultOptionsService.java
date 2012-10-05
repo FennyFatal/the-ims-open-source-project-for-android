@@ -110,6 +110,11 @@ public class DefaultOptionsService extends AbstractService implements OptionsSer
             if (isSdpNeedInResponse(optionsRequest)) {
                 Logger.log(TAG, "optionsRequestRecieved#add sdp to response for options");
                 CommonRegistry commonRegistry = getStackContext().getStackRegistry().getCommonRegistry();
+                if (commonRegistry == null || commonRegistry.getCapabilityProperties() == null) {
+                    Logger.log(TAG, "optionsRequestRecieved#add sdp to response for options NULL");
+                    return;
+                }
+
                 CapabilityProperty[] capabilityProperties = commonRegistry.getCapabilityProperties();
 
                 final SdpMessage sdpMessage = event.getDialog().getOutgoingSdpMessage();

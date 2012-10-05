@@ -67,6 +67,10 @@ public class ConnectionDataDefaultImpl implements ConnectionData {
             return this;
         }
 
+        public Protocol getProtocol() {
+            return this.protocol;
+        }
+
         public ConnectionData build() {
             return new ConnectionDataDefaultImpl(this);
         }

@@ -1,3 +1,43 @@
+/*
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+ *
+ * Unauthorized redistribution or further use of this material is
+ * prohibited without the express permission of T-Mobile USA, Inc. and
+ * will be prosecuted to the fullest extent of the law.
+ *
+ * Removal or modification of these Terms and Conditions from the source
+ * or binary code of this software is prohibited.  In the event that
+ * redistribution of the source or binary code for this software is
+ * approved by T-Mobile USA, Inc., these Terms and Conditions and the
+ * above copyright notice must be reproduced in their entirety and in all
+ * circumstances.
+ *
+ * No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+ * Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+ * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+ * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+ * OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+ * AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+ * LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+ * OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+ * LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+ * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+ * HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+ * OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+ * INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ *
+ * THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+ * MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+ * CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+ * WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+ * USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+ */
 package javax.microedition.ims.dns;
 
 import org.xbill.DNS.*;
@@ -8,11 +48,15 @@ import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.Logger.Tag;
 import javax.microedition.ims.common.Protocol;
 import javax.microedition.ims.config.UserInfo;
+import javax.microedition.ims.config.Configuration;
 import javax.microedition.ims.core.ReasonCode;
+import javax.microedition.ims.core.connection.NetworkType;
+import javax.microedition.ims.core.env.ConnectionManager;
 
 import java.net.*;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -28,6 +72,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class DNSResolverDNSJavaImpl implements DNSResolver {
 
     //private static final int ICMP_TIMEOUT = 32000;
+    private static final String DEFAULT_DATA_CONNECTION_PROXY_SERVER = "pcf.sipgeo.t-mobile.com.";
+    private static final String DEFAULT_WIFI_PROXY_SERVER = "sba.sipgeo.t-mobile.com.";
+    private static final int DEFAULT_TLS_PORT = 5061;
+    private static final int DEFAULT_NON_TLS_PORT = 5060;
 
     private static final String SERVICE_NAME_SIP = "SIP";
     private static final String SERVICE_NAME_SIPS = "SIPS";
@@ -37,11 +85,14 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
 
     private static final String LOG_PREFIX = "DNS";
 
+    private final Configuration mConfiguration;
+    private final ConnectionManager mConnectionManager;
     // the field to store the connection data object
     // the uniqueness guarantees that we shall use the same A-record (DNS lookup) all the time
     // even in case the lookup might return multiple A-records
     //TODO we can't cache dns lookup result due the reason that network interface can be changed and cached value becames invalid
     private AtomicReference<ConnectionData> connectionData = new AtomicReference<ConnectionData>(null);
+    private AtomicReference<NetworkType> mNetworkType = new AtomicReference<NetworkType>(NetworkType.WIFI);
 
     //Comparator to compare records like this
     //example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
@@ -53,20 +104,10 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
     private static class NAPTRRecordComparator implements Comparator<NAPTRRecord> {
         @Override
         public int compare(NAPTRRecord record1, NAPTRRecord record2) {
-            int retValue;
+            int retValue = record1.getOrder() - record2.getOrder();
 
-            if (record1.getPreference() < record2.getPreference()) {
-                retValue = 1;
-            } else if (record1.getPreference() > record2.getPreference()) {
-                retValue = -1;
-            } else {
-                if (record1.getOrder() < record2.getOrder()) {
-                    retValue = 1;
-                } else if (record1.getOrder() > record2.getOrder()) {
-                    retValue = -1;
-                } else {
-                    retValue = 0;
-                }
+            if (retValue == 0) {
+                retValue = record1.getPreference() - record2.getPreference();
             }
 
             return retValue;
@@ -82,30 +123,21 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
     private static class SRVRecordComparator implements Comparator<SRVRecord> {
         @Override
         public int compare(SRVRecord record1, SRVRecord record2) {
-            int retValue;
-
-            if (record1.getPriority() < record2.getPriority()) {
-                retValue = 1;
-            } else if (record1.getPriority() > record2.getPriority()) {
-                retValue = -1;
-            } else {
-                if (record1.getWeight() < record2.getWeight()) {
-                    retValue = -1;
-                } else if (record1.getWeight() > record2.getWeight()) {
-                    retValue = 1;
-                } else {
-                    retValue = 0;
-                }
-            }
-
-            return retValue;
+            return (record1.getPriority() - record2.getPriority());
         }
     }
 
     private final Comparator<NAPTRRecord> naptrComparatorImportantFirst = new NAPTRRecordComparator();
     private final Comparator<SRVRecord> srvComparatorImportantFirst = new SRVRecordComparator();
 
-    public DNSResolverDNSJavaImpl() {
+    public DNSResolverDNSJavaImpl(final Configuration configuration) {
+        mConfiguration = configuration;
+        mConnectionManager = null;
+    }
+
+    public DNSResolverDNSJavaImpl(final Configuration configuration, final ConnectionManager connectionManager) {
+        mConfiguration = configuration;
+        mConnectionManager = connectionManager;
     }
 
 /*    @Override
@@ -128,8 +160,8 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
         Logger.log(Tag.COMMON, "doLookUp#userInfo = " + userInfo);
         
         ConnectionData retValue = null;
-        
-/*        if (connectionData.get() == null) {
+/*
+        if (connectionData.get() == null) {
             Logger.log(Tag.COMMON, "doLookUp#connectionData is null");
             try {
                 connectionData.set(retValue = doActualLookUp(userInfo));
@@ -141,7 +173,11 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
             Logger.log(Tag.COMMON, "doLookUp#connectionData is cached");
             retValue = connectionData.get();
         }
-*/       
+*/
+        if (mConnectionManager != null) {
+            mNetworkType.set(mConnectionManager.obtainNetworkTypeDirectly());
+        }
+
         try {
             connectionData.set(retValue = doActualLookUp(userInfo));
         } catch (TextParseException e) {
@@ -162,92 +198,147 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
     private ConnectionData doActualLookUp(final UserInfo userInfo) throws TextParseException, DNSException {
         String serverName = userInfo.getDomain();
 
-        //lookup for records like this
-        //example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
-        
+        if (mNetworkType.get() == NetworkType.WIFI) {
+            serverName = "wifi." + serverName;
+        }
+        // lookup for records like this
+        // example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
+        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "Lookup: " + serverName);
+
         Lookup.refreshDefault();
         Lookup naptrLookup = new Lookup(serverName, Type.NAPTR);
         //naptrLookup.setCache(cache)
         Record[] records = naptrLookup.run();
-        String logMsg = "'NAPTR' lookup records = " + (records == null ? null : Arrays.asList(records));
-        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, logMsg);
+        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "Number of NAPTR records = " +
+                ((records != null) ? records.length : "0"));
 
         ConnectionData retValue = null;
         if (Lookup.SUCCESSFUL == naptrLookup.getResult() && records != null) {
-
-            //here we know for sure exact type of array elements by passing Type.
-            //NAPTR to Lookup constructor. Then cast is safe.
+            // here we know for sure exact type of array elements by passing Type.
+            // NAPTR to Lookup constructor. Then cast is safe.
             @SuppressWarnings({"SuspiciousToArrayCall"})
             NAPTRRecord[] sortedNaptrRecords = sortRecords(
                     Arrays.asList(records).toArray(new NAPTRRecord[records.length]),
                     naptrComparatorImportantFirst
             );
 
+            for (NAPTRRecord naptrRecord : sortedNaptrRecords) {
+                Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "NAPTR Record: " + naptrRecord);
+            }
             //process all records from most important to least one
             for (NAPTRRecord naptrRecord : sortedNaptrRecords) {
                 retValue = processNAPTRRecord(naptrRecord);
 
-                if(retValue != null){
+                if (retValue != null){
                     break;
                 }
             }
         } else {
             int result = naptrLookup.getResult();
             String errorString = naptrLookup.getErrorString();
+
             Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Can't do 'NAPTR' lookup for " + serverName + " " + userInfo);
             Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "'NAPTR' Lookup result = " + result + " " + errorString);
 
-            throw new DNSException(ReasonCode.NAPTR_LOOKUP_FAILS, errorString);
+            try {
+                ConnectionDataDefaultImpl.Builder builder = new ConnectionDataDefaultImpl.Builder();
+                Name target = null;
+
+                if (mNetworkType.get() == NetworkType.MOBILE) {
+                    target = new Name(DEFAULT_DATA_CONNECTION_PROXY_SERVER);
+                    Protocol protocol = mConfiguration.getConnectionType();
+
+                    if (protocol == Protocol.TLS) {
+                        Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Forcibly set protocol from TLS to TCP...");
+                        protocol = Protocol.TCP;
+                    }
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use protocol " + protocol + ", port = " + DEFAULT_NON_TLS_PORT);
+
+                    builder.protocol(protocol);
+                    builder.port(DEFAULT_NON_TLS_PORT);
+                } else if (mNetworkType.get() == NetworkType.WIFI) {
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use default A Record...");
+                    target = new Name(DEFAULT_WIFI_PROXY_SERVER);
+
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use protocol TLS, port = " + DEFAULT_TLS_PORT);
+                    builder.protocol(Protocol.TLS);
+                    builder.port(DEFAULT_TLS_PORT);
+                }
+
+                retValue = doProcessRecordAsTypeA(target, builder);
+            } catch (TextParseException e) {
+                Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Can't fulfill lookup for " +
+                        (mNetworkType.get() == NetworkType.MOBILE ?
+                        DEFAULT_DATA_CONNECTION_PROXY_SERVER : DEFAULT_WIFI_PROXY_SERVER));
+                Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "" + e);
+                throw new DNSException(ReasonCode.NAPTR_LOOKUP_FAILS, e.toString());
+            }
         }
 
         return retValue;
     }
 
     private ConnectionData processNAPTRRecord(final NAPTRRecord naptrRecord) throws DNSException {
-
         ConnectionData retValue = null;
 
-        //NAPTR record looks like this
-        //example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
+        // NAPTR record looks like this
+        // example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
         Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "");
         Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "processing 'NAPTR' record: " + naptrRecord);
 
-        //Service is a "SIP+D2U" part of NAPTR record
-        //Currently we can only process two parted string with '+' in the middle
-        //"Services" field may looks like "SIP+D2U", "SIP+D2T", "E2U+email" or something like that.
-        //"SIP+D2U" is SIP over UDP, "SIP+D2T" is SIP over TCP and (you guessed it) "E2U+email" stands for email.
-        //This is the application specific service optios we have to reach example.com.
+        // Service is a "SIP+D2U" part of NAPTR record
+        // Currently we can only process two parted string with '+' in the middle
+        // "Services" field may looks like "SIP+D2U", "SIP+D2T", "E2U+email" or something like that.
+        // "SIP+D2U" is SIP over UDP, "SIP+D2T" is SIP over TCP and (you guessed it) "E2U+email" stands for email.
+        // This is the application specific service optios we have to reach example.com.
         String[] serviceInfoParts = naptrRecord.getService().trim().split("\\+");
 
         if (serviceInfoParts != null && serviceInfoParts.length >= 2) {
-
             String serviceName = serviceInfoParts[0];
             String protocolInfo = serviceInfoParts[1];
 
-            //the only supported service types are SIP and SIPS. So service name must begin with 'SIP' string.
+            // the only supported service types are SIP and SIPS. So service name must begin with 'SIP' string.
             if (serviceName.toUpperCase().startsWith(SERVICE_NAME_SIP)) {
-
-                //guess protocol by service name here
+                // guess protocol by service name here
                 Protocol protocol = determineProtocol(serviceName, protocolInfo);
 
                 if (protocol != null) {
-                    //Regular expressions and replacements are mutually exclusive.
-                    //If you have one, you shouldn't have the other.
-                    //The replacement is used as the "result" of the NAPTR lookup
-                    //instead of mutating the original request as the regular expression.
-                    //The regular expression is used to mutate the original request into something new.
-                    //We're not using it here but you could use this
-                    //to substitute the entire name or parts of the name used in the original query.
-                    //(NOTE: These are NOT cumulative. You would never use a regular expression
-                    //on the output of a NAPTR lookup, only on the original query.)
-                    Name replacement = naptrRecord.getReplacement();
-                    String replacementAsString = replacement == null ? null : replacement.toString();
+                    // Regular expressions and replacements are mutually exclusive.
+                    // If you have one, you shouldn't have the other.
+                    // The replacement is used as the "result" of the NAPTR lookup
+                    // instead of mutating the original request as the regular expression.
+                    // The regular expression is used to mutate the original request into something new.
+                    // We're not using it here but you could use this
+                    // to substitute the entire name or parts of the name used in the original query.
+                    // (NOTE: These are NOT cumulative. You would never use a regular expression
+                    // on the output of a NAPTR lookup, only on the original query.)
 
-                    if (replacementAsString != null && !replacementAsString.trim().equals("")) {
-                        retValue = doProcessNAPTRRecord(naptrRecord, new ConnectionDataDefaultImpl.Builder().protocol(protocol));
+                    if (mNetworkType.get() == NetworkType.WIFI && protocol != Protocol.TLS) {
+                        try {
+                            ConnectionDataDefaultImpl.Builder builder = new ConnectionDataDefaultImpl.Builder();
+                            Name target = new Name(DEFAULT_WIFI_PROXY_SERVER);
+
+                            Logger.log(Logger.Tag.WARNING, LOG_PREFIX,
+                                    "Use TLS forcibly because server returns non-secure SIP under WiFi connection!");
+                            builder.protocol(Protocol.TLS);
+                            builder.port(DEFAULT_TLS_PORT);
+
+                            retValue = doProcessRecordAsTypeA(target, builder);
+                        } catch (TextParseException e) {
+                            Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Can't fulfill lookup for " + DEFAULT_WIFI_PROXY_SERVER);
+                            Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "" + e);
+                            throw new DNSException(ReasonCode.NAPTR_LOOKUP_FAILS, e.toString());
+                        }
                     } else {
-                        String errMsg = "Record skipped. Unsupported replacement: " + replacement + " for record: " + naptrRecord;
-                        Logger.log(Logger.Tag.WARNING, LOG_PREFIX, errMsg);
+                        Name replacement = naptrRecord.getReplacement();
+                        String replacementAsString = replacement == null ? null : replacement.toString();
+
+                        if (replacementAsString != null && !replacementAsString.trim().equals("")) {
+                            retValue = doProcessNAPTRRecord(naptrRecord, new ConnectionDataDefaultImpl.Builder().protocol(protocol));
+                        } else {
+                            String errMsg = "Record skipped. Unsupported replacement: " + replacement + " for record: " + naptrRecord;
+                            Logger.log(Logger.Tag.WARNING, LOG_PREFIX, errMsg);
+                        }
                     }
                 } else {
                     String errMsg = "Record skipped. Unsupported protocol: " + protocolInfo + " for record: " + naptrRecord;
@@ -264,9 +355,7 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
     private ConnectionData doProcessNAPTRRecord(
             final NAPTRRecord naptrRecord,
             final ConnectionDataDefaultImpl.Builder builder) throws DNSException {
-
         ConnectionData retValue;
-
         //NAPTR record looks like this
         //example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
         //
@@ -306,17 +395,16 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
     private ConnectionData processRecordAsTypeSRV(
             final NAPTRRecord naptrRecord,
             final ConnectionDataDefaultImpl.Builder builder) throws DNSException {
-
-        //SRV record looks like this
-        //_sip._udp.example.com SRV 5 100 5060 sip-udp01.example.com.
-
+        // SRV record looks like this
+        // _sip._udp.example.com SRV 5 100 5060 sip-udp01.example.com.
         Lookup srvLookup = new Lookup(naptrRecord.getReplacement(), Type.SRV);
         Record[] records = srvLookup.run();
-        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "'SRV' lookup records = " + (records == null ? null : Arrays.asList(records)));
-
         ConnectionData retValue = null;
-        if (Lookup.SUCCESSFUL == srvLookup.getResult() && records != null) {
 
+        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "Number of SRV records = " +
+                ((records != null) ? records.length : "0"));
+
+        if (Lookup.SUCCESSFUL == srvLookup.getResult() && records != null) {
             //here we know for sure exact type of array elements by passing Type.SRV to Lookup constructor. Then cast is safe.
             @SuppressWarnings({"SuspiciousToArrayCall"})
             SRVRecord[] srvRecords = sortRecords(
@@ -324,22 +412,81 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
                     srvComparatorImportantFirst
             );
 
-            //process all records from most important to least one
-            for (SRVRecord srvRecord : srvRecords) {
-                Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "processing 'SRV' record: " + srvRecord);
-                retValue = processRecordAsTypeA(srvRecord, builder.port(srvRecord.getPort()));
+            int priorityIndex = 0, weightSum = 0, randNum = 0;
+            SRVRecord srvRecord = srvRecords[0];
 
-                if (retValue != null) {
-                    break;
+            if (srvRecords.length > 1) {
+                // Fine proper DNS server by SRV records...
+                Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "Finding proper DNS server...");
+                Random rand = new Random();
+
+                for (int i = 0; i < srvRecords.length; i++) {
+                    Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "SRV Record: " + srvRecords[i]);
+
+                    if (srvRecords[0].getPriority() == srvRecords[i].getPriority()) {
+                        weightSum += srvRecords[i].getWeight();
+                    } else if (srvRecords[0].getPriority() != srvRecords[i].getPriority()) {
+                        priorityIndex = i;
+                        break;
+                    }
+                }
+
+                randNum = rand.nextInt(weightSum);
+                Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "priorityIndex = " + priorityIndex +
+                        ", weightSum = " + weightSum + ", randNum = " + randNum);
+                weightSum = 0;
+                for (int i = 0; i < priorityIndex; i++) {
+                    weightSum += srvRecords[i].getWeight();
+
+                    if (randNum <= weightSum) {
+                        srvRecord = srvRecords[i];
+                        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "Select SRV record: " + srvRecord);
+                        break;
+                    }
                 }
             }
+
+            Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "processing 'SRV' record: " + srvRecord);
+            retValue = processRecordAsTypeA(srvRecord, builder.port(srvRecord.getPort()));
         } else {
             int result = srvLookup.getResult();
             String errorString = srvLookup.getErrorString();
+
             Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Can't do 'SRV' lookup for " + naptrRecord.getReplacement() + " " + builder);
             Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "'SRV' Lookup result = " + result + " " + errorString);
 
-            throw new DNSException(ReasonCode.SRV_LOOKUP_FAILS, errorString);
+            try {
+                Name target = null;
+
+                if (mNetworkType.get() == NetworkType.MOBILE) {
+                    target = new Name(DEFAULT_DATA_CONNECTION_PROXY_SERVER);
+                    Protocol protocol = mConfiguration.getConnectionType();
+
+                    if (protocol == Protocol.TLS) {
+                        Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Forcibly set protocol from TLS to TCP...");
+                        protocol = Protocol.TCP;
+                    }
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use protocol " + protocol + ", port = " + DEFAULT_NON_TLS_PORT);
+
+                    builder.protocol(protocol);
+                    builder.port(DEFAULT_NON_TLS_PORT);
+                } else if (mNetworkType.get() == NetworkType.WIFI) {
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use default A Record...");
+                    target = new Name(DEFAULT_WIFI_PROXY_SERVER);
+
+                    Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Use protocol TLS, port = " + DEFAULT_TLS_PORT);
+                    builder.protocol(Protocol.TLS);
+                    builder.port(DEFAULT_TLS_PORT);
+                }
+
+                retValue = doProcessRecordAsTypeA(target, builder);
+            } catch (TextParseException e) {
+                Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "Can't fulfill lookup for " +
+                        (mNetworkType.get() == NetworkType.MOBILE ?
+                        DEFAULT_DATA_CONNECTION_PROXY_SERVER : DEFAULT_WIFI_PROXY_SERVER));
+                Logger.log(Logger.Tag.WARNING, LOG_PREFIX, "" + e);
+                throw new DNSException(ReasonCode.NAPTR_LOOKUP_FAILS, e.toString());
+            }
         }
 
         return retValue;
@@ -360,6 +507,7 @@ public final class DNSResolverDNSJavaImpl implements DNSResolver {
         //'A' record looks like this
         //sip-udp01.example.com has address 11.22.33.44
 
+        Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "'A' target = " + (target == null ? null : target.toString()));
         Lookup aLookup = new Lookup(target, Type.A);
         Record[] records = aLookup.run();
         Logger.log(Logger.Tag.COMMON, LOG_PREFIX, "'A' lookup records = " + (records == null ? null : Arrays.asList(records)));

@@ -45,6 +45,10 @@ import android.content.Context;
 import android.util.Log;
 import com.android.ims.configuration.AppConfiguration;
 import com.android.ims.core.DtmfPayload;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import javax.microedition.ims.core.media.Media;
 
@@ -52,14 +56,16 @@ public final class MediaFactory {
     private static final String TAG = "MediaFactory";
 
     public static final MediaFactory INSTANCE = new MediaFactory();
+    private static final List<Integer> rtpSessionIdList = new ArrayList<Integer>();
+    private static final List<Integer> rtpPortList = new ArrayList<Integer>();
 
     private MediaFactory() {
     }
     
-    public MediaImpl createMedia(Media.MediaType mediaType, int direction,
+    public MediaExt createMedia(Media.MediaType mediaType, int direction,
             int state, final String localAddress, AppConfiguration configuration, 
             Context context, DtmfPayload dtmfPayload) {
-        MediaImpl media = null;
+        MediaExt media = null;
 
         switch (mediaType) {
             case StreamMedia: {
@@ -81,12 +87,12 @@ public final class MediaFactory {
      * @param mediaDescriptor
      * @return media
      */
-    public MediaImpl createMediaBasedOnIncomingOffer(final MediaDescriptorImpl mediaDescriptor, 
+    public MediaExt createMediaBasedOnIncomingOffer(final MediaDescriptorImpl mediaDescriptor, 
             final String localAddress, AppConfiguration configuration, Context context,
             DtmfPayload dtmfPayload) {
         assert mediaDescriptor != null;
 
-        MediaImpl media = null;
+        MediaExt media = null;
 
         final MediaDescriptorImpl remoteMediaDescriptor = mediaDescriptor.createCopy();
         final MediaDescriptorImpl localMediaDescriptor = mediaDescriptor;
@@ -111,5 +117,36 @@ public final class MediaFactory {
 
         Log.d(TAG, "createMediaBasedOnIncomingOffer#media = " + media);
         return media;
+    }
+    public boolean containRtpPort(int port) {
+        return rtpPortList.contains(port);
+    }
+    public void addRtpPort(int port) {
+        rtpPortList.add(port);
+    }
+    public void removeRtpPort(int port) {
+        if (rtpPortList.contains(port))
+            rtpPortList.remove(new Integer(port));
+    }
+
+    public int getRandomRtpSessionId() {
+        int id;
+        do{
+            id = generateRandomNumber();
+        } while (rtpSessionIdList.contains(id));
+
+        rtpSessionIdList.add(id);
+
+        return id;
+    }
+
+    public void removeRtpSessionId(int id) {
+        rtpSessionIdList.remove(new Integer(id));
+    }
+
+    private int generateRandomNumber() {
+        Random rn = new Random(new Date().hashCode());
+        int id = rn.nextInt(65535-1024)+1024;     //Let random number less than 1024
+        return id;
     }
 }

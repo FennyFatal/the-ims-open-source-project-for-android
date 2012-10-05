@@ -61,7 +61,8 @@ import java.util.*;
  * Time: 17.48.06
  */
 public class MessageRouterComposite implements Router<IMSMessage> {
-
+    private final static String TAG = "MessageRouterComposite";
+    private final static boolean DBG = false;
     private final DefaultRouteResolver defaultRouteResolver;
     private final Map<IMSEntityType, IMSRouter<IMSMessage>> routers;
 
@@ -105,24 +106,30 @@ public class MessageRouterComposite implements Router<IMSMessage> {
     }
 
     public Route getRoute(final IMSMessage msg) {
+        if (DBG) Logger.log(TAG, "getRoute: " + msg);
 
         Route retValue = null;
 
         final Router<IMSMessage> messageRouter = routers.get(msg.getEntityType());
         if (messageRouter != null) {
+            if (DBG) Logger.log(TAG, "getRoute: messageRouter = " + messageRouter);
             retValue = messageRouter.getRoute(msg);
         }
 
         if (retValue == null) {
+            if (DBG) Logger.log(TAG, "getRoute: getDefaultRoute");
             retValue = defaultRouteResolver.getDefaultRoute(msg);
         }
 
+        if (DBG) Logger.log(TAG, "getRoute: retValue = " + retValue);
         return retValue;
     }
 
     public void addRoute(final Route route, final RouteDescriptor routeDescriptor) {
+        Logger.log(TAG, "addRoute");
         final Router<IMSMessage> messageRouter = routers.get(route.getEntityType());
         if (messageRouter != null) {
+            Logger.log(TAG, "addRoute: " + messageRouter);
             messageRouter.addRoute(route, routeDescriptor);
         }
     }
@@ -189,6 +196,7 @@ public class MessageRouterComposite implements Router<IMSMessage> {
     }
 
     public static class Builder {
+        private final static String TAG = "MessageRouterComposite.Builder";
         private final Configuration config;
         private final ConnectionDataProvider connDataProvider;
         private final Map<IMSEntityType, IMSRouter<IMSMessage>> routers =
@@ -204,6 +212,7 @@ public class MessageRouterComposite implements Router<IMSMessage> {
             if (router == null) {
                 throw new NullPointerException("Router is " + router);
             }
+            Logger.log(TAG, "addRouter: " + router);
 
             if (routers.containsKey(router.getEntityType())) {
                 throw new IllegalArgumentException("Router for " + router.getEntityType() + " already added.");

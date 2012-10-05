@@ -43,38 +43,96 @@ package javax.microedition.ims.core.transaction.state.noninvite.sip.server;
 
 import javax.microedition.ims.core.sipservice.State;
 import javax.microedition.ims.core.sipservice.StateChangeReason;
+import javax.microedition.ims.core.sipservice.TUEvent;
 import javax.microedition.ims.core.sipservice.TransactionState;
 import javax.microedition.ims.core.sipservice.TransactionStateChangeEvent;
+import javax.microedition.ims.core.sipservice.invite.TUResponseEvent;
+import javax.microedition.ims.core.sipservice.invite.TUResponseEvent.OperationType;
 import javax.microedition.ims.core.transaction.server.ServerTransaction;
 import javax.microedition.ims.core.transaction.state.noninvite.CompletedState;
+import javax.microedition.ims.messages.utils.StatusCode;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 
 public class TryingState extends TransactionState<ServerTransaction, BaseSipMessage> {
-
     public TryingState(ServerTransaction transaction) {
         super(transaction);
     }
 
-    
     protected State getTransactionStateName() {
         return State.TRYING;
     }
 
-    
     protected void onFirstInit(final TransactionStateChangeEvent<BaseSipMessage> triggeringEvent) {
 
     }
 
-    
     public void onStateInitiated(final TransactionStateChangeEvent<BaseSipMessage> triggeringEvent) {
 
         super.onStateInitiated(triggeringEvent);
-        transaction.sendResponseNonInvite(getTransactionStateName());
+        if (transaction.isAutoAcceptable()) {
+            transaction.sendResponseNonInvite(getTransactionStateName());
 
-        final TransactionStateChangeEvent<BaseSipMessage> event =
-                createStateChangeEvent(StateChangeReason.INITIALIZATION, null);
+            final TransactionStateChangeEvent<BaseSipMessage> event = createStateChangeEvent(
+                    StateChangeReason.INITIALIZATION, null);
 
-        transaction.transitToState(new CompletedState<BaseSipMessage>(transaction), event);
+            transaction.transitToState(new CompletedState<BaseSipMessage>(transaction), event);
+
+        } else {
+            // waiting respose from TU
+        }
+
+    }
+
+    public void onTUReceived(TUEvent event) {
+        BaseSipMessage triggeringMessage = null;
+        if (event instanceof TUResponseEvent) {
+            triggeringMessage = ((TUResponseEvent)event).getTriggeringMessage();
+        }
+
+        TUResponseEvent inviteEvent = (TUResponseEvent)event;
+        if (inviteEvent.getOpType() == OperationType.ACCEPT_UPDATE) {
+            sendResponse(RequestState.ACCEPTED_UPDATE, StatusCode.OK, triggeringMessage);
+        } else if (inviteEvent.getOpType() == OperationType.REJECT_UPDATE) {
+            sendResponse(RequestState.REJECTED_UPDATE, inviteEvent.getStatusCode(),
+                    triggeringMessage);
+        }
+    }
+
+    private void sendResponse(final RequestState requestState, final int customCode,
+            final BaseSipMessage triggeringMessage) {
+        switch (requestState) {
+            case TIMEOUT: {
+                transaction.sendResponse(triggeringMessage, StatusCode.REQUEST_TIMEOUT, false);
+
+                final TransactionStateChangeEvent<BaseSipMessage> event = createStateChangeEvent(
+                        StateChangeReason.TIMER_TIMEOUT, null);
+
+                transaction.transitToState(new CompletedState<BaseSipMessage>(transaction), event);
+            }
+                break;
+            case ACCEPTED_UPDATE: {
+                transaction.sendResponse(triggeringMessage, StatusCode.OK, true);
+
+                final TransactionStateChangeEvent<BaseSipMessage> event = createStateChangeEvent(
+                        StateChangeReason.CLIENT_UPDATE_SUCCESS, null);
+
+                transaction.transitToState(new CompletedState<BaseSipMessage>(transaction), event);
+                // transaction.notifyTU(event);
+            }
+                break;
+            case REJECTED_UPDATE: {
+                transaction.sendResponse(triggeringMessage, customCode, true);
+
+                final TransactionStateChangeEvent<BaseSipMessage> event = createStateChangeEvent(
+                        StateChangeReason.CLIENT_UPDATE_FAILED, null);
+
+                // transaction.notifyTU(event);
+                transaction.transitToState(new CompletedState<BaseSipMessage>(transaction), event);
+            }
+                break;
+            default:
+                break;
+        }
     }
 
 }

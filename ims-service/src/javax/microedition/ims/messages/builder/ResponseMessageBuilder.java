@@ -44,10 +44,13 @@ package javax.microedition.ims.messages.builder;
 import javax.microedition.ims.common.*;
 import javax.microedition.ims.common.util.CollectionsUtils;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.core.registry.ClientRegistry;
 import javax.microedition.ims.core.registry.CommonRegistry;
 import javax.microedition.ims.core.registry.RegistryUtils;
+import javax.microedition.ims.core.registry.StackRegistry;
+import javax.microedition.ims.core.registry.property.CoreServiceProperty;
 import javax.microedition.ims.messages.utils.MessageUtils;
 import javax.microedition.ims.messages.utils.StatusCode;
 import javax.microedition.ims.messages.wrappers.sdp.ConnectionInfo;
@@ -55,6 +58,9 @@ import javax.microedition.ims.messages.wrappers.sdp.SdpMessage;
 import javax.microedition.ims.messages.wrappers.sip.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 
 public final class ResponseMessageBuilder extends BaseMessageBuilder implements IResponseMessageBuilder {
     public ResponseMessageBuilder(final Dialog dialog, final StackContext context) {
@@ -133,9 +139,20 @@ public final class ResponseMessageBuilder extends BaseMessageBuilder implements 
 
         addFromHeader(sipMsg instanceof Request ? sipMsg.getFrom() : sipMsg.getTo(), retValue);
 
-        generateContactHeader(context.getConfig(), retValue, false);
+        MessageType requestType = MessageType.parse(sipMsg.getMethod());
+        if (MessageType.SIP_OPTIONS == requestType) {
+            Set<String> aggregatedParams = extractClientData(context.getStackRegistry(), true);
+            generateContactHeader(context.getConfig(), retValue, false,
+                aggregatedParams.toArray(new String[aggregatedParams.size()]));
+        } else
+            generateContactHeader(context.getConfig(), retValue, false);
         addMaxForwardsHeader(context.getConfig(), retValue);
         addCallIdHeader(dialog, retValue);
+
+        if (MessageType.SIP_CANCEL != requestType) {
+            final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+            addPAccessNetworkHeader(locationInfo, retValue);
+        }
 
         retValue.cSeq(sipMsg.getcSeq());
         retValue.method(sipMsg.getMethod());
@@ -153,11 +170,12 @@ public final class ResponseMessageBuilder extends BaseMessageBuilder implements 
 
         addRetryAfterHeader(retValue);
 
-        MessageType requestType = MessageType.parse(sipMsg.getMethod());
         if (statusCode == StatusCode.OK) {
             if (MessageType.SIP_INVITE == requestType) {
-                if (!context.getConfig().useResourceReservation() || dialog.getIncomingSdpMessage().typeSupported(SDPType.MSRP)) {
+                if (!context.getConfig().useResourceReservation() || dialog.getIncomingSdpMessage().typeSupported(SDPType.MSRP) ||
+                    dialog.getSdpStatus()) {
                     addBody(retValue);
+                    dialog.setSdpStatus(false);
                 }
                 //INVITE refresh code
                 //TODO check if it's 200 ok for initial invite
@@ -282,4 +300,26 @@ public final class ResponseMessageBuilder extends BaseMessageBuilder implements 
             retValue.customHeader(Header.Accept, acceptValue);
         }
     }
+
+    protected Set<String> extractClientData(StackRegistry stackRegistry, boolean useFeatureTags) {
+        final Set<String> clientData = new HashSet<String>();
+
+        for (ClientRegistry registry : stackRegistry.getClientRegistries()) {
+            CoreServiceProperty coreProperty = registry.getCoreServiceProperty();
+
+            //add FeatureTags
+            if (useFeatureTags) {
+                Collection<String> fTs = CollectionsUtils.transform(Arrays.asList(coreProperty.getFeatureTags()),
+                        new CollectionsUtils.Transformer<String, String>() {
+                            public String transform(String source) {
+                                return source.split(";") [0];
+                            }
+                        });
+                clientData.addAll(fTs);
+            }
+        }
+
+        return clientData;
+    }
+
 }

@@ -46,25 +46,12 @@ import java.io.IOException;
 
 /**
  * A WatcherInfoSubscriber is an entity that subscribes to a dynamic set of
- * watchers and the state of their subscriptions. This is used for reactive
- * authorization and to keep track of URIs that are subscribing to the presence
- * information of the local presence source.
- * 
- * The watcher information subscriber will receive notifications when the
- * subscription is started and whenever the watcher information is changed. This
- * API only enables subscription to the user's own watcher information.
- * 
- * This is used for reactive authorization and to keep track of URIs that are
- * subscribing to the presence information of the local presence source. More
- * information about watcher information can be found in [RFC3857] and
- * [RFC3858].
- * 
- * The WatcherInfoSubscriber life cycle consist of four states: STATE_INACTIVE,
- * STATE_PENDING_SUBSCRIBE, STATE_PENDING_UNSUBSCRIBE, and STATE_ACTIVE. A new
- * WatcherInfoSubscriber starts in STATE_INACTIVE and when subscribe is called
- * the state transits to STATE_PENDING_SUBSCRIBE and remains there until a
- * response arrives.
- * 
+ * watchers and the state of their subscriptions. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

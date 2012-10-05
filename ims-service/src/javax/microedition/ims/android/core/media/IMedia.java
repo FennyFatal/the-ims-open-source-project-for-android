@@ -164,7 +164,7 @@ public class IMedia implements Parcelable {
 */
 
     public void writeToParcel(Parcel dest, int flags) {
-        //Log.i(TAG, "writeToParcel#started");
+        //Logger.log(TAG, "writeToParcel#started");
         dest.writeString(type);
         dest.writeInt(port);
         dest.writeString(address);
@@ -198,11 +198,11 @@ public class IMedia implements Parcelable {
             dest.writeInt(attributes.length);
             dest.writeStringArray(attributes);
         }
-        //Log.i(TAG, "writeToParcel#finished");
+        //Logger.log(TAG, "writeToParcel#finished");
     }
 
     protected static IMedia readFromParcel(Parcel dest) {
-        //Log.i(TAG, "readFromParcel#started");
+        //Logger.log(TAG, "readFromParcel#started");
     	IMediaBuilder builder = new IMediaBuilder()
     		.type(dest.readString())
     		.port(dest.readInt())
@@ -226,7 +226,7 @@ public class IMedia implements Parcelable {
         } 
     	
         int bandSize = dest.readInt();
-        //Log.i("Reading band: ",length+" ");
+        //Logger.log("Reading band: ",length+" ");
         if(bandSize > 0){
             String[] bandwidthes = new String[bandSize];
             dest.readStringArray(bandwidthes);
@@ -234,14 +234,14 @@ public class IMedia implements Parcelable {
         } 
         
         int attrSize = dest.readInt();
-        //Log.i("Reading attributes: ",length+" ");
+        //Logger.log("Reading attributes: ",length+" ");
         if(attrSize > 0){
             String[] attributes = new String[attrSize];
             dest.readStringArray(attributes);
             builder.attributes(attributes);
         }
-        //Log.i("Reading done"," ");
-        //Log.i(TAG, "readFromParcel#finished");
+        //Logger.log("Reading done"," ");
+        //Logger.log(TAG, "readFromParcel#finished");
         return  builder.build();
     } 
     

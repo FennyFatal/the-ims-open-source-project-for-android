@@ -44,6 +44,10 @@ package javax.microedition.ims.core;
 /**
  * This listener type is used to notify the application about subscription 
  * status and the event state of the subscribed event package.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
  */
 public interface SubscriptionListener {
     

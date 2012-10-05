@@ -46,30 +46,12 @@ import java.util.List;
 
 /**
  * A WatcherFilter enables the possibility to limit the data received in the
- * presenceInfoReceived event of the WatcherListener interface. The filtering
- * mechanism is defined in [OMA_PRES_SPEC], chapter 5.2.5.
- * 
- * There are three available types of filters:
- * <ul>
- * <li>Generic - this creates a generic filter that applies to all presentities
- * of the Watcher.</li>
- * <li>URI-specific - this creates a URI-specific filter that only applies to
- * the presentity that is identified by the user identity.</li>
- * <li>Domain-specific - this creates a domain-specific filter that applies to
- * all presentities that can be identified by the domain.</li>
- * </ul>
- * 
- * If the filter is to be used in a watcher that subscribes to a single
- * presentity it is recommended that only one generic filter should be used. A
- * watcher that subscribes to a presence list can have any number of filters but
- * only one generic filter is recommended to ensure consistency.
- * 
- * An URI specific filter overrides a domain specific filter and both the URI
- * and domain filters override the generic filter, according to [RFC4660].
- * 
- * A WatcherFilter is created and added to a WatcherFilterSet. See
- * WatcherFilterSet for examples.
- * 
+ * presenceInfoReceived event of the WatcherListener interface. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

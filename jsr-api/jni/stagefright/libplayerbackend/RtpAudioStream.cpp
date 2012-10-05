@@ -278,7 +278,7 @@ void RtpAudioStream::decode(int tick)
         }
         length -= offset;
         if (length >= 0) {
-            length = mCodec->decode(samples, &buffer[offset], length);
+            //length = mCodec->decode(samples, &buffer[offset], length);
         }
     }
     if (length <= 0) {

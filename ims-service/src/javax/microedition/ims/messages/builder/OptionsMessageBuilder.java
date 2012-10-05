@@ -44,6 +44,7 @@ package javax.microedition.ims.messages.builder;
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.common.MimeType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.messages.wrappers.common.Uri;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
@@ -89,9 +90,14 @@ public class OptionsMessageBuilder extends RequestMessageBuilder {
         addToHeader(requestUri, retValue);
         addCallIdHeader(dialog, retValue);
         addCSeqHeader(dialog, retValue);
-        generateContactHeader(context.getConfig(), retValue);
+//        generateContactHeader(context.getConfig(), retValue);
+        generateContactHeader(extractClientData(dialog.getLocalParty().getAppID(), context.getStackRegistry(), true),
+                context.getConfig(), context.getStackRegistry(), retValue);
         addAuthorizationHeader(retValue, MessageType.SIP_INVITE);
         addAcceptHeader(retValue, MimeType.APP_SDP);
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
 
         return retValue;
     }

@@ -47,10 +47,16 @@ import javax.microedition.ims.common.util.CollectionsUtils;
 import javax.microedition.ims.core.*;
 import javax.microedition.ims.core.registry.ClientRegistry;
 import javax.microedition.ims.core.registry.StackRegistry;
+import javax.microedition.ims.core.registry.property.CoreServiceProperty;
+import javax.microedition.ims.messages.wrappers.common.ParamList;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
+import javax.microedition.ims.messages.wrappers.sip.ContactsList;
 import javax.microedition.ims.messages.wrappers.sip.Header;
+import javax.microedition.ims.messages.wrappers.sip.UriHeader;
 import java.util.*;
 import java.util.Map.Entry;
+
+import android.text.TextUtils;
 
 public class DefaultClientRouter implements ClientRouter {
     private static final String TAG = "DefaultClientRouter";
@@ -64,11 +70,11 @@ public class DefaultClientRouter implements ClientRouter {
     }
 
     
-    public AcceptContactDescriptor[] buildClientPreferences(ClientIdentity clientIdentity) {
+    public AcceptContactDescriptor[] buildClientPreferences(ClientIdentity clientIdentity, boolean containFT) {
         ClientRegistry clientRegistry = stackRegistry.getClientRegistry(clientIdentity.getAppID());
         AcceptContactDescriptor[] headers = null;
         if (clientRegistry != null) {
-            headers = AcceptContactDescriptorCreator.create(clientRegistry);
+            headers = AcceptContactDescriptorCreator.create(clientRegistry, containFT);
         }
         return headers;
     }
@@ -87,7 +93,8 @@ public class DefaultClientRouter implements ClientRouter {
             addressee = consumers.length > 0 ? stackClientRegistry.getStackClientbyAppId(consumers[0]) : null;
         }
         else {
-            Collection<String> acceptHeaders = message.getCustomHeader(Header.AcceptContact);
+//            Collection<String> acceptHeaders = message.getCustomHeader(Header.AcceptContact);
+            Collection<String> acceptHeaders = message.getAcceptContact().retrieveContent();
             Collection<AcceptContactDescriptor> acceptContactDescriptors = CollectionsUtils.transform(
                     acceptHeaders,
                     new CollectionsUtils.Transformer<String, AcceptContactDescriptor>() {
@@ -97,7 +104,8 @@ public class DefaultClientRouter implements ClientRouter {
                     }
             );
 
-            Collection<String> rejectHeaders = message.getCustomHeader(Header.RejectContact);
+//            Collection<String> rejectHeaders = message.getCustomHeader(Header.RejectContact);
+            Collection<String> rejectHeaders = message.getRejectContact().retrieveContent();
             Collection<AcceptContactDescriptor> rejectContactDescriptors = CollectionsUtils.transform(
                     rejectHeaders,
                     new CollectionsUtils.Transformer<String, AcceptContactDescriptor>() {
@@ -109,7 +117,8 @@ public class DefaultClientRouter implements ClientRouter {
 
             addressee = findAddressee(
                     acceptContactDescriptors.toArray(new AcceptContactDescriptor[acceptContactDescriptors.size()]),
-                    rejectContactDescriptors.toArray(new AcceptContactDescriptor[rejectContactDescriptors.size()])
+                    rejectContactDescriptors.toArray(new AcceptContactDescriptor[rejectContactDescriptors.size()]),
+                    message.getContacts()
             );
         }
 
@@ -117,7 +126,8 @@ public class DefaultClientRouter implements ClientRouter {
     }
 
     private ClientIdentity findAddressee(AcceptContactDescriptor[] acceptContacts,
-                                         AcceptContactDescriptor[] rejectContacts) {
+                                         AcceptContactDescriptor[] rejectContacts,
+                                         ContactsList contactslist) {
         final ClientIdentity retValue;
 
         List<ClientRegistry> clientRegistries = Arrays.asList(stackRegistry.getClientRegistries());
@@ -142,7 +152,8 @@ public class DefaultClientRouter implements ClientRouter {
             Logger.log(TAG, "retrieveClient#retValue = " + appId);
         }
         else if (clientRegistries.size() > 0) {
-            appId = clientRegistries.get(0).getAppId();
+            appId = retrieveClientAppId(contactslist, clientRegistries);
+//            appId = clientRegistries.get(0).getAppId();
             Logger.log(TAG, "retrieveClient#Can't retrieve client by accept header, appId = " + appId);
         }
 
@@ -170,5 +181,62 @@ public class DefaultClientRouter implements ClientRouter {
         }
 
         return rejectedClients;
+    }
+
+    private String retrieveClientAppId(ContactsList contactslist, List<ClientRegistry> clientRegistries) {
+        String contacts="", defValue = clientRegistries.get(0).getAppId();
+        if (contactslist != null) {
+            if (!contactslist.getContactsList().isEmpty()) {
+                for (final UriHeader aContactsList : contactslist.getContactsList()) {
+                    contacts += aContactsList.buildContent();
+                }
+            }
+        }
+
+        if (TextUtils.isEmpty(contacts))    return defValue;
+
+        for(int i=0;i<clientRegistries.size();i++) {
+            ClientRegistry clientRegistry = clientRegistries.get(i);
+            String clients = extractClientData(clientRegistry);
+            if (!TextUtils.isEmpty(clients) &&
+                contacts.contains(clients)) {
+                return clientRegistry.getAppId();
+            }
+        }
+
+        return defValue;
+    }
+
+    private String extractClientData(ClientRegistry clientRegistry) {
+        String result = "";
+
+        CoreServiceProperty coreProperty = clientRegistry.getCoreServiceProperty();
+
+        String value;
+
+        //add iARIs
+        value = CollectionsUtils.concatenate(
+                coreProperty.getIARIs(),
+                ";",
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.iari-ref=\"%s\"", source);
+                    }
+                });
+
+        if (!TextUtils.isEmpty(value) && !value.equals("null")) result += value;
+
+        //add iCSIs
+        value = CollectionsUtils.concatenate(
+                coreProperty.getICSIs(),
+                ";",
+                new CollectionsUtils.Transformer<String, String>() {
+                    public String transform(String source) {
+                        return String.format("+g.3gpp.icsi-ref=\"%s\"", source);
+                    }
+                });
+
+        if (!TextUtils.isEmpty(value) && !value.equals("null")) result += value;
+        return result;
     }
 }

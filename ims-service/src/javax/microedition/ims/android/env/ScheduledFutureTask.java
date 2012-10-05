@@ -50,6 +50,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.ManagableScheduledFuture;
 
 /**
@@ -128,15 +129,15 @@ class ScheduledFutureTask<V> extends FutureTask<V> implements ManagableScheduled
     
     @Override
     public void run() {
-        Log.d(LOG_TAG, "run#started, " + toString());
+        Logger.log(LOG_TAG, "run#started, " + toString());
         
         super.run();
-        Log.d(LOG_TAG, "run#ended, " + toString());
+        Logger.log(LOG_TAG, "run#ended, " + toString());
     };
     
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        Log.d(LOG_TAG, "cancel#" + toString());
+        Logger.log(LOG_TAG, "cancel#" + toString());
         boolean isCancelled = super.cancel(mayInterruptIfRunning);
         
         notifyTaskCanceled();
@@ -152,7 +153,7 @@ class ScheduledFutureTask<V> extends FutureTask<V> implements ManagableScheduled
 
     @Override
     public void shutdown() {
-        Log.d(LOG_TAG, "shutdown#" + toString());
+        Logger.log(LOG_TAG, "shutdown#" + toString());
         wakeLock.release();
     }
     

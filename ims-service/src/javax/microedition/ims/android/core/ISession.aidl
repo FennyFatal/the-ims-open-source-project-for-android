@@ -11,7 +11,7 @@ interface ISession
 {
     // Adding/removing/rolling back/pending updates to medias
     // is handled at the client side library
-    void accept(in List<IMedia> medias);
+    void accept(in List<IMedia> medias, boolean isAutoAccept);
     void reject(int statusCode);
     void rejectWithDiversion(String alternativeUserAddress);
     void preaccept(in List<IMedia> medias);

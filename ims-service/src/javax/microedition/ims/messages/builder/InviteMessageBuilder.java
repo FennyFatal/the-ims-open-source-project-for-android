@@ -148,7 +148,10 @@ public class InviteMessageBuilder extends RequestMessageBuilder {
         addCSeqHeader(dialog, retValue);
 
         String sipInstance = extractSipInstance();
-        generateContactHeader(context.getConfig(), context.getStackRegistry(), retValue, sipInstance);
+//        generateContactHeader(dialog.getContactHeaders(), context.getConfig(), context.getStackRegistry(), retValue, sipInstance);
+        generateContactHeader(extractClientData(dialog.getLocalParty().getAppID(), context.getStackRegistry(), false),
+                context.getConfig(), context.getStackRegistry(), retValue, sipInstance);
+
 
         final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
         addPLastAccessNetworkHeader(locationInfo, retValue);
@@ -160,7 +163,7 @@ public class InviteMessageBuilder extends RequestMessageBuilder {
             retValue.customHeader(Header.AcceptContact.stringValue(), "*;+g.oma.sip-im");
         }
 
-        buildAcceptContactForClient(retValue, dialog.getLocalParty());
+//        buildAcceptContactForClient(retValue, dialog.getLocalParty());
 
         //TODO for test, client should set this HEADER if need, remove it before final delivery
         //addRequire(retValue);

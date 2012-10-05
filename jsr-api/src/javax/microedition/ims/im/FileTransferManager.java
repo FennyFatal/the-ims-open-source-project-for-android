@@ -47,48 +47,11 @@ import java.io.IOException;
 
 /**
  * The FileTransferManager can be used to send files to one or several IM 
- * users, or request files from an IM user. The FileTransferManagerListener 
- * must be set in order to receive incoming file requests and progress 
- * reports for files to be transferred.
- * <p/>
- * Each file in the file transfer has its own identifier, which enables 
- * tracking of progress and delivery reports for individual files. Delivery 
- * reports are received through the deliveryReportsReceived event in the 
- * IMServiceListener interface. For files, the identifier of the delivery 
- * report corresponds to the identifier of the FileInfo.
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice can send a file to another IM user called Bob.
- * <p/>
- * <pre>
- *  IMService service = (IMService) Connector
- *      .open("imsim://com.myCompany.apps.myApp");
- *      
- *  FileTransferManager fileTransferManager = service.getFileTransferManager();
- *  fileTransferManager.setListener(fileTransferManagerListener);
- *  
- *  FileInfo[] fileInfos = new FileInfo[1];
- *  fileInfos[0] = new FileInfo("file:///CFCard/images/alice.png", "image/png");
- *  
- *  // the identifier of the file
- *  String fileId = fileInfos[0].getFileId();
- *  
- *  String requestId = fileTransferManager.sendFiles(null, 
- *   new String[]{"sip:bob@example.org"}, "My avatar", fileInfos, false);
- *  ...
- *  
- *  void transferProgress(String requestId, String fileId,
- *   int bytesTransferred, int bytesTotal) {
- *      // this call to the FileTransferManagerListener indicates the 
- *      // transfer progress of the outgoing file
- *  }
- *  
- *  void fileSent(String requestId, String fileId) {
- *      // this call to the FileTransferManagerListener indicates that 
- *      // the file was successfully sent
- *  }
- * </pre> 
+ * users, or request files from an IM user.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface FileTransferManager {
 

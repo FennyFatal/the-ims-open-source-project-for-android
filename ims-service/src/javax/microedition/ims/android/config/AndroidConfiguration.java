@@ -49,12 +49,14 @@ import android.preference.PreferenceManager;
 import javax.microedition.ims.DefaultFeatureMapper;
 import javax.microedition.ims.FeatureMapper;
 import javax.microedition.ims.engine.test.R;
+//import javax.microedition.ims.android.auth.AKAAuthProviderAndroidImpl;
 import javax.microedition.ims.android.config.ui.ListPreferenceMultiSelect;
 import javax.microedition.ims.common.*;
 import javax.microedition.ims.common.util.StringUtils;
 import javax.microedition.ims.config.Configuration;
 import javax.microedition.ims.config.UserInfo;
 import javax.microedition.ims.config.UserPassword;
+import javax.microedition.ims.core.auth.AKAAuthProvider;
 import javax.microedition.ims.core.sipservice.PrivacyInfo;
 import javax.microedition.ims.core.sipservice.PrivacyInfoImpl;
 import javax.microedition.ims.core.xdm.XDMConfig;
@@ -84,7 +86,6 @@ public class AndroidConfiguration implements Configuration,
     public static final String SIP_REGISTER_HOST = "sip_registrar_host";
     public static final String SIP_REGISTER_PORT = "sip_registrar_port";
     public static final String SIP_REGISTER_PROTOCOL_TYPE = "sip_registrar_protocol_type";
-    public static final String SIP_REGISTER_EXPIRE_TIME = "sip_register_expire_time";
     public static final String SIP_GLOBAL_IP_DISCOVERY = "sip_global_ip_discovery";
     public static final String SIP_DNS_LOOKUP = "sip_dns_lookup";
 
@@ -125,14 +126,21 @@ public class AndroidConfiguration implements Configuration,
     public static final String SIP_SUPPORTED_EVENTLIST = "sip_supported_eventlist";
     public static final String SIP_SUPPORTED_PATH = "sip_supported_path";
 
+    public static final String SIP_EXPIRE_TIME = "sip_expire_time";
+    public static final String SIP_REGISTER_EXPIRE_TIME = "sip_register_expire_time";
+    public static final String SIP_SUBSCRIPTION_EXPIRE_TIME = "sip_subscription_expire_time";
+    public static final String SIP_PUBLICATION_EXPIRE_TIME = "sip_publication_expire_time";
+
     public static final String SIP_REQUIRED_FEATURES = "sip_required_features";
 
 //    public static final String SIP_FORCE_SRTP = "sip_force_srtp";
     public static final String SIP_DTMF_PAYLOAD_TYPE = "sip_dtmf_payload_type";
-    
+    public static final String SIP_USE_FEATURE_TAGS = "sip_use_feature_tags";
 
     private final Context context;
     private final SharedPreferences preferences;
+
+    //private final AKAAuthProvider akaAuthProvider;
 
     private final FeatureMapper featureMapping = new DefaultFeatureMapper();
 
@@ -143,6 +151,7 @@ public class AndroidConfiguration implements Configuration,
         this.preferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         preferences.registerOnSharedPreferenceChangeListener(this);
+        //akaAuthProvider = new AKAAuthProviderAndroidImpl(context);
     }
 
     private String getDefSettingValue(int defKey) {
@@ -190,6 +199,20 @@ public class AndroidConfiguration implements Configuration,
     }
 
     public ServerAddress getRegistrarServer() {
+        AuthType type = getUserPassword().getPasswordType();
+        String host;
+        //if (AuthType.AKA == type) {
+        //    host = akaAuthProvider.getHomeNetworkDomain();
+        //} else {
+            host = getStringSettingValue(SIP_REGISTER_HOST,
+                R.string.def_registrar_host);
+        //}
+        String port = getStringSettingValue(SIP_REGISTER_PORT,
+                R.string.def_registrar_port);
+        return new ServerAddress(host, Integer.parseInt(port));
+    }
+
+    public ServerAddress getRegistrarServerSettings() {
         String host = getStringSettingValue(SIP_REGISTER_HOST,
                 R.string.def_registrar_host);
         String port = getStringSettingValue(SIP_REGISTER_PORT,
@@ -203,6 +226,15 @@ public class AndroidConfiguration implements Configuration,
     }
 
     public String getRealm() {
+        AuthType type = getUserPassword().getPasswordType();
+        //if (AuthType.AKA == type) {
+        //    return akaAuthProvider.getHomeNetworkDomain();
+        //}
+        //else
+            return getStringSettingValue(SIP_AUTH_REALM, R.string.def_realm);
+    }
+
+    public String getRealmSettings() {
         return getStringSettingValue(SIP_AUTH_REALM, R.string.def_realm);
     }
 
@@ -249,6 +281,7 @@ public class AndroidConfiguration implements Configuration,
         return getBooleanSettingValue(SIP_FORCE_SRTP, R.string.def_force_srtp);
     }*/
 
+    @Override
     public boolean useDNSLookup() {
         return getBooleanSettingValue(SIP_DNS_LOOKUP, R.string.def_dns_lookup);
     }
@@ -262,6 +295,12 @@ public class AndroidConfiguration implements Configuration,
         return getBooleanSettingValue(SIP_AUTH_FORCE, R.string.def_auth_force);
     }
 */
+
+    //use feature tags in INVITE message
+    public boolean useFeatureTags() {
+        return getBooleanSettingValue(SIP_USE_FEATURE_TAGS,
+                R.string.def_use_feature_tags);
+    }
 
     public boolean useSimultaneousAuth() {
         return getBooleanSettingValue(SIP_AUTH_SIMULTENEOUS, R.string.def_auth_simulteneous);
@@ -307,6 +346,18 @@ public class AndroidConfiguration implements Configuration,
         String regExpireTime = getStringSettingValue(SIP_REGISTER_EXPIRE_TIME,
                 R.string.def_registrar_expire_time);
         return Long.parseLong(regExpireTime);
+    }
+
+    public long getSubscriptionExpirationSeconds() {
+        String subExpireTime = getStringSettingValue(SIP_SUBSCRIPTION_EXPIRE_TIME,
+                R.string.def_subscription_expire_time);
+        return Long.parseLong(subExpireTime);
+    }
+
+    public long getPublicationExpirationSeconds() {
+        String pubExpireTime = getStringSettingValue(SIP_PUBLICATION_EXPIRE_TIME,
+                R.string.def_publication_expire_time);
+        return Long.parseLong(pubExpireTime);
     }
 
     public void free() {

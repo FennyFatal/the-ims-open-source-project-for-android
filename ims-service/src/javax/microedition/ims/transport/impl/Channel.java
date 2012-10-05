@@ -48,6 +48,7 @@ import javax.microedition.ims.transport.ChannelIOException.Reason;
 import javax.microedition.ims.transport.MessageContext;
 import javax.microedition.ims.transport.MessageReader;
 import javax.microedition.ims.transport.messagerouter.Route;
+import javax.microedition.ims.util.MessageUtilHolder;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.Callable;
@@ -138,7 +139,9 @@ abstract class Channel<T> implements Shutdownable {
                             Integer msgHash = getMessageContext().getMessageHash(msg);
                             if (!floodBlocker.containsMessage(msgHash)) {
                                 try {
-                                    floodBlocker.addIncomingMessage(msgHash);
+                                    if (MessageUtilHolder.getSIPMessageUtil().isRequest(msg)) {
+                                        floodBlocker.addIncomingMessage(msgHash);
+                                    }
                                     handleNewMessage(msg);
                                 }
                                 catch (BlockedByFloodException e) {

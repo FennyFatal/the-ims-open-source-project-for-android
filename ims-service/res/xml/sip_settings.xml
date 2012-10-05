@@ -123,7 +123,14 @@
             android:targetPackage="javax.microedition.ims.engine.test"
             android:targetClass="javax.microedition.ims.android.config.ui.SupportedFeatures" />
 	</PreferenceScreen>
-	
+
+    <PreferenceScreen android:key="sip_expire_time"
+        android:title="@string/sip_expire_time">
+        <intent android:action="android.intent.action.MAIN"
+            android:targetPackage="javax.microedition.ims"
+            android:targetClass="javax.microedition.ims.android.config.ui.ExpireTimeSettings" />
+    </PreferenceScreen>
+
 	<ListPreference
     	android:key="sip_dtmf_payload_type"
     	android:defaultValue="@string/def_dtmf_payload_type"
@@ -133,6 +140,10 @@
         android:entryValues="@array/dtmf_payload_type_entries"
         android:dialogTitle="@string/dtmf_payload_type" />
 	
+	<CheckBoxPreference android:key="sip_use_feature_tags"
+		android:defaultValue="@string/def_use_feature_tags"
+		android:title="@string/sip_use_feature_tags" android:summary="@string/sip_use_feature_tags_summary"
+		android:persistent="true" android:disableDependentsState="true" />
 
 	<!-- PreferenceScreen android:key="sip_required_features"
 		android:title="@string/sip_required_features">

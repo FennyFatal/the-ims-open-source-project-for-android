@@ -49,14 +49,11 @@ import java.util.List;
 /**
  * A WatcherFilterSet enables the possibility to set filters and limit the data
  * received in the presenceInfoReceived event of the WatcherListener interface.
- * A WatcherFilterSet is created and a number of WatcherFilter can be added to
- * it. The WatcherFilterSet can then be passed as an argument to the subscribe
- * or poll methods in Watcher.
- * 
- * The WatcherFilterSet is a representation of the XML document that contains
- * the filter set and that XML document can be modified directly by using the
- * DOM API, please see Document.
- * 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @author Andrei Khomushko
  * 
  */

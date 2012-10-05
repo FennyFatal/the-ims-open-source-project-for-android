@@ -45,6 +45,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
@@ -323,7 +324,11 @@ public class Connector {
     private void unbindFromConnectorService(final Context context) {
         if (connector.get() != null) {
             Log.i(TAG, "unbindFromConnectorService#start");
-            context.unbindService(mConnection);
+            try {
+                context.unbindService(mConnection);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "unbindFromConnectorService# error: " + e);
+            }
             connector.set(null);
             Log.i(TAG, "unbindFromConnectorService#end");
         } else {
@@ -490,8 +495,10 @@ public class Connector {
             switch (shema) {
             case CORE: {
                 final IExceptionHolder exceptionHolder = new IExceptionHolder();
+                IBinder iBinder = new Binder();
+                Log.i(TAG, "CORE: iBinder = "+iBinder);
                 ICoreService coreService = connector.get()
-                        .openCoreService(name, exceptionHolder);
+                        .openCoreService(name, iBinder, exceptionHolder);
                 
                 IError iError = (IError)exceptionHolder.getParcelableException();
                 if (iError != null) {

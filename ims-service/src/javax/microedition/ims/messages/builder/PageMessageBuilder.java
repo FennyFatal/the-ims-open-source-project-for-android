@@ -43,6 +43,7 @@ package javax.microedition.ims.messages.builder;
 
 import javax.microedition.ims.common.MessageType;
 import javax.microedition.ims.core.StackContext;
+import javax.microedition.ims.core.connection.GsmLocationInfo;
 import javax.microedition.ims.core.dialog.Dialog;
 import javax.microedition.ims.messages.wrappers.common.Uri;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
@@ -95,19 +96,23 @@ SIP_MESSAGE sip:user2@domain.com SIP/2.0
         addCSeqHeader(dialog, retValue);
         
         addPreferedIdentity(retValue);
+
+        final GsmLocationInfo locationInfo = context.getEnvironment().getGsmLocationService().getGsmLocationInfo();
+        addPAccessNetworkHeader(locationInfo, retValue);
         
         addAuthorizationHeader(retValue, MessageType.SIP_MESSAGE);
 
-        buildAcceptContactForClient(retValue, dialog.getLocalParty());
+//        buildAcceptContactForClient(retValue, dialog.getLocalParty());
+        buildAcceptContactForClient(retValue, dialog);
 
         //TODO for test
         //retValue.addCustomHeader(Header.Content_Type.stringValue(), "text/plain");
         //retValue.addSupported("100rel");
         //retValue.addSupported("eventlist");
         //retValue.addCustomHeader(Header.Accept.stringValue(), "text/plain");
-        //retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;audio;video;application;app_subtype=\"test\";events=\"presence\";+g.3gpp.icsi_ref=\"urn:3gpp:3gpp-service.ims.icsi.mmtel\"");
+        //retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;audio;video;application;app-subtype=\"test\";events=\"presence\";+g.3gpp.icsi-ref=\"urn:3gpp:3gpp-service.ims.icsi.mmtel\"");
         //retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;events=\"refer\"");
-        //retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;+g.3gpp.iari_ref=\"urn:IMSAPI:javax.microedition.ims.engine.test\";require;+g.3gpp.icsi_ref=\"urn:3gpp:org.3gpp.icsi;require\"");
+        //retValue.addCustomHeader(Header.AcceptContact.stringValue(), "*;+g.3gpp.iari-ref=\"urn:IMSAPI:javax.microedition.ims.engine.test\";require;+g.3gpp.icsi-ref=\"urn:3gpp:org.3gpp.icsi;require\"");
         generateContactHeader(context.getConfig(), retValue);
 
         return retValue;

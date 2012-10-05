@@ -48,6 +48,7 @@ import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.presence.IEvent.EventType;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.EventPackage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.dialog.IncomingNotifyListener;
 import javax.microedition.ims.core.sipservice.subscribe.SubscribeService;
@@ -104,7 +105,7 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
     }
 
     public void subscribe() throws RemoteException {
-        Log.i(TAG, "subscribe#start");
+        Logger.log(TAG, "subscribe#start");
 
         assert state.get() == SubscriptionState.STATE_INACTIVE : "Subscription is in not suitable state to initiate subscribe#";
 
@@ -118,23 +119,24 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
 
         setState(SubscriptionState.STATE_PENDING_SUBSCRIBE);
 
-        Log.i(TAG, "subscribe#end");
+        Logger.log(TAG, "subscribe#end");
     }
 
     public void onSubscriptionStarted(SubscriptionStateEvent event) {
-        Log.i(TAG, "onSubscriptionStarted#event = " + event);
+        Logger.log(TAG, "onSubscriptionStarted#event = " + event);
 
         setState(SubscriptionState.STATE_ACTIVE);
         try {
             listenerHolder.getNotifier().subscriptionStarted();
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void onSubscriptionStartFailed(SubscriptionFailedEvent event) {
-        Log.i(TAG, "onSubscriptionStartFailed#event = " + event);
+        Logger.log(TAG, "onSubscriptionStartFailed#event = " + event);
         setState(SubscriptionState.STATE_INACTIVE);
 
         final IReasonInfo reasonInfo = SubscriptionUtil.createReasonInfo(event);
@@ -142,12 +144,13 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
             listenerHolder.getNotifier().subscriptionFailed(reasonInfo);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void unsubscribe() throws RemoteException {
-        Log.i(TAG, "unsubscribe#start");
+        Logger.log(TAG, "unsubscribe#start");
 
         assert state.get() == SubscriptionState.STATE_ACTIVE : "Subscription is in not suitable state to initiate unsubscribe#";
 
@@ -158,22 +161,22 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
 
         setState(SubscriptionState.STATE_PENDING_UNSUBSCRIBE);
 
-        Log.i(TAG, "unsubscribe#finish");
+        Logger.log(TAG, "unsubscribe#finish");
     }
 
     public void onSubscriptionRefreshed(SubscriptionStateEvent event) {
-        Log.i(TAG, "onSubscriptionRefreshed#event = " + event);
+        Logger.log(TAG, "onSubscriptionRefreshed#event = " + event);
     }
 
     public void onSubscriptionRefreshFailed(SubscriptionFailedEvent event) {
-        Log.i(TAG, "onSubscriptionRefreshFailed#event = " + event);
+        Logger.log(TAG, "onSubscriptionRefreshFailed#event = " + event);
 
         IEvent iEvent = new IEvent(EventType.EVENT_DEACTIVATED, -1);
         terminateSubscription(iEvent);
     }
 
     public void onSubscriptionTerminated(SubscriptionTerminatedEvent event) {
-        Log.i(TAG, "onSubscriptionTerminated#event = " + event);
+        Logger.log(TAG, "onSubscriptionTerminated#event = " + event);
 
         IEvent iEvent = SubscriptionUtil.createIEvent(event);
         terminateSubscription(iEvent);
@@ -196,12 +199,13 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
             listenerHolder.getNotifier().subscriptionTerminated(iEvent);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void notificationReceived(NotifyEvent event) {
-        Log.i(TAG, "notificationReceived#event = " + event);
+        Logger.log(TAG, "notificationReceived#event = " + event);
 
         String[] notifyBodyMessages = event.getNotifyInfo().getNotifyBodyMessages();
         assert notifyBodyMessages.length == 1;
@@ -210,7 +214,8 @@ class WatcherInfoSubscriberImpl extends IWatcherInfoSubscriber.Stub implements
             listenerHolder.getNotifier().watcherInfoReceived(notifyBodyMessages[0]);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 

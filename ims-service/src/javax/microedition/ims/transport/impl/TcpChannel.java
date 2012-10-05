@@ -42,6 +42,7 @@
 package javax.microedition.ims.transport.impl;
 
 import javax.microedition.ims.common.*;
+import javax.microedition.ims.common.Logger.Tag;
 import javax.microedition.ims.transport.MessageContext;
 import javax.microedition.ims.transport.MessageReader;
 import javax.microedition.ims.transport.messagerouter.Route;
@@ -73,7 +74,7 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
     private final SocketFactory socketFactory;
 
     private final AtomicReference<T> lastOutMessageChache = new AtomicReference<T>();
-
+    
     TcpChannel(final Route route, final Consumer<T> outerConsumer, final Creator creator,
             final MessageContext<T> messageContext, final SocketFactory socketFactory)
             throws IOException {
@@ -112,7 +113,7 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
             // initialRoute.getDstPort());
         }
 
-        final IOException transportCreationException = changeTransport();
+        final IOException transportCreationException = changeTransport(getInitialRoute());
         if (transportCreationException != null) {
             throw transportCreationException;
         } else if (getRealRoute() == null) {
@@ -120,20 +121,27 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
         }
     }
 
-    private IOException changeTransport() {
+    private IOException changeTransport(Route route) {
 
         IOException retValue = null;
-
+        
+        Logger.log(TAG, String.format("change transport, old socket = %s, old route = %s",socketIO.get(), realRoute.get()));
+        
         try {
             synchronized (changeTransportInProgressMutex) {
                 changeTransportInProgressMutex.set(true);
                 changeTransportInProgressMutex.notifyAll();
             }
 
-            Socket tcpSocket = createSocket(getInitialRoute(), socketFactory);
-            final SocketIO previousSocketIO = this.socketIO.getAndSet(new SocketIO(tcpSocket));
-
+            Logger.log(TAG, "create socket for route = " + route);
+            Socket tcpSocket = createSocket(route/*getInitialRoute()*/, socketFactory);
+            final SocketIO newSocketIO = new SocketIO(tcpSocket);
+            final SocketIO previousSocketIO = this.socketIO.getAndSet(newSocketIO);
+            
             Route realRoute = obtainRoute(tcpSocket, getMessageContext().getEntityType());
+            
+            Logger.log(TAG, String.format("transport changed, new socket = %s, new route = %s", newSocketIO, realRoute));
+            
             this.realRoute.set(realRoute);
             creator.onCreate(realRoute);
 
@@ -146,7 +154,8 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
                 changeTransportInProgressMutex.notifyAll();
             }
         } catch (IOException e) {
-            retValue = e;
+            Logger.log(TAG, "exception was thrown during changing transport, e = " + e.getMessage());
+            retValue = e; 
         }
 
         return retValue;
@@ -176,7 +185,9 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
 
     private Socket createSocket(Route initialRoute, SocketFactory socketFactory) throws IOException {
         Socket tcpSocket;
+        Logger.log(Tag.COMMON, "createSocket#route = " + initialRoute);
         tcpSocket = socketFactory.createSocket(initialRoute);
+        Logger.log(Tag.COMMON, "createSocket#socket = " + tcpSocket);
         // tcpSocket = new Socket(initialRoute.getDstHost(),
         // initialRoute.getDstPort());
 
@@ -211,10 +222,12 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
             try {
                 isAlive = doReadMessage(messageReader);
             } catch (SSLException e) {
+                Logger.log(TAG, "onReadMessage#socketIO = " + socketIO);
                 Logger.log(TAG, "onReadMessage#exception is arrised, e = " + e);
+                
                 if (isConnectionResetIssue(e)) {
                     Logger.log(TAG, "onReadMessage#tcp connection RST error is detected");
-                    IOException transportChangeError = changeTransport();
+                    IOException transportChangeError = changeTransport(getRealRoute());
                     if(transportChangeError != null) {
                         Logger.log(TAG, "onReadMessage#transport changed unsuccessfully, error message = " + transportChangeError.getMessage());
                         transportChangeError.printStackTrace();
@@ -257,12 +270,14 @@ class TcpChannel<T extends IMSMessage> extends Channel<T> {
             }
         } catch (SocketTimeoutException e) {
             Thread.interrupted();
-        }
+        } 
 
         if (readCount == -1) {
             // System.out.println(new Date() +
             // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: -1 detected ");
-            isAlive = changeTransport() == null;
+            Logger.log(TAG, "doReadMessage#socket somehow was broken (readCount=-1), force change transport");
+            isAlive = changeTransport(getRealRoute()) == null;
+            Logger.log(TAG, String.format("transport was changed %s", isAlive? "successfully": "unsuccessfully"));
         }
 
         return isAlive;

@@ -61,6 +61,8 @@ public interface AKAAuthProvider {
     UserInfo getImpi();
 
     UserInfo getImpu();
+
+    String getHomeNetworkDomain();
     
     boolean isGbaUSupported();
 }

@@ -90,15 +90,6 @@
         android:maxLength="5" 
         validatePattern="@id/port_validator_pattern"
         validateMessage="@string/port_validator_message" />
-    
-    <EditTextPreference
-    	android:key="sip_register_expire_time"
-    	android:defaultValue="@string/def_registrar_expire_time"
-        android:title="@string/sip_registrar_expire_time_type"
-        android:summary="@string/sip_registrar_expire_time_summary"
-        android:dialogTitle="@string/sip_registrar_expire_time_type" 
-        android:numeric="integer"
-        android:maxLength="5"/>
 
     <EditTextPreference
     	android:key="sip_preferred_identity"

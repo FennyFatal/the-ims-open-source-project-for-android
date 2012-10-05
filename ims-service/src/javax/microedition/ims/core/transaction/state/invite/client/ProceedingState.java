@@ -57,6 +57,8 @@ import javax.microedition.ims.messages.wrappers.common.ResponseClass;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import javax.microedition.ims.messages.wrappers.sip.Response;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.microedition.ims.messages.wrappers.sip.Request;
+import android.util.Log;
 
 public class ProceedingState extends
         TransactionState<ClientCommonInviteTransaction, BaseSipMessage> {
@@ -144,6 +146,10 @@ public class ProceedingState extends
              */
             else if (ResponseClass.Client == response.getResponseClass()
                     && StatusCode.REQUEST_PENDING == response.getStatusCode()) {
+
+                Request ackMessage = transaction.getDialog().getMessageBuilderFactory().getRequestBuilder(MessageType.SIP_ACK).buildMessage();
+                transaction.sendMessage(ackMessage, null);
+
                 transaction.getStackContext().getRepetitiousTaskManager().cancelTask(
                         transaction.getInitialMessage());
 
@@ -162,7 +168,8 @@ public class ProceedingState extends
                 // Proposal: introduce Dialog to transaction.
                 // Workaround: use 2 seconds as middle value between cases 1 and
                 // 2 from RFC3261 (see comments above)
-                final long requestTimeoutInterval = 2000;
+                //final long requestTimeoutInterval = 2000;
+                long requestTimeoutInterval = ((int)(Math.random()*400))*10;
                 TimeoutTimer.getInstance().startTimerTransactionSafe(
                         requestPendingTimer.get(), requestTimeoutInterval);
             }

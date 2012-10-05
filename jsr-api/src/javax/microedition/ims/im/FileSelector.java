@@ -45,36 +45,12 @@ import com.android.ims.core.media.util.UtilsMIME;
 import com.android.ims.core.media.util.UtilsMSRP;
 
 /**
- * The FileSelector class is a container for metadata about a file that is 
- * going to be pulled from a remote user in a pull request. Since the remote 
- * user must be able to identify the specific file to send, the file must be 
- * described by at least one of the following attributes: file name, content 
- * type, hash, or size.
- * <p/>
- * To retrieve a part of a file, a range may also be specified. The start 
- * offset value refers to the byte position of the file where the file 
- * transfer should start. The first byte of a file is denoted by the ordinal 
- * number 1. The stop offset value refers to the byte position of the file 
- * where the file transfer should stop, inclusive of this byte. If no stop 
- * offset value is specified, the transfer will continue until the end of 
- * the file is reached. If no range at all is specified, the entire file 
- * will be sent.
- * <p/>
- * To describe the file with a hash, the 160-bit string resulting from the 
- * computation of Secure Hash Algorithm 1 (SHA-1) should be used. The hash 
- * should be set using the following syntax: hash-algorithm : hash-value, 
- * where hash-value is a byte string with each byte in upper-case hex, 
- * separated by colons.
- * <p/>
- * Example
- * <p/>
- * <pre>
- *  FileSelector fileSelector = new FileSelector("bob.png", "image/png",
- *      "sha-1:72:24:5F:E8:65:3D:DA:F3:71:36:2F:86:D4:71:91:3E:E4:A2:CE:2E", 32349,
- *      new int[] {
- *          1, 32349
- *      });
- * </pre>
+ * The FileSelector class is a container for metadata about a file that is being transfered.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public class FileSelector {
     

@@ -57,6 +57,7 @@ import javax.microedition.ims.messages.wrappers.common.ResponseClass;
 import javax.microedition.ims.messages.wrappers.sip.BaseSipMessage;
 import javax.microedition.ims.messages.wrappers.sip.Header;
 import javax.microedition.ims.messages.wrappers.sip.Response;
+import javax.microedition.ims.messages.wrappers.sip.Request;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -149,6 +150,9 @@ public class CallingState extends
                         .getStatusCode()
                         || StatusCode.REQUEST_PENDING == response
                         .getStatusCode()) {
+                    Request ackMessage = transaction.getDialog().getMessageBuilderFactory().getRequestBuilder(MessageType.SIP_ACK).buildMessage();
+                    transaction.sendMessage(ackMessage, null);
+
                     List<String> minSeHeader = msg
                             .getCustomHeader(Header.Min_SE);
                     if (minSeHeader != null && minSeHeader.size() > 0) {
@@ -175,7 +179,8 @@ public class CallingState extends
                     // Proposal: introduce Dialog to transaction.
                     // Workaround: use 2 seconds as middle value between cases 1
                     // and 2 from RFC3261 (see comments above)
-                    final long requestTimeoutInterval = 2000;
+                    //final long requestTimeoutInterval = 2000;
+                    long requestTimeoutInterval = ((int)(Math.random()*400))*10;
                     TimeoutTimer.getInstance().startTimerTransactionSafe(
                             requestPendingTimer.get(), requestTimeoutInterval);
                 }

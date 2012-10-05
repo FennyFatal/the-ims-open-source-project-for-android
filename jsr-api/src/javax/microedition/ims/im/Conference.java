@@ -41,6 +41,10 @@
 
 package javax.microedition.ims.im;
 
+/**
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ */
 public interface Conference extends IMSession {
     
     //TODO describe interface

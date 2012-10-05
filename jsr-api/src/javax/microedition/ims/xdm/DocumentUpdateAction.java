@@ -44,32 +44,11 @@ package javax.microedition.ims.xdm;
 import org.w3c.dom.*;
 
 /**
- * Provides functionality to decide what action needs to be taken for a local
- * XDM document cache after the documentUpdateReceived method in the
- * DocumentSubscriberListener interface has been called due to an update of the
- * XDM document on the XDM server. For an example of how to use this class, see
- * DocumentSubscriber.
- * 
- * The XCAP diff document that is passed as an argument to the
- * documentUpdateReceived method can contain different amounts of information as
- * described in [XCAP-DIFF].
- * 
- * The lowest level of information is only an notification that the XDM document
- * on the XDM server has been updated, and in order to keep a local document
- * cache synchronized a new retrieval of the document is needed.
- * 
- * If the XCAP diff document provides information of the document updates this
- * could possibly be used to update the local XDM document cache without
- * retrieving the whole XDM document from the server. If all the updates and the
- * correct ETag are included in the XCAP diff document they can be applied to
- * the XDM document to save network resources.
- * 
- * The method documentUpdateReceived is also called when a subscription to an
- * XDM document has been established. If the local document cache is identical
- * to the XDM document on the server, the information in the XCAP diff document
- * indicates that no real update has been made and there is no need to take any
- * action.
- * 
+ * Provides functionality to make decision about changes in document.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * {@link DocumentSubscriber}
  * 
  * @author Andrei Khomushko

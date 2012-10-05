@@ -51,4 +51,6 @@ public interface StackRegistryEditor extends StackRegistry {
 
     boolean dropClientData(String appId);
 
+    boolean dropCommonData(String appId);
+
 }

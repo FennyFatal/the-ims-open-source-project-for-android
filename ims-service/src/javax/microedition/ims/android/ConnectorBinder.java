@@ -1,9 +1,53 @@
-
+/*
+ * This software code is (c) 2010 T-Mobile USA, Inc. All Rights Reserved.
+ *
+ * Unauthorized redistribution or further use of this material is
+ * prohibited without the express permission of T-Mobile USA, Inc. and
+ * will be prosecuted to the fullest extent of the law.
+ *
+ * Removal or modification of these Terms and Conditions from the source
+ * or binary code of this software is prohibited.  In the event that
+ * redistribution of the source or binary code for this software is
+ * approved by T-Mobile USA, Inc., these Terms and Conditions and the
+ * above copyright notice must be reproduced in their entirety and in all
+ * circumstances.
+ *
+ * No name or trademarks of T-Mobile USA, Inc., or of its parent company,
+ * Deutsche Telekom AG or any Deutsche Telekom or T-Mobile entity, may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" AND "WITH ALL FAULTS" BASIS
+ * AND WITHOUT WARRANTIES OF ANY KIND.  ALL EXPRESS OR IMPLIED
+ * CONDITIONS, REPRESENTATIONS OR WARRANTIES, INCLUDING ANY IMPLIED
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT CONCERNING THIS SOFTWARE, ITS SOURCE OR BINARY CODE
+ * OR ANY DERIVATIVES THEREOF ARE HEREBY EXCLUDED.  T-MOBILE USA, INC.
+ * AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY
+ * LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE
+ * OR ITS DERIVATIVES.  IN NO EVENT WILL T-MOBILE USA, INC. OR ITS
+ * LICENSORS BE LIABLE FOR LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+ * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+ * HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT
+ * OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF T-MOBILE USA,
+ * INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ *
+ * THESE TERMS AND CONDITIONS APPLY SOLELY AND EXCLUSIVELY TO THE USE,
+ * MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE, ITS SOURCE OR BINARY
+ * CODE OR ANY DERIVATIVES THEREOF, AND ARE SEPARATE FROM ANY WRITTEN
+ * WARRANTY THAT MAY BE PROVIDED WITH A DEVICE YOU PURCHASE FROM T-MOBILE
+ * USA, INC., AND TO THE EXTENT PERMITTED BY LAW.
+ */
 package javax.microedition.ims.android;
 
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.microedition.ims.android.core.CoreServiceImpl;
@@ -29,6 +73,7 @@ import javax.microedition.ims.core.IMSStack;
 import javax.microedition.ims.core.IMSStackException;
 import javax.microedition.ims.core.ReasonCode;
 import javax.microedition.ims.core.RegistrationException;
+import javax.microedition.ims.core.registry.StackRegistryEditor;
 import javax.microedition.ims.core.connection.ConnectionDataProviderConfigVsDnsImpl;
 import javax.microedition.ims.core.sipservice.register.RegResult;
 import javax.microedition.ims.core.sipservice.register.RegisterService;
@@ -41,19 +86,100 @@ public class ConnectorBinder extends IConnector.Stub {
 
     private final IMSStack<IMSMessage> imsStack;
     private final ConnectionDataProviderConfigVsDnsImpl connectionDataProvider;
+    private List<DeathRecipient> mRecipientList = new ArrayList<DeathRecipient>();
+    private CountDownLatch releaseLatch = null;
 
-    ConnectorBinder(final IMSStack<IMSMessage> imsStackInstance, final ConnectionDataProviderConfigVsDnsImpl connectionDataProvider) {
+    ConnectorBinder(final IMSStack<IMSMessage> imsStackInstance, final ConnectionDataProviderConfigVsDnsImpl connectionDataProvider,
+        final CountDownLatch latch) {
         assert imsStackInstance != null;
         this.imsStack = imsStackInstance;
         this.connectionDataProvider = connectionDataProvider;
+        this.releaseLatch = latch;
+    }
+
+    private void addPresenceServceInDeathRecipient(IPresenceService presenceService) {
+        for (DeathRecipient item : mRecipientList) {
+            item.addPresenceService(presenceService);
+        }
+    }
+    private class DeathRecipient implements IBinder.DeathRecipient {
+        IBinder mBinder = null;
+        ICoreService mCoreService = null;
+        IPresenceService mPresenceService = null;
+        CoreServiceImpl.CoreServiceStateListener mCoreListener = null;
+
+        DeathRecipient(IBinder binder, ICoreService coreService) {
+            super();
+            mBinder = binder;
+            mCoreService = coreService;
+            Logger.log(TAG, "DeathRecipient: create "+this.toString());
+
+            mCoreListener = new CoreServiceImpl.CoreServiceStateListener() {
+                public void onCoreServiceClosed() {
+                    Logger.log(TAG, "DeathRecipient: onCoreServiceClosed()");
+                    clean();
+                    checkReleaseSignal();
+                }
+            };
+            ((CoreServiceImpl)mCoreService).addCoreServiceStateListener(mCoreListener);
+            try {
+                mBinder.linkToDeath(this, 0);
+            } catch (RemoteException e) {
+                binderDied();
+            }
+        }
+        public void binderDied() {
+            Logger.log(TAG, "binderDied!"+this.toString());
+            clean();
+            try {
+                String appId = mCoreService.getAppId();
+                if (mPresenceService != null) {
+                    mPresenceService.close();
+                }
+                mCoreService.close();
+
+                // do Configuration.close() and ConnectionState.close()
+                StackRegistryEditor stackRegistry = (StackRegistryEditor)imsStack.getContext().getStackRegistry();
+                stackRegistry.dropClientData(appId);
+                stackRegistry.dropCommonData(appId);
+                imsStack.getRegisterService().refreshRegistration();
+            } catch (RemoteException e) {
+                Logger.log(TAG, "DeathRecipient: binderDied Exception: "+e);
+            }
+            checkReleaseSignal();
+        }
+        public void addPresenceService(IPresenceService presenceService) {
+            try {
+                if (mCoreService.getAppId().equals(presenceService.getAppId()))
+                    mPresenceService = presenceService;
+            } catch (RemoteException e) {
+                Logger.log(TAG, "DeathRecipient: addPresenceService Exception: "+e);
+            }
+        }
+        public String toString() {
+            return String.format("DeathRecipient: mBinder = %s, mCoreService = %s, mPresenceService = %s",
+                        mBinder, mCoreService, mPresenceService);
+        }
+        private void clean() {
+            Logger.log(TAG, "DeathRecipient: clean() "+this.toString());
+            ((CoreServiceImpl)mCoreService).removeCoreServiceStateListener(mCoreListener);
+            mBinder.unlinkToDeath(this, 0);
+            mRecipientList.remove(this);
+        }
+        private void checkReleaseSignal() {
+            if (mRecipientList.size() == 0) {
+                releaseLatch.countDown();
+                Logger.log(TAG, "DeathRecipient countDown "+releaseLatch.getCount());
+            }
+        }
     }
 
     @Override
-    public ICoreService openCoreService(final String uri, final IExceptionHolder exceptionHolder)
+    public ICoreService openCoreService(final String uri, final IBinder binder, final IExceptionHolder exceptionHolder)
             throws RemoteException {
         ICoreService coreService = null;
         try {
-            Log.i(TAG, "openCoreService# uri = " + uri);
+            Logger.log(TAG, "openCoreService# uri = " + uri);
             coreService = null;
 
             if (checkIsDebugMode(uri)) {
@@ -61,8 +187,10 @@ public class ConnectorBinder extends IConnector.Stub {
             } else {
                 try {
                     coreService = createRealCoreService(uri);
+                    DeathRecipient recipient = new DeathRecipient(binder, coreService);
+                    mRecipientList.add(recipient);
                 } catch (DnsLookupException e) {
-                    Log.e(TAG, "openCoreService# e = " + e.getMessage());
+                    Logger.log(TAG, "openCoreService# e = " + e.getMessage());
                     //exceptionHolder.setParcelableException(new IError(IError.ERROR_DNS_LOOKUP, e
                     //        .getMessage()));
                     final IError iError = new IError(
@@ -70,26 +198,26 @@ public class ConnectorBinder extends IConnector.Stub {
                             ReasonCode.CONNECTION_ERROR.getErrCodeString());
                     exceptionHolder.setParcelableException(iError);
                 } catch (ConfigurationException e) {
-                    Log.e(TAG, "openCoreService# e = " + e.getMessage());
+                    Logger.log(TAG, "openCoreService# e = " + e.getMessage());
                     exceptionHolder.setParcelableException(new IError(
                             IError.ERROR_STACK_CONFIGURATION, e.getMessage()));
                 } catch (RegistrationException e) {
-                    Log.e(TAG, "openCoreService# RegistrationException");
-                    Log.e(TAG, "openCoreService# e = " + e.getMessage());
+                    Logger.log(TAG, "openCoreService# RegistrationException");
+                    Logger.log(TAG, "openCoreService# e = " + e.getMessage());
                     exceptionHolder.setParcelableException(new IError(e.getResponseCode(), e
                             .getReasonPhrase(), e.getReasonData()));
                 } catch (CertificateException e) {
-                    Log.e(TAG, "openCoreService# e = " + e.getMessage());
+                    Logger.log(TAG, "openCoreService# e = " + e.getMessage());
 
                     final IError iError = new IError(
                             ErrorsUtils.toIErrorCode(ReasonCode.CERT_NOT_VALID), e.getMessage(),
                             ReasonCode.CERT_NOT_VALID.getErrCodeString());
 
-                    Log.e(TAG, "openCoreService#iError = " + iError);
+                    Logger.log(TAG, "openCoreService#iError = " + iError);
 
                     exceptionHolder.setParcelableException(iError);
                 } catch (IMSStackException e) {
-                    Log.e(TAG, "openCoreService# e = " + e);
+                    Logger.log(TAG, "openCoreService# e = " + e);
                     if (e.getThrowableCause() != null
                             && e.getThrowableCause() instanceof DNSException) {
                         DNSException dnsException = (DNSException)e.getThrowableCause();
@@ -98,7 +226,7 @@ public class ConnectorBinder extends IConnector.Stub {
                                 dnsException.getDescription(), dnsException.getCode()
                                         .getErrCodeString());
 
-                        Log.e(TAG, "openCoreService#iError = " + iError);
+                        Logger.log(TAG, "openCoreService#iError = " + iError);
 
                         exceptionHolder.setParcelableException(iError);
                     } else {
@@ -124,6 +252,11 @@ public class ConnectorBinder extends IConnector.Stub {
         // stackInstance.getContext().getConfig().getRegistrationName();
         String xuiName = imsStack.getContext().getConfig().getXDMConfig().getXuiName();
         UserInfo xdmUser = UserInfo.valueOf(xuiName);
+        if ("reguser".equals(xdmUser.getName())) {
+            Logger.log(TAG, "use reguser identity for XDMService");
+            xdmUser = imsStack.getContext().getRegistrationIdentity().getUserInfo();
+        }
+
         final ClientIdentity callingParty = ClientIdentityImpl.Creator.createFromUriAndUser(uri,
                 xdmUser);
 
@@ -149,12 +282,13 @@ public class ConnectorBinder extends IConnector.Stub {
                 .getDialogStorage(), imsStack.getPublishService(), imsStack.getSubscribeService(),
                 imsStack.getContext());
 
+        addPresenceServceInDeathRecipient(presenceService);
         return presenceService;
     }
 
     @Override
     public IIMService openIMService(String name) throws RemoteException {
-        Log.i(TAG, "openIMService# clientId = " + name);
+        Logger.log(TAG, "openIMService# clientId = " + name);
         final IIMService imService;
 
         //UserInfo regUserInfo = imsStack.getContext().getConfig().getRegistrationName();
@@ -173,7 +307,7 @@ public class ConnectorBinder extends IConnector.Stub {
 /*    private ICoreService createDebugCoreService(final String uri) {
         final boolean isUAS = uri.contains("uas");
         final int localPort = Integer.parseInt(uri.replaceAll(".*port=", ""));
-        Log.i(TAG, "createDebugCoreService#port = " + localPort + " uas = " + isUAS);
+        Logger.log(TAG, "createDebugCoreService#port = " + localPort + " uas = " + isUAS);
 
         final Configuration configSnapshot = new BaseConfiguration.ConfigurationBuilder(
                 imsStackHolder.get().getContext().getConfig()).buildLocalPort(localPort).build();
@@ -196,7 +330,7 @@ public class ConnectorBinder extends IConnector.Stub {
                 imsStackInstance.getContext().getTransportIO()
                         .startUAS(localPort, Protocol.TCP, IMSEntityType.SIP);
             } catch (UASInstantiationException e) {
-                Log.e(TAG, e.getMessage(), e);
+                Logger.log(TAG, e.getMessage(), e);
             }
         }
 
@@ -237,7 +371,8 @@ public class ConnectorBinder extends IConnector.Stub {
             RegisterService registerService = imsStack.getRegisterService();
             regResult = registerService.register(regTimeout);
         } catch (RuntimeException e) {
-            Log.e("ConnectorBinder", "createRealCoreService#e.message = " + e.getMessage(), e);
+            Logger.log("ConnectorBinder", "createRealCoreService#e.message = " + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
 

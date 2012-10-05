@@ -47,6 +47,7 @@ import android.util.Log;
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.IMSStack;
 import javax.microedition.ims.core.msrp.MSRPService;
@@ -148,7 +149,8 @@ public class IMServiceImpl extends IIMService.Stub {
             listenerHolder.getNotifier().advertisementMessageReceived(this, messageImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -161,7 +163,8 @@ public class IMServiceImpl extends IIMService.Stub {
             listenerHolder.getNotifier().systemMessageReceived(this, messageImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -175,7 +178,8 @@ public class IMServiceImpl extends IIMService.Stub {
             listenerHolder.getNotifier().deliveryReportsReceived(this, deliveryReportImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -188,7 +192,8 @@ public class IMServiceImpl extends IIMService.Stub {
             listenerHolder.getNotifier().serviceClosed(this, reasonInfoImpl);
         }
         catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 

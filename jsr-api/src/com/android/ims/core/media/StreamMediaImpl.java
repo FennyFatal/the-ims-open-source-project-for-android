@@ -44,6 +44,7 @@ package com.android.ims.core.media;
 import android.content.Context;
 import android.media.MediaRecorder;
 import android.net.rtp.AudioCodec;
+import android.os.Message;
 import android.util.Log;
 import com.android.ims.configuration.AppConfiguration;
 import com.android.ims.configuration.Codec;
@@ -56,11 +57,13 @@ import com.android.ims.util.Utils;
 
 import javax.microedition.ims.core.media.MediaException;
 import javax.microedition.ims.core.media.StreamMedia;
+import javax.microedition.ims.core.media.StreamMediaExt;
 import javax.microedition.ims.media.Player;
 import javax.microedition.ims.media.PlayerExt;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +72,7 @@ import java.util.Set;
  *
  * @author ext-akhomush
  */
-public class StreamMediaImpl extends MediaImpl implements StreamMedia {
+public class StreamMediaImpl extends MediaImpl implements StreamMediaExt {
     private final static String TAG = "StreamMediaImpl";
     public static final String PROTOCOL_RTP_AVP = "RTP/AVP";
     
@@ -90,6 +93,15 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
     private final /*static */Context mContext;
     private final DtmfPayload dtmfPayload;
 
+    private int rtpSessionId = 0;
+    private boolean mIsGips = false;
+    private boolean mIsAnswerCall = false;
+    private String mSprop;
+
+    private HashMap<Integer, String> uriMap = new HashMap<Integer, String>();
+    private HashMap<Integer, Integer> codecMap = new HashMap<Integer, Integer>();
+    private HashMap<Integer, Message> srtpMap = new HashMap<Integer, Message>();
+
     /**
      * Construct StreamMedia from local offer
      *
@@ -104,6 +116,10 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         this.dtmfPayload = dtmfPayload;
         setInitialDescriptors(direction, localAddress, config);
         setMediaInitiated(true);
+
+        // Generate new randon RTP session ID
+        rtpSessionId = MediaFactory.INSTANCE.getRandomRtpSessionId();
+        Log.i(TAG, "New StreamMediaImpl, the RTP session ID is " + rtpSessionId);
     }
 
     /**
@@ -126,7 +142,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         offeredDescriptor.setMedia(this);
         offeredDescriptor.setDirection(DirectionUtils.reverseDirection(offeredDescriptor.getDirection()));
         offeredDescriptor.setConnectionAddress(localAddress);
-        offeredDescriptor.setPort(Utils.generateRandomPortNumber());
+        offeredDescriptor.setPort(generateRandomPortNumber());
         
         mStreamType = StreamTypeUtils.convertToType(offeredDescriptor.getMediaType());
         if (mStreamType == STREAM_TYPE_AUDIO) {
@@ -136,6 +152,10 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         }
 
         setMediaDescriptors(new MediaDescriptorImpl[]{offeredDescriptor});
+
+        // Generate new randon RTP session ID
+        rtpSessionId = MediaFactory.INSTANCE.getRandomRtpSessionId();
+        Log.i(TAG, "New StreamMediaImpl, the RTP session ID is " + rtpSessionId);
     }
 
 	private void setInitialDescriptors(int direction, String localAddress,
@@ -174,7 +194,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
 
     private MediaDescriptorImpl createAudioDescriptor(int direction,
             String localAddress, AppConfiguration config) {
-        int localAudioPort = Utils.generateRandomPortNumber();
+        int localAudioPort = generateRandomPortNumber();
 
         MediaDescriptorImpl.Builder builder = new MediaDescriptorImpl.Builder()
                 .media(this)
@@ -204,7 +224,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
 
     private MediaDescriptorImpl createVideoDescriptor(
             int direction, String localAddress, AppConfiguration conf) {
-        int localVideoPort = Utils.generateRandomPortNumber();
+        int localVideoPort = generateRandomPortNumber();
 
         boolean forceSrtp = conf.isForceSrtp();
         MediaDescriptorImpl.Builder builder =  new MediaDescriptorImpl.Builder()
@@ -225,6 +245,15 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         
         addRtpMapToDescriptor(mediaDescriptor, configuration.getVideoCodecs());
         return mediaDescriptor;
+    }
+
+    private int generateRandomPortNumber() {
+        int port;
+        do {
+            port = Utils.generateRandomPortNumber();
+        } while (MediaFactory.INSTANCE.containRtpPort(port));
+        MediaFactory.INSTANCE.addRtpPort(port);
+        return port;
     }
 
 	private String obtainTransport(AppConfiguration conf) {
@@ -350,10 +379,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         this.mStreamType = type;
     }
 
-    /**
-     * @see MediaImpl#createMediaProposalBasedOnIncomingOffer(MediaDescriptorImpl)
-     */
-    
+    @Override
     protected MediaProposalImpl createMediaProposal() {
         return new StreamMediaProposalImpl(getLocalMediaDescriptors(),
                 getStreamType());
@@ -388,6 +414,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         Log.i(TAG, "createAndRealizeReceivingPlayer#started");
         PlayerExt player;
 
+
         try {
             {
                 if (type == STREAM_TYPE_AUDIO) {
@@ -400,7 +427,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
                             media, localDescriptor, null, MediaRecorder.VideoEncoder.H263, -1, remoteCryptoKey);
                 }
             }
-        } catch (MediaException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
             throw new IOException(e.getMessage());
         }
@@ -460,11 +487,11 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
                     player = new AndroidVoipPlayer(mContext, Player.PlayerType.PLAYER_SENDING,
                             media, localDescriptor, remoteDescriptor, AudioCodec.PCMU, -1, authKey, -1);
                 } else {
-                    player = new StagefrightPlayer(mContext, Player.PlayerType.PLAYER_SENDING,
+                    player = new StagefrightPlayer(mContext, Player.PlayerType.PLAYER_SENDING,                 
                             media, localDescriptor, remoteDescriptor, MediaRecorder.VideoEncoder.H263, -1, authKey);
                 }
             }
-        } catch (MediaException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
             throw new IOException(e.getMessage());
         }
@@ -494,10 +521,8 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         return socket;
     }
 */
-    /**
-     * @see MediaImpl#handleSupportedCodec()
-     */
-    
+
+    @Override
     public boolean handleSupportedCodec() {
         boolean isSupported = false;
 
@@ -570,10 +595,7 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
         return isValid;
     }
 
-    /**
-     * @see MediaImpl#notifyPropertiesChanged()
-     */
-    
+    @Override
     protected void notifyPropertiesChanged() {
         Log.i(TAG, "notifyPropertiesChanged#");
         if (!getExists()) {
@@ -636,33 +658,28 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
 		return remoteCryptoParam;
 	}
 
-    /**
-     * @see MediaImpl#prepareMedia()
-     */
-    
+    @Override
     public void prepareMedia() throws IOException {
         Log.i(TAG, "prepareMedia#");
         setExists(true);
     }
 
-    /**
-     * @see MediaImpl#processMedia()
-     */
-    
+    @Override
     public void processMedia() throws IOException {
         Log.i(TAG, "processMedia#");
         setExists(true);
     }
 
-    /**
-     * @see MediaImpl#cleanMedia()
-     */
-    
+    @Override
     public void cleanMedia() {
         Log.i(TAG, "cleanMedia");
         setExists(false);
         try {
             closePlayers();
+            for (MediaDescriptorImpl mediadsp : getLocalMediaDescriptors()) {
+                MediaFactory.INSTANCE.removeRtpPort(mediadsp.getPort());
+            }
+            MediaFactory.INSTANCE.removeRtpSessionId(rtpSessionId);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -677,4 +694,206 @@ public class StreamMediaImpl extends MediaImpl implements StreamMedia {
             receivingPlayer.close();
         }
     }
+
+    public String getUri(boolean receiver) {
+        return receiver ? getRecvUri() : getSendUri();
+    }
+
+    public Message getAuthkey(boolean receiver) {
+        return receiver ? getRecvAuthkey() : getSendAuthkey();
+    }
+
+    public int getCodec(boolean receiver) {
+        return receiver ? getRecvCodec() : getSendCodec();
+    }
+
+    private String getRecvUri() {
+        if (!uriMap.containsKey(StreamMediaExt.PLAYER_TYPE_RECV))
+            parseRecvSdp();
+        return uriMap.get(StreamMediaExt.PLAYER_TYPE_RECV);
+    }
+
+    private String getSendUri() {
+        if (!uriMap.containsKey(StreamMediaExt.PLAYER_TYPE_SEND))
+            parseSendSdp();
+        return uriMap.get(StreamMediaExt.PLAYER_TYPE_SEND);
+    }
+
+    private Message getRecvAuthkey() {
+        if (!srtpMap.containsKey(StreamMediaExt.PLAYER_TYPE_RECV))
+            parseRecvSdp();
+        return srtpMap.get(StreamMediaExt.PLAYER_TYPE_RECV);
+    }
+
+    private Message getSendAuthkey() {
+        if (!srtpMap.containsKey(StreamMediaExt.PLAYER_TYPE_SEND))
+            parseSendSdp();
+        return srtpMap.get(StreamMediaExt.PLAYER_TYPE_SEND);
+    }
+
+    private int getRecvCodec() {
+        if (!codecMap.containsKey(StreamMediaExt.PLAYER_TYPE_RECV))
+            parseRecvSdp();
+        return codecMap.get(StreamMediaExt.PLAYER_TYPE_RECV);
+    }
+
+    private int getSendCodec() {
+        if (!codecMap.containsKey(StreamMediaExt.PLAYER_TYPE_SEND))
+            parseSendSdp();
+        return codecMap.get(StreamMediaExt.PLAYER_TYPE_SEND);
+    }
+
+    private void parseRecvSdp() {
+        MediaDescriptorImpl descriptor = getLocalMediaDescriptor(0);
+        CryptoParam remoteCryptoParam = extractRemoteCryptoParam();
+        String remoteCryptoKey = remoteCryptoParam != null? remoteCryptoParam.getKey(): null;
+
+
+        Message msg = Message.obtain();
+        msg.arg1 = rtpSessionId;
+        msg.obj = remoteCryptoKey;
+        srtpMap.put(StreamMediaExt.PLAYER_TYPE_RECV, msg);
+
+        int audioCodec = MediaRecorder.AudioEncoder.DEFAULT;
+        int videoCodec = MediaRecorder.VideoEncoder.DEFAULT;
+        int rtpPtype = -1;
+
+        final String localAddress = descriptor.getConnectionAddress();
+        final int localPort = descriptor.getPort();
+        final int direction = descriptor.getDirection();
+
+        /* Decide codec and RTP payload type */
+        String rtpinfos[] = descriptor.getAttributes();
+        String rtpinfo = rtpinfos[0];
+        for (String info : rtpinfos) {
+            if (info.contains("rtpmap")) {
+                rtpinfo = info;
+                break;
+            }
+        }
+
+        /* Get RTP information */
+        if(rtpinfo.indexOf("rtpmap:") >= 0) {
+            rtpPtype = new Integer(rtpinfo.substring(rtpinfo.indexOf(":")+1, rtpinfo.indexOf(" "))).intValue();
+            Log.i(TAG, "The payload of rtp stream is " + rtpPtype );
+        } else {
+            Log.e(TAG, "Can't get rtpmap information");
+        }
+
+        /* Get Codec */
+        if (mStreamType == STREAM_TYPE_AUDIO) {
+            /* Get Audio codec information */
+            if( rtpinfo.contains("PCMU") ) {
+                /* AUDIO Codec is PCMU */
+                audioCodec = MediaRecorder.AudioEncoder.DEFAULT;
+            } else if( rtpinfo.contains("AMR-WB") ) {
+                /* AUDIO Codec is AMR-WB */
+                audioCodec = MediaRecorder.AudioEncoder.AMR_WB;
+            } else if( rtpinfo.contains("AMR") ) {
+                /* AUDIO Codec is AMR-NB */
+                audioCodec = MediaRecorder.AudioEncoder.AMR_NB;
+            } else {
+                /* Unsupport case */
+                Log.e(TAG, "The audio code of receiver RTP stream is not support:"+rtpinfo);
+            }
+            codecMap.put(StreamMediaExt.PLAYER_TYPE_RECV, audioCodec);
+
+            uriMap.put(StreamMediaExt.PLAYER_TYPE_RECV,
+                        new String(String.format("rtp://%s:%d?session=%d&mode=%d&ptype=%d&adec=%d&vdec=%d",
+                            localAddress, localPort, rtpSessionId, direction-1, rtpPtype,
+                            audioCodec, videoCodec)));
+
+        } else {
+            /* Get Video codec information */
+            if (rtpinfo.contains("H264")) {
+                /*VIDEO Codec is H264*/
+                videoCodec = MediaRecorder.VideoEncoder.H264;
+            } else {
+                /* Unsupport case */
+                Log.e(TAG, "The receiver video codec of RTP stream is not support:"+rtpinfo);
+            }
+            codecMap.put(StreamMediaExt.PLAYER_TYPE_RECV, videoCodec);
+
+            uriMap.put(StreamMediaExt.PLAYER_TYPE_RECV,
+                        new String(String.format("rtp://%s:%d?session=%d&mode=%d&ptype=%d&adec=%d&vdec=%d&vdec_f=%d&sprop=%s",
+                            localAddress, localPort, rtpSessionId, direction-1, rtpPtype,
+                            audioCodec, videoCodec, mIsGips ? 1 : 0, mSprop)));
+        }
+    }
+
+    private void parseSendSdp() {
+        MediaDescriptorImpl remoteDescriptor = getRemoteMediaDescriptor(0);
+        MediaDescriptorImpl localDescriptor = getLocalMediaDescriptor(0);
+
+        Message msg = Message.obtain();
+        msg.arg1 = rtpSessionId;
+        msg.obj = extractCryptoKey(localDescriptor);
+        srtpMap.put(StreamMediaExt.PLAYER_TYPE_SEND, msg);
+
+        int audioCodec = MediaRecorder.AudioEncoder.DEFAULT;
+        int videoCodec = MediaRecorder.VideoEncoder.DEFAULT;
+        int rtpPtype = -1;
+
+        /* Try to get RTP related information */
+        MediaDescriptorImpl descriptor = remoteDescriptor;
+        final String remoteAddress = descriptor.getConnectionAddress();
+        final int remotePort = descriptor.getPort();
+        final int direction = descriptor.getDirection();
+
+        /* Decide codec and RTP payload type */
+        String rtpinfos[] = descriptor.getAttributes();
+        String rtpinfo = rtpinfos[0];
+        for (String info : rtpinfos) {
+            if (info.contains("rtpmap")) {
+                rtpinfo = info;
+                break;
+            }
+        }
+
+        /* Get RTP information */
+        if( rtpinfo.indexOf("rtpmap:") >= 0 ) {
+            rtpPtype = new Integer(rtpinfo.substring(rtpinfo.indexOf(":")+1, rtpinfo.indexOf(" "))).intValue();
+        } else {
+            Log.e(TAG, "Can't get rtpmap information");
+        }
+
+        if (mStreamType == STREAM_TYPE_AUDIO) {
+            /* Get Audio codec information */
+            if( rtpinfo.contains("PCMU") ) {
+                /* AUDIO Codec is PCMU */
+                audioCodec = MediaRecorder.AudioEncoder.DEFAULT;
+            } else if( rtpinfo.contains("AMR-WB") ) {
+                /* AUDIO Codec is AMR-WB */
+                audioCodec = MediaRecorder.AudioEncoder.AMR_WB;
+            } else if( rtpinfo.contains("AMR") ) {
+                /* AUDIO Codec is AMR-NB */
+                audioCodec = MediaRecorder.AudioEncoder.AMR_NB;
+            } else {
+                /* Unsupport case */
+                Log.e(TAG, "The audio code of sender RTP stream is not support:"+rtpinfo);
+            }
+            codecMap.put(StreamMediaExt.PLAYER_TYPE_SEND, audioCodec);
+        } else {
+            /* Get Video codec information */
+            if (rtpinfo.contains("H264")) {
+                /*VIDEO Codec is H264*/
+                videoCodec = MediaRecorder.VideoEncoder.H264;
+            } else {
+                /* Unsupport case */
+                Log.e(TAG, "The sender video codec of RTP stream is not support:"+rtpinfo);
+            }
+            codecMap.put(StreamMediaExt.PLAYER_TYPE_SEND, videoCodec);
+        }
+
+        uriMap.put(StreamMediaExt.PLAYER_TYPE_SEND,
+                    new String(String.format("rtp://%s:%d?session=%d&mode=%d&ptype=%d&echo_cancellation=%d",
+                        remoteAddress, remotePort, rtpSessionId, direction-1, rtpPtype, 1)));
+    }
+
+    private void clearMaps() {
+        srtpMap.clear();
+        codecMap.clear();
+        uriMap.clear();
+    }
+
 }

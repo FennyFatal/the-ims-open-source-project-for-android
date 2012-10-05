@@ -42,14 +42,12 @@
 package javax.microedition.ims.presence;
 
 /**
- * A Presentity is an entity that has presence information associated with it. A
- * Presentity is most commonly a reference for a person, although it may
- * represent a role such as "help desk" or a resource such as
- * "conference room #27". A Presentity is identified by a user identity and an
- * optional display name that is a human-readable string that describes the
- * Presentity. In this enabler the Presentity is used when receiving presence
- * information in the WatcherListener interface.
- * 
+ * A Presentity is an entity that has presence information associated with it. 
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation
+ *
  * @see PresenceDocument
  * 
  * @author Andrei Khomushko

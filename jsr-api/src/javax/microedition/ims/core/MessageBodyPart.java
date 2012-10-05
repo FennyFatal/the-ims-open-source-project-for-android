@@ -43,29 +43,12 @@ package javax.microedition.ims.core;
 
 /**
  * A <code>MessageBodyPart</code> can contain different kinds of content, for
- * example text, an image or an audio clip.
- * </p><p>
- * <p/>
- * There are two main uses for a <code>MessageBodyPart</code>:
- * </p><ul>
- * <li>A <code>MessageBodyPart</code> can be created and attached to the next
- * client request <code>Message</code> by calling
- * <code>createBodyPart</code> on a <code>Message</code>.</li>
- * <p/>
+ * example text, an image or an audio clip. </p>
  * <p>
- * </p><li>A <code>MessageBodyPart</code> can be extracted from a previously sent
- * or received <code>Message</code> by calling
- * <code>getBodyParts</code> on a <code>Message</code>.</li>
- * </ul>
- * <p/>
- * See [RFC2045, 2046] for more information about body parts. [RFC2045] also
- * describes some possible headers to set with the <code>setHeader</code>
- * method.
- * <p>
- * <p/>
- * </p><p>
- * </p>
  *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ * 
  * @see ServiceMethod
  * @see Message
  */

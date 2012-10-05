@@ -42,11 +42,11 @@
 package javax.microedition.ims.xdm;
 
 /**
- * This class represents an element used in a PresenceContentFilter object to
- * provide permissions for an unknown element not defined by [OMA_PRES_DDS]. It
- * consists of a name, a namespace, and an indicator of true or false defining
- * whether access to the element is provided or not.
+ * This class represents an element used in a PresenceContentFilter object.
  * 
+ * A list entry consists of either a single user URI or a reference to an
+ * already existing URI list. Each entry can provide an optional display name.
+ *
  * @author Andrei Khomushko
  * 
  */

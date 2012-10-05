@@ -220,11 +220,14 @@ public class ConnectionState {
                 setListener(null);
                 connectionStateListener = null;
             }
+            connectionState.close();
             interfaceHolder.unbindFromService(context, false);
-            context = null;
-            INSTANCE = null;
         } catch (ServiceConnectionException e) {
             Log.e(TAG, "Cannot unbind from connection state service");
+        } catch (RemoteException e) {
+            Log.e(TAG, "connection state service close FAILED", e);
         }
+        context = null;
+        INSTANCE = null;
     }
 }

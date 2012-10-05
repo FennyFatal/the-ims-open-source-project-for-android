@@ -45,30 +45,18 @@ import javax.microedition.ims.ImsException;
 import java.io.IOException;
 
 /**
- * IMSession is a superinterface for communication with other IM users. 
- * Through the subinterfaces Conference and Chat it is possible to send 
- * messages and files to some or all of the participants of the session. 
- * In the same way, the IMSessionListener interface is a collection of 
- * the common features of the ConferenceListener and ChatListener 
- * subinterfaces. This involves receiving messages and files from 
- * the other participants of the session.
- * <p/>
- * A conference can be created as an ad hoc session by sending an 
- * invitation to one or more individual users. A conference with a 
- * predefined IM group can be joined through the URI of the predefined 
- * group. This is represented by the Conference subinterface. A special 
- * case of a conference is a chat (One-to-One session) with only two 
- * participants and no conference server involved. This is represented 
- * by the Chat subinterface.
+ * IMSession is a superinterface for communication with other IM users.
+ *
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface IMSession {
     
     /**
      * Cancels an entire file transfer or the transfer of a specific file.
      * <p/>
-     * Note: Individual files can only be canceled if the specific file 
-     * is currently being transferred, while an entire file transfer can 
-     * be canceled as soon as the file transfer request has been sent or received.
      * 
      * @param identifier - the request identifier of the file transfer or the file identifier of the specific file
      * 
@@ -107,17 +95,7 @@ public interface IMSession {
     
     /**
      * Sends a message to all participants to indicate that the user is 
-     * composing a message. The timeout argument specifies the interval 
-     * after which the recipients will assume that the user has stopped 
-     * composing. Recommended value is at least 60 seconds.
-     * <p/>
-     * When the message is sent, the recipients' timers are automatically 
-     * canceled. If the message has not been sent within the timeout interval, 
-     * this method should be called again to refresh the recipients' timers.
-     * <p/>
-     * If the user stops composing for a significant period of time without 
-     * sending the message, this method should be called with the timeout 
-     * set to 0 to notify all participants that the user has stopped composing.
+     * composing a message. 
      * 
      * @param timeout - the interval in seconds after which the recipients will assume that the user has stopped composing
      * 
@@ -128,11 +106,7 @@ public interface IMSession {
     void sendComposingIndicator(int timeout) throws ImsException;
     
     /**
-     * Sends files to all participants in the session. Each file is described 
-     * using a FileInfo. The recipients will have the possibility to accept or 
-     * reject the file push request.
-     * <p/>
-     * The actual file transfer will not start until this method returns. 
+     * Sends files to all participants in the session. 
      * 
      * @param files - an array of FileInfo of the files to send
      * @param deliveryReport - true if a delivery report should be requested for each file, false otherwise

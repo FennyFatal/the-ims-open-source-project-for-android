@@ -46,6 +46,8 @@ import javax.microedition.ims.ReasonInfo;
 /**
  * A listener type for receiving notifications of when a file is sent or received. 
  * The transfer progress of files can also be observed. 
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
  */
 public interface FileTransferManagerListener {
     

@@ -210,7 +210,7 @@ public class MediaDescriptorImpl implements MediaDescriptor {
         Log.d(TAG, "*** addAttribute() media.getState() = " + media.getState());
 
         if (media.getState() == Media.STATE_ACTIVE) {
-            ((MediaImpl) media).addAttributeToActiveMedia(this, attribute);
+            ((MediaExt) media).addAttributeToActiveMedia(this, attribute);
         } else {
             addAttributeInternal(attribute);
         }
@@ -685,6 +685,11 @@ public class MediaDescriptorImpl implements MediaDescriptor {
 		} else if (!transport.equals(other.transport))
 			return false;
 		return true;
+	}
+
+	public void setCryptoParam(CryptoParam... cryptoParams) {
+	    this.cryptoParams.clear();
+	    addCryptoParam(cryptoParams);
 	}
 	
 	public void addCryptoParam(CryptoParam... cryptoParams) {

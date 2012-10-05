@@ -84,7 +84,7 @@ public class ConfigurationBinder extends IConfiguration.Stub {
     public IRegistry getRegistry(String appId) throws RemoteException {
         final IRegistry retValue;
 
-        CommonRegistry commonRegistry = stackAppRegistry.getCommonRegistry();
+        CommonRegistry commonRegistry = stackAppRegistry.getCommonRegistry(appId);
         String[][] commonProps = RegistrySerializer
                 .serializeCommonRegistry(commonRegistry);
 
@@ -112,7 +112,7 @@ public class ConfigurationBinder extends IConfiguration.Stub {
     public boolean removeRegistry(String appId) throws RemoteException {
         final boolean retValue;
 
-        retValue = stackAppRegistry.dropClientData(appId);
+        retValue = stackAppRegistry.dropClientData(appId) && stackAppRegistry.dropCommonData(appId);
 
         return retValue;
     }
@@ -125,7 +125,7 @@ public class ConfigurationBinder extends IConfiguration.Stub {
         final RegistryParser registryParser = new RegistryParser();
 
         final ClientRegistryBuilder clientRegistryBuilder = new ClientRegistryBuilder(appId);
-        final CommonRegistryBuilder commonRegistryBuilder = new CommonRegistryBuilder();
+        final CommonRegistryBuilder commonRegistryBuilder = new CommonRegistryBuilder(appId);
 
         registryParser.addRegistryContentHandler(new ClientRegistryContentHandler(clientRegistryBuilder));
         registryParser.addRegistryContentHandler(new CommonRegistryContentHandler(commonRegistryBuilder));
@@ -159,6 +159,18 @@ public class ConfigurationBinder extends IConfiguration.Stub {
                 serviceDefault.updateLocationInfo(
                         new GsmLocationInfo(locationInfo.getCid(), locationInfo.getLac(), mccMnc, networkSubType)
                 );
+            }
+        }
+    }
+
+    public void removeLocation()
+            throws RemoteException {
+        if (stackContext instanceof DefaultStackContext) {
+            DefaultStackContext defaultStackContext = (DefaultStackContext) stackContext;
+            final GsmLocationService service = defaultStackContext.getEnvironment().getGsmLocationService();
+
+            if (service instanceof GsmLocationServiceDefaultImpl) {
+                ((GsmLocationServiceDefaultImpl) service).updateLocationInfo(null);
             }
         }
     }

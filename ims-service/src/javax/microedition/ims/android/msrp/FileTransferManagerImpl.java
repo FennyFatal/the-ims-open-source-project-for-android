@@ -47,6 +47,7 @@ import android.util.Log;
 import javax.microedition.ims.android.IReasonInfo;
 import javax.microedition.ims.android.util.RemoteListenerHolder;
 import javax.microedition.ims.common.IMSMessage;
+import javax.microedition.ims.common.Logger;
 import javax.microedition.ims.common.util.SIPUtil;
 import javax.microedition.ims.core.ClientIdentity;
 import javax.microedition.ims.core.IMSStack;
@@ -148,57 +149,57 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
 
 
         public void onMSRPSessionStarted() {
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#started");
             try {
                 msrpSession.sendFile(fileDescriptor);
             } catch (IMSStackException e) {
-                Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#failed to send " + fileDescriptor);
+                Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#failed to send " + fileDescriptor);
             }
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionStarted#finished");
         }
 
 
         public void onMSRPSessionStartFailed(int reasonType, String reasonPhrase, int statusCode) {
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionStartFailed#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionStartFailed#started");
 
             IReasonInfo reasonInfoImpl = new IReasonInfo(reasonPhrase, reasonType, statusCode);
             notifyFileSendFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
 
             unSubscribe();
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionStartFailed#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionStartFailed#finished");
         }
 
         public void onMSRPSessionFinished() {
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionFinished#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionFinished#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo("777", IReasonInfo.REASONTYPE_RESPONSE, 777);
             notifyFileSendFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
             unSubscribe();
-            Log.i(TAG, "FileSendingListenersImpl.onMSRPSessionFinished#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onMSRPSessionFinished#finished");
         }
 
         public void onFileSent(final FileDescriptor fileDescriptor) {
-            Log.i(TAG, "FileSendingListenersImpl.onFileSent#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onFileSent#started");
             notifyFileSent(requestId, fileDescriptor.getFileId());
             unSubscribe();
 
             msrpSession.close();
-            Log.i(TAG, "FileSendingListenersImpl.onFileSent#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onFileSent#finished");
         }
 
         public void onFileSendFailed(FileDescriptor fileDescriptor, int failCode, String failReasonPhrase) {
-            Log.i(TAG, "FileSendingListenersImpl.onFileSendFailed#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onFileSendFailed#started");
             IReasonInfo reasonInfoImpl = new IReasonInfo(failReasonPhrase, 0, failCode);
             notifyFileSendFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
             unSubscribe();
 
             msrpSession.close();
-            Log.i(TAG, "FileSendingListenersImpl.onFileSendFailed#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onFileSendFailed#finished");
         }
 
         public void onBytesTransfered(FileDescriptor fileDescriptor, long bytesTransferred, long bytesTotal) {
-            Log.i(TAG, "FileSendingListenersImpl.onBytesTransfered#started");
+            Logger.log(TAG, "FileSendingListenersImpl.onBytesTransfered#started");
             notifyTransferProgress(requestId, fileDescriptor.getFileId(), bytesTransferred, bytesTotal);
-            Log.i(TAG, "FileSendingListenersImpl.onBytesTransfered#finished");
+            Logger.log(TAG, "FileSendingListenersImpl.onBytesTransfered#finished");
         }
 
 
@@ -224,7 +225,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
       */
     private class MSRPFilePushRequestListener implements IncomingMSRPFilePushInviteListener {
         public void onIncomingInvite(IncomingMSRPFilePushInviteEvent event) {
-            Log.i(TAG, "MSRPFilePushRequestListener.onIncomingInvite#started");
+            Logger.log(TAG, "MSRPFilePushRequestListener.onIncomingInvite#started");
 
             MSRPSession msrpSession = event.getMsrpSession();
             List<FileDescriptor> fileDescriptors = event.getFileDescriptors();
@@ -240,7 +241,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
 
 
             notifyIncomingFilePushRequest(event.getAcceptable(), msrpSession.getMsrpDialog(), requestId, fileDescriptors);
-            Log.i(TAG, "MSRPFilePushRequestListener.onIncomingInvite#finished");
+            Logger.log(TAG, "MSRPFilePushRequestListener.onIncomingInvite#finished");
         }
     }
 
@@ -263,7 +264,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                 final FileDescriptor fileDescriptor,
                 final String filePath) {
 
-            Log.i(TAG, "MSRPFileReceivingListeners.onFileReceived#started");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onFileReceived#started");
 
             notifyFileReceived(requestId, fileDescriptor.getFileId(), filePath);
 
@@ -271,7 +272,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
             if (fileDescriptors.isEmpty()) {
                 unSubscribe();
             }
-            Log.i(TAG, "MSRPFileReceivingListeners.onFileReceived#finished");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onFileReceived#finished");
         }
 
         public void onFileReceiveFailed(
@@ -280,7 +281,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                 final String failReasonPhrase,
                 final boolean localy) {
 
-            Log.i(TAG, "MSRPFileReceivingListeners.onFileReceiveFailed#started");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onFileReceiveFailed#started");
 
             IReasonInfo reasonInfoImpl = new IReasonInfo(failReasonPhrase, 0, failCode);
             notifyFileReceiveFailed(requestId, fileDescriptor.getFileId(), reasonInfoImpl);
@@ -293,7 +294,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
             if (localy) {
                 msrpSession.close();
             }
-            Log.i(TAG, "MSRPFileReceivingListeners.onFileReceiveFailed#finished");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onFileReceiveFailed#finished");
         }
 
         public void onBytesReceived(
@@ -302,10 +303,10 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                 final long bytesTotal,
                 final byte[] data) {
 
-            Log.i(TAG, "MSRPFileReceivingListeners.onBytesReceived#started");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onBytesReceived#started");
 
             notifyTransferProgress(requestId, fileDescriptor.getFileId(), bytesTransferred, bytesTotal);
-            Log.i(TAG, "MSRPFileReceivingListeners.onBytesReceived#finished");
+            Logger.log(TAG, "MSRPFileReceivingListeners.onBytesReceived#finished");
         }
 
         private void unSubscribe() {
@@ -330,7 +331,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
 
     public String sendFiles(String sender, String[] recipients, String subject,
                             IFileInfo[] files, boolean deliveryReport) throws RemoteException {
-        Log.i(TAG, "sendFiles#started");
+        Logger.log(TAG, "sendFiles#started");
 
         String requestId = MsrpUtils.generateFileRequestId();
 
@@ -338,7 +339,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
         for (int i = 0; i < files.length; i++) {
             fileDescrs[i] = IFileInfoConverter.convert(files[i]);
         }
-        Log.i(TAG, "sendFiles#converted");
+        Logger.log(TAG, "sendFiles#converted");
 
         for (String recipient : recipients) {
             for (int i = 0; i < fileDescrs.length; i++) {
@@ -365,13 +366,14 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                     //add records to file repository and to file transfer request repository
                     filesInProgressRegistry.addRecords(requestId, fileDescrs[i], msrpSession);
 
-                    Log.i(TAG, "sendFiles#sent file " + (i + 1) + "/" + fileDescrs.length + " to " + recipient);
+                    Logger.log(TAG, "sendFiles#sent file " + (i + 1) + "/" + fileDescrs.length + " to " + recipient);
                 } catch (Throwable e) {
-                    Log.e(TAG, e.getMessage(), e);
+                    Logger.log(TAG, e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
-        Log.i(TAG, "sendFiles#finished");
+        Logger.log(TAG, "sendFiles#finished");
         return requestId;
     }
 
@@ -382,7 +384,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
     }
 
     public void cancel(String identifier) throws RemoteException {
-        Log.i(TAG, "cancel#started");
+        Logger.log(TAG, "cancel#started");
         if (filesInProgressRegistry.isRequestDefined(identifier)) {
 
             Set<String> fileIds = filesInProgressRegistry.getRequestInfo(identifier);
@@ -403,7 +405,7 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                 fileTransferEnv.getMsrpSession().cancelFileReceiving(fileTransferEnv.getFileDescriptor());
             }
         }
-        Log.i(TAG, "cancel#finished");
+        Logger.log(TAG, "cancel#finished");
     }
 
     public void addListener(IFileTransferManagerListener listener)
@@ -430,43 +432,47 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
     }
 
     private void notifyFileSent(String requestId, String fileId) {
-        Log.i(TAG, "notifyFileSent#started");
+        Logger.log(TAG, "notifyFileSent#started");
         try {
             listenerHolder.getNotifier().fileSent(requestId, fileId);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileSent#finished");
+        Logger.log(TAG, "notifyFileSent#finished");
     }
 
     private void notifyFileSendFailed(String requestId, String fileId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileSendFailed#started");
+        Logger.log(TAG, "notifyFileSendFailed#started");
         try {
             listenerHolder.getNotifier().fileSendFailed(requestId, fileId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileSendFailed#finished");
+        Logger.log(TAG, "notifyFileSendFailed#finished");
     }
 
     private void notifyFileReceived(String requestId, String fileId, String filePath) {
-        Log.i(TAG, "notifyFileReceived#started");
+        Logger.log(TAG, "notifyFileReceived#started");
         try {
             listenerHolder.getNotifier().fileReceived(requestId, fileId, filePath);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileReceived#finished");
+        Logger.log(TAG, "notifyFileReceived#finished");
     }
 
     private void notifyFileReceiveFailed(String requestId, String fileId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileReceiveFailed#started");
+        Logger.log(TAG, "notifyFileReceiveFailed#started");
         try {
             listenerHolder.getNotifier().fileReceiveFailed(requestId, fileId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileReceiveFailed#finished");
+        Logger.log(TAG, "notifyFileReceiveFailed#finished");
     }
 
     private void notifyIncomingFilePushRequest(final Acceptable acceptable, final Dialog dialog,
@@ -488,51 +494,55 @@ public class FileTransferManagerImpl extends IFileTransferManager.Stub {
                 dialog, acceptable,
                 requestId, null, null, null, fileInfos);
 
-        Log.i(TAG, "notifyIncomingFilePushRequest#started");
+        Logger.log(TAG, "notifyIncomingFilePushRequest#started");
         try {
             listenerHolder.getNotifier().incomingFilePushRequest(filePushRequestImpl);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyIncomingFilePushRequest#finished");
+        Logger.log(TAG, "notifyIncomingFilePushRequest#finished");
     }
 
     /*
       * TODO call this method
       */
     private void notifyIncomingFilePullRequest(IFilePullRequest filePullRequest) {
-        Log.i(TAG, "notifyIncomingFilePullRequest#started");
+        Logger.log(TAG, "notifyIncomingFilePullRequest#started");
         try {
             listenerHolder.getNotifier().incomingFilePullRequest(filePullRequest);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyIncomingFilePullRequest#finished");
+        Logger.log(TAG, "notifyIncomingFilePullRequest#finished");
     }
 
     private void notifyTransferProgress(String requestId, String fileId, long bytesTransferred, long bytesTotal) {
-        Log.i(TAG, "notifyTransferProgress#started");
+        Logger.log(TAG, "notifyTransferProgress#started");
         Date timeStart = new Date();
         try {
             listenerHolder.getNotifier().transferProgress(requestId, fileId, bytesTransferred, bytesTotal);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
         Date timeStop = new Date();
         long timeDelta = timeStop.getTime() - timeStart.getTime();
-        Log.i(TAG, "notifyTransferProgress#finished   MILLISECONDS=" + timeDelta);
+        Logger.log(TAG, "notifyTransferProgress#finished   MILLISECONDS=" + timeDelta);
     }
 
     /*
       * TODO call this method
       */
     private void notifyFileTransferFailed(String requestId, IReasonInfo reason) {
-        Log.i(TAG, "notifyFileTransferFailed#started");
+        Logger.log(TAG, "notifyFileTransferFailed#started");
         try {
             listenerHolder.getNotifier().fileTransferFailed(requestId, reason);
         } catch (RemoteException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Logger.log(TAG, e.getMessage());
+            e.printStackTrace();
         }
-        Log.i(TAG, "notifyFileTransferFailed#finished");
+        Logger.log(TAG, "notifyFileTransferFailed#finished");
     }
 }

@@ -45,45 +45,11 @@ import javax.microedition.ims.ImsException;
 
 /**
  * The Chat interface can be used to to send messages and files to another 
- * IM user. Through the ChatListener interface, messages and files from 
- * the other participant can be received.
- * <p/>
- * A chat is a special case of a conference with only two participants 
- * (One-to-One session) and no conference server involved. However, the 
- * chat can be extended to a conference by inviting additional participants. 
- * If it is anticipated that new participants will be added, it is recommended 
- * to send a conference invitation instead of a chat invitation.
- * <p/>
- * Chat invitations are sent using the ConferenceManager interface. Incoming 
- * chat invitations are received through the ConferenceManagerListener interface.
- * <p/>
- * Examples
- * <p/>
- * This example shows how Alice sends a message to the other participant 
- * in the chat. The chat has already been set up.
- * <p>
- * <pre>
- *  Message message = new Message();
- *  ContentPart contentPart = new ContentPart("Hi, I'm Alice!".getBytes(),
- *                               "text/plain");
- *  message.addContentPart(contentPart);                             
- *  chat.sendMessage(message, false);
- *  
- *  void messageSent(IMSession session, String messageId) {
- *    // this call to the ChatListener indicates that the message was successfully sent
- *  }
- * </pre>
- * <p/>
- * This example shows how Alice extends the chat to a conference by inviting 
- * Charlotte to the chat. The chat has already been set up.
- * <p/>
- * <pre>
- *  chat.extendToConference(new String[]{"sip:charlotte@example.org"});
- *  
- *  void chatExtended(Chat chat, Conference conference) {
- *    // this call to the ChatListener indicates that the chat was extended
- *  }
- * </pre>
+ * IM user.
+ *
+ * </p><p>For detailed implementation guidelines and for complete API docs,
+ * please refer to JSR-281 and JSR-235 documentation.
+ *
  */
 public interface Chat extends IMSession {
 

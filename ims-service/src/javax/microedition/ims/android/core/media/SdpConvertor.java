@@ -81,7 +81,7 @@ public class SdpConvertor {
                 .encryptionKey(
                         m.getEncryptionKeys() != null ? m.getEncryptionKeys().getValue() : null)
                 .attributes(convertAttributes(m.getAttributes()))
-                .direction(m.getDirection().getValue())
+                .direction(m.getDirection(currentSdpMessage).getValue())
                 .cryptoParams(convertCryptoParams(m.getCryptoParams())).build();
         Logger.log("createIMedia", "end");
         return ret;
