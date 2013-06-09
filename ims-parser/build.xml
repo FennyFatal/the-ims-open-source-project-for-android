@@ -98,6 +98,7 @@
 			classpathref="android.antlibs.ragel" />
 
 	<target name="-compile-ragel">
+		<echo>${external.libs.absolute.dir}</echo>
 		<echo>R A G E L</echo>
 		<mkdir dir="src2" />
 		<ragel executable="${ragel}"

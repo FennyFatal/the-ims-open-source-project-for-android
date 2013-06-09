@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ims-open-source" default="all">
+<property file="build.properties" />
 
     <target name="all">
         <antcall target="enterDirs">
@@ -20,9 +21,11 @@
     </target>
 
     <target name="enterDirs">
+<!--
         <antcall target="${action}">
             <param name="dir" value="ims-common"/>
         </antcall>
+-->
         <antcall target="${action}">
             <param name="dir" value="ims-parser"/>
         </antcall>

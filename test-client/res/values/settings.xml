@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="def_app_id" type="id">Test client</item>
-	<item name="def_registration_name" type="id">sip:dummy@iptel.org</item>
-	<item name="def_refer_to_party_name" type="id">sip:android1007@iptel.org</item>
+    <item name="def_app_id" type="id">Fenny IMS Test client</item>
+	<item name="def_registration_name" type="id">sip:user@msg.pc.t-mobile.com</item>
+	<item name="def_refer_to_party_name" type="id">sip:user@msg.pc.t-mobile.com</item>
 	<item name="def_page_message_text" type="id">Test page message</item>
 	
     <string-array name="conference_server_list">
@@ -10,13 +10,13 @@
     </string-array>
     
     <string-array name="remote_parties">
-    	<item>sip:dummy@iptel.org</item>
-    	<item>sip:dummy@iptel.org</item>
+    	<item>sip:dummy@msg.pc.t-mobile.com</item>
+    	<item>sip:dummy@msg.pc.t-mobile.com</item>
     </string-array>
     
     <item name="cont_doc_name" type="id">phbk</item>
     <item name="cont_list_name" type="id">phbk</item>
-    <item name="cont_target_uri" type="id">sip:1234567@dummy.com;list=phbk</item>
+    <item name="cont_target_uri" type="id">sip:user@msg.pc.t-mobile.com;list=phbk</item>
     
 	
 </resources>

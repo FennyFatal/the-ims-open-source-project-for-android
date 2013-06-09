@@ -42,26 +42,26 @@
 
 <resources>
 	<!-- string name="def_proxy_host">10.176.9.130</string -->
-	<string name="def_proxy_host">sip.iptel.org</string>
+	<string name="def_proxy_host">sba.sipgeo.t-mobile.com</string>
 
-	<string name="def_proxy_port">5060</string>
+	<string name="def_proxy_port">5061</string>
 
-	<string name="def_registrar_host">iptel.org</string>
-	<string name="def_registrar_port">5060</string>
+	<string name="def_registrar_host">msg.pc.t-mobile.com</string>
+	<string name="def_registrar_port">5061</string>
 	<string name="def_registrar_user_name_schema">sip</string>
-	<string name="def_registrar_user_name">dummy</string>
-	<string name="def_registrar_user_name_domain" >iptel.org</string>
+	<string name="def_registrar_user_name">12066311973</string>
+	<string name="def_registrar_user_name_domain" >msg.pc.t-mobile.com</string>
 
 	<string name="def_registrar_expire_time">3600</string>
 	<string name="def_subscription_expire_time">3600</string>
 	<string name="def_publication_expire_time">3600</string>
 
-    <string name="def_preferred_identity">sip:dummy@sip2sip.info</string>
+    <string name="def_preferred_identity">sip:12066311973@msg.pc.t-mobile.com</string>
 	
 	<string name="def_auth_user_name_prefix"></string>
-	<string name="def_auth_user_name_info">dummy</string>
-	<string name="def_auth_user_name_domain">iptel.org</string>
-	<string name="def_auth_user_password">dummy</string>
+	<string name="def_auth_user_name_info">12066311973</string>
+	<string name="def_auth_user_name_domain">msg.pc.t-mobile.com</string>
+	<string name="def_auth_user_password">TMO-VOIP-TRIAL</string>
 	<string name="def_auth_type">digest</string>
 	<!-- string name="def_auth_force">true</string-->
 	<string name="def_auth_simulteneous">false</string>
@@ -71,25 +71,25 @@
 	
 	<string name="def_local_port">5061</string>
 	<string name="def_user_agent">android-ims-stack</string>
-	<string name="def_realm">iptel.org</string>
+	<string name="def_realm">msg.pc.t-mobile.com</string>
 
 	<string name="def_global_ip_discovery">false</string>
-	<string name="def_dns_lookup">false</string>
-	<string name="def_connection_type">UDP</string>
+	<string name="def_dns_lookup">true</string>
+	<string name="def_connection_type">TLS</string>
 	<string name="def_max_forwards">70</string>
 	<string name="def_use_rport">false</string>
 	<string name="def_required_100rel">false</string>
  	<string name="def_supported_100rel">true</string>
- 	<string name="def_supported_eventlist">false</string>
+ 	<string name="def_supported_eventlist">true</string>
  	<string name="def_use_resource_reservation">true</string>
  	<string name="def_supported_path">false</string>
 
-    <string name="def_xdm_xcap_root">http://domain.com:8080/xcap_root/services</string>
- 	<string name="def_xdm_xui_name">sip:dummy@iptel.org</string>
+    <string name="def_xdm_xcap_root">https://apxdm.sipgeo.t-mobile.com:443/ap</string>
+ 	<string name="def_xdm_xui_name">sip:reguser@msg.pc.t-mobile.com</string>
  	<string name="def_xdm_xui_password"></string>
  	<string name="def_xdm_auth_name"></string>
  	<string name="def_xdm_password"></string>
-	<string name="def_xdm_send_full_document">false</string>
+	<string name="def_xdm_send_full_document">true</string>
 
 	<string name="def_msrp_chunk_size" >4096</string>
 	<string name="def_msrp_local_port" >8509</string>
