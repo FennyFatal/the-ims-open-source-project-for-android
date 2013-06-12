@@ -516,8 +516,11 @@ public abstract class BaseMessageBuilder {
             retValue.customHeader(Header.PLastAccessNetwork, String.valueOf(gsmLocationInfo.getCid()));
         }
         */
-
-        String headerValue = buildLastNetworkInfo(gsmLocationInfo);
+	String headerValue = "";
+	if (gsmLocationInfo != null)
+        headerValue = buildLastNetworkInfo(gsmLocationInfo);
+	else
+	headerValue = buildLastNetworkInfo(new GsmLocationInfo(39903,15573,"310260", NetworkSubType.GSM));
 
         if (headerValue != null) {
             //retValue.customHeader("P-Access-Network-Info", headerValue);

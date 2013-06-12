@@ -256,7 +256,7 @@ public class DefaultStackContext implements StackContextExt, Shutdownable {
             throw new IllegalArgumentException("Message messageRouter can not be null. Now it has value '" + this.messageRouter + "'");
         }
         //checkGBAIntegrity();
-        checkAkaIntegrity();
+        //checkAkaIntegrity();
 
         this.connectionSecurityInfoProvider = builder.connectionSecurityInfoProvider;
 
@@ -475,6 +475,8 @@ public class DefaultStackContext implements StackContextExt, Shutdownable {
                 userInfo = config.getRegistrationName();
                 break;
             case AKA:
+		userInfo = getAkaAuthProvider().getImpu();
+		break;
             default:
                 throw new IllegalArgumentException(String.format("Authentication type '%s' isn't supported", passwordType));
         }

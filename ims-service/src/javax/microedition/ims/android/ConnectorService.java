@@ -59,7 +59,6 @@ import android.os.Process;
 import android.os.PowerManager.WakeLock;
 import android.os.StrictMode;
 import android.util.Log;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -73,6 +72,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.microedition.ims.DefaultStackContext;
 import javax.microedition.ims.StackHelper;
 import javax.microedition.ims.core.auth.AKAAuthProviderMockImpl;
+import javax.microedition.ims.android.auth.AKAAuthProviderAndroidImpl;
 import javax.microedition.ims.android.config.AndroidConfiguration;
 import javax.microedition.ims.android.env.AlarmScheduledService;
 import javax.microedition.ims.android.env.HardwareInfoAndroidImpl;
@@ -288,7 +288,7 @@ public class ConnectorService extends Service implements UncaughtExceptionHandle
         final Configuration configSnapshot = new BaseConfiguration.ConfigurationBuilder(configuration).build();
 
         final DefaultStackRegistry stackRegistry = new DefaultStackRegistry(new DefaultCommonRegistry.CommonRegistryBuilder().build());
-
+	
         imsStackInstance = instantiateStack(getApplicationContext(),
                 configSnapshot,
                 connectionManager,
@@ -354,6 +354,7 @@ public class ConnectorService extends Service implements UncaughtExceptionHandle
                             router(messageRouter).
                             environment(env).
                             stackRegistry(stackRegistry).
+                          //akaAuthProvider(new AKAAuthProviderAndroidImpl(androidContext)).
                             akaAuthProvider(new AKAAuthProviderMockImpl()).
                             connectionSecurityInfoProvider(
                                     new ConnectionSecurityInfoProviderImplDefault(
