@@ -255,7 +255,7 @@ public class DefaultStackContext implements StackContextExt, Shutdownable {
         if (this.messageRouter == null) {
             throw new IllegalArgumentException("Message messageRouter can not be null. Now it has value '" + this.messageRouter + "'");
         }
-        checkGBAIntegrity();
+        //checkGBAIntegrity();
         checkAkaIntegrity();
 
         this.connectionSecurityInfoProvider = builder.connectionSecurityInfoProvider;

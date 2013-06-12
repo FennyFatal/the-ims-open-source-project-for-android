@@ -62,7 +62,7 @@ import java.util.*;
  */
 public class MessageRouterComposite implements Router<IMSMessage> {
     private final static String TAG = "MessageRouterComposite";
-    private final static boolean DBG = false;
+    private final static boolean DBG = true;
     private final DefaultRouteResolver defaultRouteResolver;
     private final Map<IMSEntityType, IMSRouter<IMSMessage>> routers;
 

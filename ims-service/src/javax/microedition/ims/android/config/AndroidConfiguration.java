@@ -49,7 +49,7 @@ import android.preference.PreferenceManager;
 import javax.microedition.ims.DefaultFeatureMapper;
 import javax.microedition.ims.FeatureMapper;
 import javax.microedition.ims.engine.test.R;
-//import javax.microedition.ims.android.auth.AKAAuthProviderAndroidImpl;
+import javax.microedition.ims.android.auth.AKAAuthProviderAndroidImpl;
 import javax.microedition.ims.android.config.ui.ListPreferenceMultiSelect;
 import javax.microedition.ims.common.*;
 import javax.microedition.ims.common.util.StringUtils;
@@ -95,7 +95,7 @@ public class AndroidConfiguration implements Configuration,
     public static final String SIP_AUTH_USERNAME_DOMAIN = "sip_auth_username_domain";
     public static final String SIP_AUTH_PASSWORD = "sip_auth_password";
     public static final String SIP_AUTH_REALM = "sip_auth_realm";
-    //public static final String SIP_AUTH_FORCE = "sip_auth_force";
+    public static final String SIP_AUTH_FORCE = "sip_auth_force";
     public static final String SIP_AUTH_SIMULTENEOUS = "sip_auth_simulteneous";
     public static final String SIP_AUTH_FORCES = "sip_auth_forces";
 
@@ -133,14 +133,14 @@ public class AndroidConfiguration implements Configuration,
 
     public static final String SIP_REQUIRED_FEATURES = "sip_required_features";
 
-//    public static final String SIP_FORCE_SRTP = "sip_force_srtp";
+    public static final String SIP_FORCE_SRTP = "sip_force_srtp";
     public static final String SIP_DTMF_PAYLOAD_TYPE = "sip_dtmf_payload_type";
     public static final String SIP_USE_FEATURE_TAGS = "sip_use_feature_tags";
 
     private final Context context;
     private final SharedPreferences preferences;
 
-    //private final AKAAuthProvider akaAuthProvider;
+    private final AKAAuthProvider akaAuthProvider;
 
     private final FeatureMapper featureMapping = new DefaultFeatureMapper();
 
@@ -151,7 +151,7 @@ public class AndroidConfiguration implements Configuration,
         this.preferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         preferences.registerOnSharedPreferenceChangeListener(this);
-        //akaAuthProvider = new AKAAuthProviderAndroidImpl(context);
+        akaAuthProvider = new AKAAuthProviderAndroidImpl(context);
     }
 
     private String getDefSettingValue(int defKey) {
@@ -201,12 +201,12 @@ public class AndroidConfiguration implements Configuration,
     public ServerAddress getRegistrarServer() {
         AuthType type = getUserPassword().getPasswordType();
         String host;
-        //if (AuthType.AKA == type) {
-        //    host = akaAuthProvider.getHomeNetworkDomain();
-        //} else {
+        if (AuthType.AKA == type) {
+            host = akaAuthProvider.getHomeNetworkDomain();
+        } else {
             host = getStringSettingValue(SIP_REGISTER_HOST,
                 R.string.def_registrar_host);
-        //}
+        }
         String port = getStringSettingValue(SIP_REGISTER_PORT,
                 R.string.def_registrar_port);
         return new ServerAddress(host, Integer.parseInt(port));
@@ -227,10 +227,10 @@ public class AndroidConfiguration implements Configuration,
 
     public String getRealm() {
         AuthType type = getUserPassword().getPasswordType();
-        //if (AuthType.AKA == type) {
-        //    return akaAuthProvider.getHomeNetworkDomain();
-        //}
-        //else
+        if (AuthType.AKA == type) {
+            return akaAuthProvider.getHomeNetworkDomain();
+        }
+        else
             return getStringSettingValue(SIP_AUTH_REALM, R.string.def_realm);
     }
 
@@ -277,9 +277,9 @@ public class AndroidConfiguration implements Configuration,
         return getBooleanSettingValue(SIP_USE_RPORT, R.string.def_use_rport);
     }
 
-/*    public boolean forceSrtp() {
+    public boolean forceSrtp() {
         return getBooleanSettingValue(SIP_FORCE_SRTP, R.string.def_force_srtp);
-    }*/
+    }
 
     @Override
     public boolean useDNSLookup() {

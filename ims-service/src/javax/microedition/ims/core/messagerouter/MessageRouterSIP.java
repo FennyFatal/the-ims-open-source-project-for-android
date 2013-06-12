@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
     private final static String TAG = "MessageRouterSIP";
-    private final static boolean DBG = false;
+    private final static boolean DBG = true;
 
     private final static Object SIP_ROUTER_KEY = new Object();
 
@@ -74,7 +74,7 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
 
     private final AtomicReference<Route> currentRouteUDP = new AtomicReference<Route>(null);
     private final AtomicReference<Route> currentRouteTCP = new AtomicReference<Route>(null);
-    //private final AtomicReference<Route> currentRouteTLS = new AtomicReference<Route>(null);
+    private final AtomicReference<Route> currentRouteTLS = new AtomicReference<Route>(null);
     private final AtomicReference<Route> currentRoute = new AtomicReference<Route>(null);
 
     private final IMSDefaultRouteResolver routeResolver;
@@ -109,15 +109,15 @@ public class MessageRouterSIP extends MessageRouterBase<IMSMessage> {
             if (currentRoute.compareAndSet(null, prepareRoute(defaultRoute, defaultRoute.getTransportType()))) {
                 currentRouteTCP.set(prepareRoute(defaultRoute, Protocol.TCP));
                 currentRouteUDP.set(prepareRoute(defaultRoute, Protocol.UDP));
-                //currentRouteTLS.set(prepareRoute(defaultRoute, Protocol.TLS));
+                currentRouteTLS.set(prepareRoute(defaultRoute, Protocol.TLS));
             }
         }
 
-        Protocol transport = suggestProtocolForMessage(msg);
-
-        if (DBG) Logger.log(TAG, "getRoute: transport = " + transport);
-        //msgTransport = sipMessageUtil.getMessageTransport(msg);
-        //final Protocol transport = msgTransport == null ? config.getConnectionType() : msgTransport;
+        //Protocol transport = suggestProtocolForMessage(msg);
+//	MessageUtilHolder sipMessageUtil = new MessageUtilHolder();
+//        Protocol msgTransport = sipMessageUtil.getMessageTransport(msg);
+        final Protocol transport = config.getConnectionType();
+	if (DBG) Logger.log(TAG, "getRoute: transport = " + transport);
         checkTransport(transport);
 
         final Route route;
