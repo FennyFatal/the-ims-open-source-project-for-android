@@ -113,6 +113,7 @@ public class TlsSocketFactory implements SocketFactory {
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             this.chain = chain;
             this.authType = authType;
+	    if (true)
 		return;
             //Logger.log(Logger.Tag.WARNING, "THROW EXCEPTION");
             
