@@ -1,6 +1,5 @@
 ant
 rm -R IMSTestClient-debug/
-rm classes.dex
 rm -R IMSTestClient/
 baksmali test-client/bin/IMSTestClient-debug.apk -o IMSTestClient-debug/
 cp -R smaliadds/* IMSTestClient-debug/
