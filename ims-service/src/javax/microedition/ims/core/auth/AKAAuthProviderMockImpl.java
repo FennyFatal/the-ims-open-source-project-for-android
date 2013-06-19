@@ -41,9 +41,20 @@
 
 package javax.microedition.ims.core.auth;
 
+import com.android.internal.telephony.ITelephony;
+import com.android.internal.telephony.ITelephony.Stub;
+import com.android.internal.telephony.uicc.UiccController;
+import com.orange.authentication.simcard.SimCardAuthenticationService;
+import com.orange.authentication.simcard.ServiceAkaAuthenticationResult;
+import android.util.Log;
+import javax.microedition.ims.common.Logger;
+import javax.microedition.ims.common.Logger.Tag;
 import javax.microedition.ims.common.util.StringUtils;
 import javax.microedition.ims.config.UserInfo;
-
+import com.android.internal.telephony.CommandsInterface;
+import android.telephony.TelephonyManager;
+import android.os.ServiceManager;
+import android.content.Context;
 /**
  * User: Pavel Laboda (pavel.laboda@gmail.com)
  * Date: 30.6.2010
@@ -52,26 +63,159 @@ import javax.microedition.ims.config.UserInfo;
 
 
 public class AKAAuthProviderMockImpl implements AKAAuthProvider {
+    private static final String LOG_TAG = "AKAAuthProviderAndroidImpl";
+    private Context theContext;
+    private ITelephony telephonyHdl = null;
+    public AKAAuthProviderMockImpl(Context aContext)
+	{
+	    this.theContext = aContext;
+	}
 
     @Override
     public AKAResponse calculateAkaResponse(byte[] rand, byte[] autn) {
+	try
+	{
+	Log.d("AKAAuthProviderAndroidImpl", "Rand:"+rand);
+	Log.d("AKAAuthProviderAndroidImpl", "autn:"+autn);
+/*
+	mPhoneFactory = Class.forName("com.android.internal.telephony.PhoneFactory");
+	Method mMakeDefaultPhone = mPhoneFactory.getMethod("makeDefaultPhone", new Class[] {Context.class});
+	mMakeDefaultPhone.invoke(null, theContext);
+	Method mGetDefaultPhone = mPhoneFactory.getMethod("getDefaultPhone", null);
+	mPhone = mGetDefaultPhone.invoke(null);
+*/
+	ServiceAkaAuthenticationResult result = new SimCardAuthenticationService(UiccController.getInstance().getCommandsInterface(),theContext).akaAuthentication(rand,autn);
+	Log.d("AKAAuthProviderAndroidImpl", "Error:"+ result.getError().ordinal() + ":" + result.getError());
+	Log.d("AKAAuthProviderAndroidImpl", "Ck:" + result.getCk());
+	Log.d("AKAAuthProviderAndroidImpl", "Ik:" + result.getIk());
+	Log.d("AKAAuthProviderAndroidImpl", "Res:" + result.getRes());
+	Log.d("AKAAuthProviderAndroidImpl", "Auts:" + result.getAuts());
         return new AKAResponseImpl(
+	//result.getCk(),
+	result.getIk(),
+	result.getRes(),
+	result.getAuts(),
+	result.getCk()
+	);
+	/*return new AKAResponseImpl(
                 new byte[]{},
                 new byte[]{},
                 new byte[]{},
                 StringUtils.hexStringToByteArray(DigestUtils.md5Hex("" + System.currentTimeMillis()).substring(0, 8))
-        );
+        );*/
+	}
+	catch (Exception ex)
+	{
+	Log.d("AKAAuthProviderAndroidImpl", "error1:" + ex);
+	Logger.log("AKAAuthProviderAndroidImpl", "error" + ex);
+	return null;
+	}
     }
-
-    
+/*
+  private ITelephony getTelephonyHdl()
+    throws Exception
+  {
+    if (this.telephonyHdl == null)
+      this.telephonyHdl = ITelephony.Stub.asInterface(ServiceManager.getService("phone"));
+    return this.telephonyHdl;
+  }
+*/
+/*
+    private AKAResponse doCalculateAkaResponse(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2)
+    throws AuthCalculationException
+  {
+    TelephonyManager manager = (TelephonyManager) theContext.getSystemService(Context.TELEPHONY_SERVICE);
+    byte[] arrayOfByte1 = null;
+    byte[] arrayOfByte2 = null;
+    byte[] arrayOfByte3 = null;
+    byte[] arrayOfByte4 = null;
+    try
+    {
+      int i = getTelephonyHdl().openIccLogicalChannel(manager.getIsimAid());
+      if (i == -1)
+      {
+          return null;
+      }
+      byte[] arrayOfByte5 = hexStringToBytes(manager.calculateAkaResponse(paramArrayOfByte1, paramArrayOfByte2));
+      getTelephonyHdl().closeIccLogicalChannel(i);
+      if ((arrayOfByte5[0] == -37) || (arrayOfByte5[0] == 0))
+      {
+        int j = arrayOfByte5[1];
+        arrayOfByte2 = null;
+        arrayOfByte3 = null;
+        arrayOfByte4 = null;
+        arrayOfByte1 = null;
+        if (j > 0)
+        {
+          arrayOfByte1 = new byte[j];
+          System.arraycopy(arrayOfByte5, 2, arrayOfByte1, 0, j);
+        }
+        int k = arrayOfByte5[(j + 2)];
+        arrayOfByte2 = null;
+        arrayOfByte3 = null;
+        arrayOfByte4 = null;
+        if (k > 0)
+        {
+          arrayOfByte2 = new byte[k];
+          System.arraycopy(arrayOfByte5, j + 3, arrayOfByte2, 0, k);
+        }
+        int m = arrayOfByte5[(k + (j + 3))];
+        arrayOfByte3 = null;
+        arrayOfByte4 = null;
+        if (m > 0)
+        {
+          arrayOfByte3 = new byte[m];
+          System.arraycopy(arrayOfByte5, k + (j + 4), arrayOfByte3, 0, m);
+        }
+      }
+      while (arrayOfByte1 == null)
+      {
+        throw new AuthCalculationException("Aka response can't be calculated");
+        int n = arrayOfByte5[0];
+        arrayOfByte2 = null;
+        arrayOfByte3 = null;
+        arrayOfByte4 = null;
+        arrayOfByte1 = null;
+        if (n != -36)
+          continue;
+        int i1 = arrayOfByte5[1];
+        arrayOfByte2 = null;
+        arrayOfByte3 = null;
+        arrayOfByte4 = null;
+        arrayOfByte1 = null;
+        if (i1 <= 0)
+          continue;
+        arrayOfByte4 = new byte[i1];
+        System.arraycopy(arrayOfByte5, 2, arrayOfByte4, 0, i1);
+        arrayOfByte2 = null;
+        arrayOfByte3 = null;
+        arrayOfByte1 = null;
+      }
+    }
+    catch (Exception localException)
+    {
+      while (true)
+      {
+        localException.printStackTrace();
+      }
+      if (arrayOfByte1 == null)
+        return null;
+    }
+    return new AKAResponseImpl(arrayOfByte2, arrayOfByte3, arrayOfByte4, arrayOfByte1);
+  }
+*/    
     public UserInfo getImpi() {
-        return new UserInfo("sip", "1234567", "dummy.com");
+TelephonyManager mTelephonyMgr = (TelephonyManager) theContext.getSystemService(Context.TELEPHONY_SERVICE); 
+	String imsi = mTelephonyMgr.getSubscriberId();
+        return new UserInfo("", imsi , "msg.pc.t-mobile.com");
         
     }
 
-    
+	    
     public UserInfo getImpu() {
-        return new UserInfo("sip", "12345678", "dummy.com");
+        TelephonyManager mTelephonyMgr = (TelephonyManager) theContext.getSystemService(Context.TELEPHONY_SERVICE);
+        String number = mTelephonyMgr.getLine1Number();
+        return new UserInfo("sip", number , "msg.pc.t-mobile.com");
         //return null;
     }
 
@@ -81,6 +225,6 @@ public class AKAAuthProviderMockImpl implements AKAAuthProvider {
     
     @Override
     public boolean isGbaUSupported() {
-        return false;
+        return true;
     }
 }

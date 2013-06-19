@@ -201,12 +201,12 @@ public class AndroidConfiguration implements Configuration,
     public ServerAddress getRegistrarServer() {
         AuthType type = getUserPassword().getPasswordType();
         String host;
-        if (AuthType.AKA == type) {
-            host = akaAuthProvider.getHomeNetworkDomain();
-        } else {
+        //if (AuthType.AKA == type) {
+        //    host = akaAuthProvider.getHomeNetworkDomain();
+        //} else {
             host = getStringSettingValue(SIP_REGISTER_HOST,
                 R.string.def_registrar_host);
-        }
+        //}
         String port = getStringSettingValue(SIP_REGISTER_PORT,
                 R.string.def_registrar_port);
         return new ServerAddress(host, Integer.parseInt(port));
@@ -227,10 +227,10 @@ public class AndroidConfiguration implements Configuration,
 
     public String getRealm() {
         AuthType type = getUserPassword().getPasswordType();
-        if (AuthType.AKA == type) {
-            return akaAuthProvider.getHomeNetworkDomain();
-        }
-        else
+       // if (AuthType.AKA == type) {
+        //    return akaAuthProvider.getHomeNetworkDomain();
+      //  }
+      //  else
             return getStringSettingValue(SIP_AUTH_REALM, R.string.def_realm);
     }
 

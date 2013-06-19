@@ -355,7 +355,7 @@ public class ConnectorService extends Service implements UncaughtExceptionHandle
                             environment(env).
                             stackRegistry(stackRegistry).
                           //akaAuthProvider(new AKAAuthProviderAndroidImpl(androidContext)).
-                            akaAuthProvider(new AKAAuthProviderMockImpl()).
+                            akaAuthProvider(new AKAAuthProviderMockImpl(androidContext)).
                             connectionSecurityInfoProvider(
                                     new ConnectionSecurityInfoProviderImplDefault(
                                             connDataProvider.getDNSResolver(),
